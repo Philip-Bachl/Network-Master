@@ -32,4 +32,15 @@ CREATE TABLE sw_switch (
     PRIMARY KEY (sw_ip)
 );
 
--- TODO: SD_Switch_zu_Dose
+CREATE TABLE sd_switch_zu_dose (
+    sd_sw_ip INTEGER REFERENCES sw_switch.sw_ip,
+    sd_do_nummer TEXT REFERENCES do_dose.do_nummer,
+    sd_do_ra_nummer INTEGER REFERENCES do_dose.do_ra_nummer,
+    sd_do_ra_stockwerk INTEGER REFERENCES do_dose.do_ra_stockwerk,
+    sd_switchport TEXT,
+    sd_hat_telefon INTEGER,
+    sd_hat_pc INTEGER,
+    sd_hat_drucker INTEGER,
+    sd_kommentar TEXT,
+    PRIMARY KEY (sd_sw_ip, sd_do_nummer, sd_do_ra_nummer, sd_do_ra_stockwerk)
+);
