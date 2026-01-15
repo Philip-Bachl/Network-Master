@@ -1,4 +1,5 @@
 -- Your SQL goes here
+
 CREATE TABLE ge_gebaeude (
     ge_name TEXT,
     PRIMARY KEY (ge_name)
