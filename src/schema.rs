@@ -32,14 +32,14 @@ diesel::table! {
 
 diesel::table! {
     sd_switch_zu_dose (sd_sw_ip, sd_do_nummer, sd_do_ra_nummer, sd_do_ra_stockwerk) {
-        sd_sw_ip -> Integer,
+        sd_sw_ip -> Text,
         sd_do_nummer -> Text,
         sd_do_ra_nummer -> Integer,
         sd_do_ra_stockwerk -> Integer,
         sd_switchport -> Text,
-        sd_hat_telefon -> Integer,
-        sd_hat_pc -> Integer,
-        sd_hat_drucker -> Integer,
+        sd_hat_telefon -> Bool,
+        sd_hat_pc -> Bool,
+        sd_hat_drucker -> Bool,
         sd_kommentar -> Nullable<Text>,
     }
 }

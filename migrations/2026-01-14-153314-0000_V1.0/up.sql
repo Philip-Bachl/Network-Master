@@ -34,14 +34,14 @@ CREATE TABLE sw_switch (
 );
 
 CREATE TABLE sd_switch_zu_dose (
-    sd_sw_ip INTEGER REFERENCES sw_ip NOT NULL,
+    sd_sw_ip TEXT REFERENCES sw_ip NOT NULL,
     sd_do_nummer TEXT REFERENCES do_nummer NOT NULL,
     sd_do_ra_nummer INTEGER REFERENCES do_ra_nummer NOT NULL,
     sd_do_ra_stockwerk INTEGER REFERENCES do_ra_stockwerk NOT NULL,
     sd_switchport TEXT NOT NULL,
-    sd_hat_telefon INTEGER NOT NULL,
-    sd_hat_pc INTEGER NOT NULL,
-    sd_hat_drucker INTEGER NOT NULL,
+    sd_hat_telefon BOOLEAN NOT NULL,
+    sd_hat_pc BOOLEAN NOT NULL,
+    sd_hat_drucker BOOLEAN NOT NULL,
     sd_kommentar TEXT,
     PRIMARY KEY (sd_sw_ip, sd_do_nummer, sd_do_ra_nummer, sd_do_ra_stockwerk)
 );
