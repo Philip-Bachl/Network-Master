@@ -2,16 +2,18 @@ use std::env;
 
 use dotenvy::dotenv;
 
-use crate::model::Masterbase;
+use masterbase::Masterbase;
 
-pub mod model;
-pub mod schema;
+mod error;
+mod masterbase;
+mod model;
+mod schema;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv()?;
 
     let connection_string = env::var("DATABASE_URL")?;
-    let database = Masterbase::connect(&connection_string);
+    let database = Masterbase::connect(&connection_string)?;
 
     Ok(())
 }
