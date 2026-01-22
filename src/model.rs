@@ -1,5 +1,5 @@
 use diesel::{Selectable, prelude::Queryable};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::schema;
 
@@ -12,7 +12,7 @@ pub struct Dose {
     pub do_ra_stockwerk: i32,
 }
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable, Serialize, Deserialize)]
 #[diesel(table_name = schema::ge_gebaeude)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Gebaeude {
