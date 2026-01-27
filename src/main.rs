@@ -37,22 +37,17 @@ async fn rocket() -> _ {
         }
     };
 
-    let app = rocket::build()
+    rocket::build()
         .manage(MasterState {
             database: Arc::new(Mutex::new(database)),
         })
         .mount(
             "/db",
             routes![
-                endpoints::get_gebaeude_all,
-                endpoints::add_gebaede,
-                endpoints::change_gebaede
+                endpoints::gebaeude::get_gebaeude_all,
+                endpoints::gebaeude::add_gebaede,
+                endpoints::gebaeude::change_gebaede,
+                endpoints::gebaeude::remove_gebaeude
             ],
-        );
-
-    for r in app.routes() {
-        println!("{r}");
-    }
-
-    app
+        )
 }

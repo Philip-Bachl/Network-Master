@@ -2,7 +2,7 @@ use rocket::{State, delete, get, http::Status, post, put, serde::json::Json};
 
 use crate::{
     MasterState,
-    masterbase::{DeleteGebaeude, UpdateGebaeude},
+    masterbase::{CreateEntityRequest, DeleteEntityRequest, UpdateEntityRequest},
     model::Gebaeude,
 };
 
@@ -26,7 +26,10 @@ pub async fn get_gebaeude_all(state: &State<MasterState>) -> Result<Json<Vec<Geb
 }
 
 #[post("/gebaeude", data = "<gebaeude>")]
-pub async fn add_gebaede(state: &State<MasterState>, gebaeude: Json<Gebaeude>) -> Status {
+pub async fn add_gebaede(
+    state: &State<MasterState>,
+    gebaeude: Json<CreateEntityRequest<Gebaeude>>,
+) -> Status {
     let Ok(mut database) = state.database.lock() else {
         println!("ERROR: Poisioned Lock detected at 'add_gebaeude'");
         return Status::InternalServerError;
@@ -46,7 +49,7 @@ pub async fn add_gebaede(state: &State<MasterState>, gebaeude: Json<Gebaeude>) -
 #[put("/gebaeude", data = "<update_gebaeude>")]
 pub async fn change_gebaede(
     state: &State<MasterState>,
-    update_gebaeude: Json<UpdateGebaeude>,
+    update_gebaeude: Json<UpdateEntityRequest<String, Gebaeude>>,
 ) -> Status {
     let Ok(mut database) = state.database.lock() else {
         println!("ERROR: Poisioned Lock detected at 'change_gebaeude'");
@@ -67,7 +70,7 @@ pub async fn change_gebaede(
 #[delete("/gebaeude", data = "<delete_gebaeude>")]
 pub async fn remove_gebaeude(
     state: &State<MasterState>,
-    delete_gebaeude: Json<DeleteGebaeude>,
+    delete_gebaeude: Json<DeleteEntityRequest<String>>,
 ) -> Status {
     let Ok(mut database) = state.database.lock() else {
         println!("ERROR: Poisioned Lock detected at 'remove_gebaeude'");
