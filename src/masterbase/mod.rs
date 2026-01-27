@@ -2,6 +2,7 @@ use diesel::{Connection, ConnectionError, SqliteConnection};
 use serde::Deserialize;
 
 mod gebaeude;
+mod raum;
 
 #[derive(Deserialize)]
 pub struct CreateEntityRequest<E> {
