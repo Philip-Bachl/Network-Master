@@ -1,22 +1,15 @@
-use std::{
-    env,
-    process::exit,
-    sync::{Arc, Mutex},
-};
+use std::{env, process::exit};
 
 use dotenvy::dotenv;
 
-use masterbase::Masterbase;
 use rocket::{launch, routes};
 
+use masterbase::Masterbase;
+
 mod endpoints;
+mod error;
 mod masterbase;
 mod model;
-mod schema;
-
-struct MasterState {
-    database: Arc<Mutex<Masterbase>>,
-}
 
 #[launch]
 async fn rocket() -> _ {
@@ -29,25 +22,12 @@ async fn rocket() -> _ {
         println!("INITERROR: Could not retrieve \"DATABASE_URL\" from .env file!");
         exit(2);
     };
-    let database = match Masterbase::connect(&connection_string) {
-        Ok(db) => db,
-        Err(err) => {
-            println!("INITERROR: Could not connect to Database: {}", err);
-            exit(3);
-        }
+    let Ok(masterbase) = Masterbase::init(&connection_string).await else {
+        println!(
+            "INITERROR: Could not establish connection with given database url: \"{connection_string}\"!"
+        );
+        exit(3);
     };
 
-    rocket::build()
-        .manage(MasterState {
-            database: Arc::new(Mutex::new(database)),
-        })
-        .mount(
-            "/db",
-            routes![
-                endpoints::gebaeude::get_gebaeude_all,
-                endpoints::gebaeude::add_gebaede,
-                endpoints::gebaeude::change_gebaede,
-                endpoints::gebaeude::remove_gebaeude
-            ],
-        )
+    rocket::build().manage(masterbase).mount("/db", routes![])
 }
