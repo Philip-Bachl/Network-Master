@@ -29,6 +29,17 @@ async fn rocket() -> _ {
         exit(3);
     };
 
+    if Some("--reset".to_string()) == env::args().nth(1) {
+        sqlx::query(include_str!("../db_scripts/down.sql"))
+            .execute(&masterbase.connection_pool)
+            .await
+            .unwrap();
+        sqlx::query(include_str!("../db_scripts/up.sql"))
+            .execute(&masterbase.connection_pool)
+            .await
+            .unwrap();
+    }
+
     rocket::build()
         .manage(masterbase)
         .mount(

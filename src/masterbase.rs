@@ -1,4 +1,4 @@
-use sqlx::{Pool, Sqlite};
+use sqlx::{Pool, Sqlite, sqlite::SqliteConnectOptions};
 
 use crate::error::Error;
 
@@ -11,8 +11,11 @@ pub struct Masterbase {
 
 impl Masterbase {
     pub async fn init(connection_string: &str) -> Result<Masterbase, Error> {
-        let connection_pool =
-            Pool::connect_lazy(connection_string).map_err(Error::DatabaseInitError)?;
+        let connection_pool = Pool::connect_lazy_with(
+            SqliteConnectOptions::new()
+                .filename(connection_string)
+                .create_if_missing(true),
+        );
 
         Ok(Masterbase { connection_pool })
     }
