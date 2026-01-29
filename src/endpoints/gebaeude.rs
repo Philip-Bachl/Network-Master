@@ -60,24 +60,8 @@ pub async fn delete_gebaeude(
     masterbase: &State<Masterbase>,
     delete_gebaeude: Json<DeleteGebaeude>,
 ) -> Status {
-    if sqlx::query("PRAGMA foreign_keys = OFF")
-        .execute(&masterbase.connection_pool)
-        .await
-        .is_err()
-    {
-        return Status::InternalServerError;
-    }
-
-    if sqlx::query("DELETE FROM ge_gebaeude WHERE ge_name = $1")
+    match sqlx::query("DELETE FROM ge_gebaeude WHERE ge_name = $1")
         .bind(&delete_gebaeude.ge_name)
-        .execute(&masterbase.connection_pool)
-        .await
-        .is_err()
-    {
-        return Status::InternalServerError;
-    }
-
-    match sqlx::query("PRAGMA foreign_keys = ON")
         .execute(&masterbase.connection_pool)
         .await
     {
