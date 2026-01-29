@@ -12,7 +12,7 @@ pub struct Masterbase {
 impl Masterbase {
     pub async fn init(connection_string: &str) -> Result<Masterbase, Error> {
         let connection_pool =
-            Pool::connect_lazy(connection_string).map_err(|err| Error::DatabaseInitError(err))?;
+            Pool::connect_lazy(connection_string).map_err(Error::DatabaseInitError)?;
 
         Ok(Masterbase { connection_pool })
     }

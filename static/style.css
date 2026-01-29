@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-size: 1.1em;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(30, 30, 30);
+    color: white;
+}
+
+[id^="template-"] {
+    display: none;
+}
+
+[id$="-container"] {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 20px;
+    background-color: rgb(50, 50, 50);
+}
+
+.gebaeude-container {}
+
+.gebaeude {
+    width: fit-content;
+    padding: 10px;
+
+    background-color: rgb(70, 70, 70);
+}

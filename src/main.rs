@@ -2,7 +2,7 @@ use std::{env, process::exit};
 
 use dotenvy::dotenv;
 
-use rocket::{launch, routes};
+use rocket::{fs::FileServer, launch, routes};
 
 use masterbase::Masterbase;
 
@@ -29,5 +29,16 @@ async fn rocket() -> _ {
         exit(3);
     };
 
-    rocket::build().manage(masterbase).mount("/db", routes![])
+    rocket::build()
+        .manage(masterbase)
+        .mount(
+            "/api",
+            routes![
+                endpoints::gebaeude::create_gebaede,
+                endpoints::gebaeude::read_gebaeude_all,
+                endpoints::gebaeude::update_gebaeude,
+                endpoints::gebaeude::delete_gebaeude,
+            ],
+        )
+        .mount("/", FileServer::from("./static"))
 }
