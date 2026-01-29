@@ -13,30 +13,31 @@ pub struct Raum {
     pub ra_ge_name: String,
 }
 
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct Schrank {
-    pub sc_nummer: i32,
+    pub sc_nummer: String,
     pub sc_stockwerk: i32,
     pub sc_ge_name: String,
 }
 
 pub struct Dose {
     pub do_nummer: String,
-    pub do_ra_ge_name: String,
-    pub do_ra_nummer: i32,
+    pub do_ra_nummer: String,
     pub do_ra_stockwerk: i32,
+    pub do_ra_ge_name: String,
 }
 
 pub struct Switch {
     pub sw_ip: String,
-    pub sw_sc_nummer: i32,
+    pub sw_sc_nummer: String,
     pub sw_sc_stockwerk: i32,
-    pub sw_sc_ge_name: i32,
+    pub sw_sc_ge_name: String,
 }
 
 pub struct SwitchZuDose {
     pub sd_sw_ip: String,
     pub sd_do_nummer: String,
-    pub sd_do_ra_nummer: i32,
+    pub sd_do_ra_nummer: String,
     pub sd_do_ra_stockwerk: i32,
     pub sd_do_ra_ge_name: String,
     pub sd_switchport: String,
