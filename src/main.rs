@@ -49,10 +49,16 @@ async fn rocket() -> _ {
                 endpoints::gebaeude::read_gebaeude_all,
                 endpoints::gebaeude::update_gebaeude,
                 endpoints::gebaeude::delete_gebaeude,
+                //
                 endpoints::raum::create_raum,
                 endpoints::raum::read_raeume_all,
                 endpoints::raum::update_raum,
                 endpoints::raum::delete_raum,
+                //
+                endpoints::schrank::create_schrank,
+                endpoints::schrank::read_schrank_all,
+                endpoints::schrank::update_schrank,
+                endpoints::schrank::delete_schrank,
             ],
         )
         .mount("/", FileServer::from("./static"))
