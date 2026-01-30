@@ -40,8 +40,8 @@ pub async fn update_gebaeude(
     update_gebaeude: Json<UpdateGebaeude>,
 ) -> Status {
     match sqlx::query("UPDATE ge_gebaeude SET ge_name = $1 WHERE ge_name = $2")
-        .bind(&update_gebaeude.ge_name)
         .bind(&update_gebaeude.gebaeude.ge_name)
+        .bind(&update_gebaeude.ge_name)
         .execute(&masterbase.connection_pool)
         .await
     {

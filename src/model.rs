@@ -20,6 +20,7 @@ pub struct Schrank {
     pub sc_ge_name: String,
 }
 
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct Dose {
     pub do_nummer: String,
     pub do_ra_nummer: String,

@@ -43,16 +43,18 @@ pub async fn update_schrank(
     update_schrank: Json<UpdateSchrank>,
 ) -> Status {
     match sqlx::query("UPDATE sc_schrank SET sc_nummer = $1, sc_stockwerk = $2, sc_ge_name = $3 WHERE sc_nummer = $1, sc_stockwerk = $2, sc_ge_name = $3")
-        .bind(&update_schrank.sc_nummer)
-        .bind(update_schrank.sc_stockwerk)
-        .bind(&update_schrank.sc_ge_name)
         .bind(&update_schrank.schrank.sc_nummer)
         .bind(update_schrank.schrank.sc_stockwerk)
         .bind(&update_schrank.schrank.sc_ge_name)
+        //
+        .bind(&update_schrank.sc_nummer)
+        .bind(update_schrank.sc_stockwerk)
+        .bind(&update_schrank.sc_ge_name)
+        //
         .execute(&masterbase.connection_pool)
         .await
     {
-        Ok(_) => Status::Created,
+        Ok(_) => Status::Accepted,
         Err(_) => Status::InternalServerError,
     }
 }
@@ -78,7 +80,7 @@ pub async fn delete_schrank(
     .execute(&masterbase.connection_pool)
     .await
     {
-        Ok(_) => Status::Created,
+        Ok(_) => Status::Ok,
         Err(_) => Status::InternalServerError,
     }
 }

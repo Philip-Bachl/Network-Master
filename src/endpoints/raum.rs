@@ -42,18 +42,18 @@ pub async fn update_raum(masterbase: &State<Masterbase>, update_raum: Json<Updat
     match sqlx::query(
         "UPDATE ra_raum SET ra_nummer = $1, ra_stockwerk = $2, ra_ge_name = $3 WHERE ra_ge_name = $4, ra_stockwerk = $5, ra_nummer = $6",
     )
-    .bind(&update_raum.ra_nummer)
-    .bind(update_raum.ra_stockwerk)
-    .bind(&update_raum.ra_ge_name)
-
     .bind(&update_raum.raum.ra_nummer)
     .bind(update_raum.raum.ra_stockwerk)
     .bind(&update_raum.raum.ra_ge_name)    
-
+    //
+    .bind(&update_raum.ra_nummer)
+    .bind(update_raum.ra_stockwerk)
+    .bind(&update_raum.ra_ge_name)
+    //
     .fetch_all(&masterbase.connection_pool)
     .await
     {
-        Ok(_) => Status::Created,
+        Ok(_) => Status::Accepted,
         Err(_) => Status::InternalServerError,
     }
 }

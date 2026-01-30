@@ -1,4 +1,4 @@
-use std::{env, fs, process::exit};
+use std::{env, process::exit};
 
 use dotenvy::dotenv;
 
@@ -62,6 +62,11 @@ async fn rocket() -> _ {
                 endpoints::schrank::read_schrank_all,
                 endpoints::schrank::update_schrank,
                 endpoints::schrank::delete_schrank,
+                //
+                endpoints::dose::create_dose,
+                endpoints::dose::read_dosen_all,
+                endpoints::dose::update_dose,
+                endpoints::dose::delete_dose,
             ],
         )
         .mount("/", FileServer::from("./static"))
