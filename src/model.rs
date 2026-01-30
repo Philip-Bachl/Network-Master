@@ -28,6 +28,7 @@ pub struct Dose {
     pub do_ra_ge_name: String,
 }
 
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct Switch {
     pub sw_ip: String,
     pub sw_sc_nummer: String,
