@@ -1,4 +1,4 @@
-use std::{env, process::exit};
+use std::{env, fs, process::exit};
 
 use dotenvy::dotenv;
 
@@ -30,14 +30,17 @@ async fn rocket() -> _ {
     };
 
     if Some("--reset".to_string()) == env::args().nth(1) {
-        sqlx::query(include_str!("../db_scripts/down.sql"))
-            .execute(&masterbase.connection_pool)
-            .await
-            .unwrap();
-        sqlx::query(include_str!("../db_scripts/up.sql"))
-            .execute(&masterbase.connection_pool)
-            .await
-            .unwrap();
+        for (i, line) in include_str!("../db_scripts/down.sql")
+            .split_inclusive(';')
+            .chain(include_str!("../db_scripts/up.sql").split_inclusive(';'))
+            .enumerate()
+        {
+            sqlx::query(line)
+                .execute(&masterbase.connection_pool)
+                .await
+                .unwrap();
+            println!("Running reset query line number {i}: {line}");
+        }
     }
 
     rocket::build()
