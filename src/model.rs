@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 
+//TODO: add ids
+
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct Gebaeude {
     pub ge_name: String,
@@ -26,6 +28,9 @@ pub struct Dose {
     pub do_ra_nummer: String,
     pub do_ra_stockwerk: i32,
     pub do_ra_ge_name: String,
+    pub do_hat_telefon: bool,
+    pub do_hat_pc: bool,
+    pub do_hat_drucker: bool,
 }
 
 #[derive(Serialize, Deserialize, FromRow)]
@@ -36,6 +41,7 @@ pub struct Switch {
     pub sw_sc_ge_name: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct SwitchZuDose {
     pub sd_do_nummer: String,
     pub sd_do_ra_nummer: String,
@@ -43,8 +49,5 @@ pub struct SwitchZuDose {
     pub sd_do_ra_ge_name: String,
     pub sd_sw_ip: String,
     pub sd_switchport: String,
-    pub sd_hat_telefon: bool,
-    pub sd_hat_pc: bool,
-    pub sd_hat_drucker: bool,
     pub sd_kommentar: Option<String>,
 }

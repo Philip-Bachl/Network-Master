@@ -72,6 +72,11 @@ async fn rocket() -> _ {
                 endpoints::switch::read_switches_all,
                 endpoints::switch::update_switch,
                 endpoints::switch::delete_switch,
+                //
+                endpoints::switch_zu_dose::create_switch_zu_dose,
+                endpoints::switch_zu_dose::read_switch_zu_dose,
+                endpoints::switch_zu_dose::update_switch_zu_dose,
+                endpoints::switch_zu_dose::delete_switch_zu_dose,
             ],
         )
         .mount("/", FileServer::from("./static"))

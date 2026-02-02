@@ -26,6 +26,9 @@ CREATE TABLE do_dose (
     do_ra_nummer TEXT NOT NULL,
     do_ra_stockwerk INTEGER NOT NULL,
     do_ra_ge_name TEXT NOT NULL,
+    do_hat_telefon BOOLEAN NOT NULL,
+    do_hat_pc BOOLEAN NOT NULL,
+    do_hat_drucker BOOLEAN NOT NULL,
     PRIMARY KEY (do_nummer, do_ra_ge_name, do_ra_nummer, do_ra_stockwerk)
     FOREIGN KEY (do_ra_nummer, do_ra_stockwerk, do_ra_ge_name) REFERENCES ra_raum(ra_nummer, ra_stockwerk, ra_ge_name)
 );
@@ -46,9 +49,6 @@ CREATE TABLE sd_switch_zu_dose (
     sd_do_ra_ge_name TEXT NOT NULL,
     sd_sw_ip TEXT NOT NULL,
     sd_switchport TEXT NOT NULL,
-    sd_hat_telefon BOOLEAN NOT NULL,
-    sd_hat_pc BOOLEAN NOT NULL,
-    sd_hat_drucker BOOLEAN NOT NULL,
     sd_kommentar TEXT,
     PRIMARY KEY (sd_do_nummer, sd_do_ra_nummer, sd_do_ra_stockwerk, sd_do_ra_ge_name)
     FOREIGN KEY (sd_sw_ip) REFERENCES sw_switch(sw_ip),
