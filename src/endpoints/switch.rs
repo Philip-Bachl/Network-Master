@@ -1,4 +1,4 @@
-use rocket::{State, get, http::Status, post, put, serde::json::Json};
+use rocket::{State, delete, get, http::Status, post, put, serde::json::Json};
 use serde::Deserialize;
 
 use crate::{masterbase::Masterbase, model::Switch};
@@ -68,7 +68,7 @@ pub struct DeleteSwitch {
     sw_ip: String,
 }
 
-#[put("/switch", data = "<delete_switch>")]
+#[delete("/switch", data = "<delete_switch>")]
 pub async fn delete_switch(
     masterbase: &State<Masterbase>,
     delete_switch: Json<DeleteSwitch>,

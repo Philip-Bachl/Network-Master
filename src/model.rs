@@ -31,17 +31,17 @@ pub struct Dose {
 #[derive(Serialize, Deserialize, FromRow)]
 pub struct Switch {
     pub sw_ip: String,
-    pub sw_sc_nummer: String,
-    pub sw_sc_stockwerk: i32,
-    pub sw_sc_ge_name: String,
+    pub sw_sc_nummer: Option<String>,
+    pub sw_sc_stockwerk: Option<i32>,
+    pub sw_sc_ge_name: Option<String>,
 }
 
 pub struct SwitchZuDose {
-    pub sd_sw_ip: String,
     pub sd_do_nummer: String,
     pub sd_do_ra_nummer: String,
     pub sd_do_ra_stockwerk: i32,
     pub sd_do_ra_ge_name: String,
+    pub sd_sw_ip: String,
     pub sd_switchport: String,
     pub sd_hat_telefon: bool,
     pub sd_hat_pc: bool,
