@@ -15,11 +15,14 @@ pub async fn read_dosen_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<D
 
 #[post("/dose", data = "<dose>")]
 pub async fn create_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> Status {
-    match sqlx::query("INSERT INTO do_dose VALUES ($1, $2, $3)")
+    match sqlx::query("INSERT INTO do_dose VALUES ($1, $2, $3, $4, $5, $6, $7)")
         .bind(&dose.do_nummer)
         .bind(&dose.do_ra_nummer)
         .bind(dose.do_ra_stockwerk)
         .bind(&dose.do_ra_ge_name)
+        .bind(dose.do_hat_telefon)
+        .bind(dose.do_hat_pc)
+        .bind(dose.do_hat_drucker)
         .execute(&masterbase.connection_pool)
         .await
     {
@@ -43,7 +46,7 @@ pub async fn update_dose(masterbase: &State<Masterbase>, update_dose: Json<Updat
     match sqlx::query(
         "
             UPDATE do_dose
-            SET do_nummer = $1, do_ra_nummer = $2, do_ra_stockwerk = $3, do_rage_name = $4
+            SET do_nummer = $1, do_ra_nummer = $2, do_ra_stockwerk = $3, do_rage_name = $4, do_hat_telefon = $5, do_hat_pc = $6, do_hat_drucker = $7
             WHERE do_nummer = $5, do_ra_nummer = $6, do_ra_stockwerk = $7, do_rage_name = $8
         ",
     )
@@ -51,6 +54,9 @@ pub async fn update_dose(masterbase: &State<Masterbase>, update_dose: Json<Updat
     .bind(&update_dose.dose.do_ra_nummer)
     .bind(update_dose.dose.do_ra_stockwerk)
     .bind(&update_dose.dose.do_ra_ge_name)
+    .bind(update_dose.dose.do_hat_telefon)
+    .bind(update_dose.dose.do_hat_pc)
+    .bind(update_dose.dose.do_hat_drucker)
     //
     .bind(&update_dose.do_nummer)
     .bind(&update_dose.do_ra_nummer)
