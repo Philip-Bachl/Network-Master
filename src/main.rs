@@ -13,6 +13,8 @@ mod model;
 
 #[launch]
 async fn rocket() -> _ {
+    let args: Vec<String> = env::args().collect();
+
     if dotenv().is_err() {
         println!("INITERROR: Could not find .env file!");
         exit(1);
@@ -29,7 +31,8 @@ async fn rocket() -> _ {
         exit(3);
     };
 
-    if Some("--reset".to_string()) == env::args().nth(1) {
+    if args.iter().any(|arg| arg == "--reset") {
+        drop(args);
         for (i, line) in include_str!("../db_scripts/down.sql")
             .split_inclusive(';')
             .chain(include_str!("../db_scripts/up.sql").split_inclusive(';'))
