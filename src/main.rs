@@ -41,6 +41,8 @@ async fn rocket() -> _ {
                 .unwrap();
             println!("Running reset query line number {i}: {line}");
         }
+
+        masterbase.seed().await;
     }
 
     rocket::build()
