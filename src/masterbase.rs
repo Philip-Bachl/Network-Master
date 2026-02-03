@@ -1,7 +1,6 @@
 use sqlx::{Pool, Sqlite, sqlite::SqliteConnectOptions};
 
 use crate::{
-    endpoints::{gebaeude, schrank, switch},
     error::Error,
     model::{Dose, Gebaeude, Raum, Schrank, Switch, SwitchZuDose},
 };
@@ -38,13 +37,14 @@ impl Masterbase {
         ];
 
         const ABC: [char; 10] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+        const ABC_LENGTH: usize = ABC.len();
 
         let mut raeume = Vec::new();
         let mut schraenke = Vec::new();
         for (i, geb) in gebaede.iter().enumerate() {
             for j in 0..3 {
                 let schrank = Schrank {
-                    sc_nummer: String::from(ABC[i + j]),
+                    sc_nummer: String::from(ABC[(i + j) % ABC_LENGTH]),
                     sc_stockwerk: j as i32,
                     sc_ge_name: geb.ge_name.clone(),
                 };
@@ -82,35 +82,36 @@ impl Masterbase {
         for (i, schrank) in schraenke.iter().enumerate() {
             let switch1 = if i % 3 != 0 {
                 Switch {
-                    sw_ip: format!("{i}.{i}.{i}.{i}"),
+                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 1),
                     sw_sc_nummer: Some(schrank.sc_nummer.clone()),
                     sw_sc_stockwerk: Some(schrank.sc_stockwerk),
                     sw_sc_ge_name: Some(schrank.sc_ge_name.clone()),
                 }
             } else {
                 Switch {
-                    sw_ip: format!("{i}.{i}.{i}.{i}"),
+                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 1),
                     sw_sc_nummer: None,
                     sw_sc_stockwerk: None,
                     sw_sc_ge_name: None,
                 }
             };
-            let switch1 = if i % 3 != 0 {
+            let switch2 = if i % 5 != 0 {
                 Switch {
-                    sw_ip: format!("{0}.{0}.{0}.{0}", i + 1),
+                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 2),
                     sw_sc_nummer: Some(schrank.sc_nummer.clone()),
                     sw_sc_stockwerk: Some(schrank.sc_stockwerk),
                     sw_sc_ge_name: Some(schrank.sc_ge_name.clone()),
                 }
             } else {
                 Switch {
-                    sw_ip: format!("{0}.{0}.{0}.{0}", i + 1),
+                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 2),
                     sw_sc_nummer: None,
                     sw_sc_stockwerk: None,
                     sw_sc_ge_name: None,
                 }
             };
             switches.push(switch1);
+            switches.push(switch2);
         }
 
         let switches_length = switches.len();
