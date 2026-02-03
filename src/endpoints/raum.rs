@@ -21,7 +21,7 @@ pub async fn create_raum(masterbase: &State<Masterbase>, raum: Json<Raum>) -> St
     .bind(&raum.ra_nummer)
     .bind(raum.ra_stockwerk)
     .bind(&raum.ra_ge_name)
-    .fetch_all(&masterbase.connection_pool)
+    .execute(&masterbase.connection_pool)
     .await
     {
         Ok(_) => Status::Created,
@@ -50,7 +50,7 @@ pub async fn update_raum(masterbase: &State<Masterbase>, update_raum: Json<Updat
     .bind(update_raum.ra_stockwerk)
     .bind(&update_raum.ra_ge_name)
     //
-    .fetch_all(&masterbase.connection_pool)
+    .execute(&masterbase.connection_pool)
     .await
     {
         Ok(_) => Status::Accepted,
@@ -70,7 +70,8 @@ pub async fn delete_raum(masterbase: &State<Masterbase>, delete_raum: Json<Delet
     match sqlx::query("DELETE FROM ra_raum WHERE ra_nummer = $1, ra_stockwerk = $2, ra_ge_name = $3")
     .bind(&delete_raum.ra_nummer)
     .bind(delete_raum.ra_stockwerk)
-    .bind(&delete_raum.ra_ge_name).execute(&masterbase.connection_pool).await {
+    .bind(&delete_raum.ra_ge_name)
+    .execute(&masterbase.connection_pool).await {
         Ok(_) => Status::Ok,
         Err(_) => Status::InternalServerError,
     }
