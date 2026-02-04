@@ -16,7 +16,7 @@ pub async fn read_schrank_all(
 
 #[post("/schrank", data = "<schrank>")]
 pub async fn create_schrank(masterbase: &State<Masterbase>, schrank: Json<Schrank>) -> Status {
-    sqlx::query("INSERT INTO sc_schrank VALUES ($1, $2, $3)")
+    sqlx::query("INSERT INTO sc_schrank VALUES (NULL, $1, $2, $3)")
         .bind(&schrank.sc_ge_name)
         .bind(&schrank.sc_nummer)
         .bind(schrank.sc_stockwerk)

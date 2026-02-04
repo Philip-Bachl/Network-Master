@@ -14,7 +14,7 @@ pub async fn read_dosen_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<D
 
 #[post("/dose", data = "<dose>")]
 pub async fn create_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> Status {
-    sqlx::query("INSERT INTO do_dose VALUES ($1, $2, $3, $4, $5)")
+    sqlx::query("INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4, $5)")
         .bind(dose.do_ra_id)
         .bind(&dose.do_nummer)
         .bind(dose.do_hat_telefon)

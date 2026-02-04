@@ -14,7 +14,7 @@ pub async fn read_raeume_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<
 
 #[post("/raum", data = "<raum>")]
 pub async fn create_raum(masterbase: &State<Masterbase>, raum: Json<Raum>) -> Status {
-    sqlx::query("INSERT INTO ra_raum VALUES ($1, $2, $3)")
+    sqlx::query("INSERT INTO ra_raum VALUES (NULL, $1, $2, $3)")
         .bind(&raum.ra_ge_name)
         .bind(&raum.ra_nummer)
         .bind(raum.ra_stockwerk)
