@@ -8,7 +8,7 @@ pub async fn read_raeume_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<
     sqlx::query_as("SELECT * FROM ra_raum")
         .fetch_all(&masterbase.connection_pool)
         .await
-        .map(|all_raeume| Json(all_raeume))
+        .map(Json)
         .map_err(|_| Status::InternalServerError)
 }
 
@@ -37,7 +37,7 @@ pub async fn update_raum(masterbase: &State<Masterbase>, update_raum: Json<Updat
     .bind(&update_raum.raum.ra_ge_name)
     .bind(&update_raum.raum.ra_nummer)
     .bind(update_raum.raum.ra_stockwerk)
-    .bind(&update_raum.ra_id)
+    .bind(update_raum.ra_id)
     .execute(&masterbase.connection_pool)
     .await
     .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
@@ -51,7 +51,7 @@ pub struct DeleteRaum {
 #[delete("/raum", data = "<delete_raum>")]
 pub async fn delete_raum(masterbase: &State<Masterbase>, delete_raum: Json<DeleteRaum>) -> Status {
     sqlx::query("DELETE FROM ra_raum WHERE ra_id = $1")
-        .bind(&delete_raum.ra_id)
+        .bind(delete_raum.ra_id)
         .execute(&masterbase.connection_pool)
         .await
         .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)

@@ -11,7 +11,7 @@ pub async fn read_gebaeude_all(
     sqlx::query_as("SELECT * FROM ge_gebaeude")
         .fetch_all(&masterbase.connection_pool)
         .await
-        .map(|all_gebaeude| Json(all_gebaeude))
+        .map(Json)
         .map_err(|_| Status::InternalServerError)
 }
 

@@ -10,7 +10,7 @@ pub async fn read_schrank_all(
     sqlx::query_as("SELECT * FROM sc_schrank")
         .fetch_all(&masterbase.connection_pool)
         .await
-        .map(|all_schraenke| Json(all_schraenke))
+        .map(Json)
         .map_err(|_| Status::InternalServerError)
 }
 
@@ -42,7 +42,7 @@ pub async fn update_schrank(
     .bind(&update_schrank.schrank.sc_ge_name)
     .bind(&update_schrank.schrank.sc_nummer)
     .bind(update_schrank.schrank.sc_stockwerk)
-    .bind(&update_schrank.sc_id)
+    .bind(update_schrank.sc_id)
     .execute(&masterbase.connection_pool)
     .await
     .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
@@ -59,7 +59,7 @@ pub async fn delete_schrank(
     delete_schrank: Json<DeleteSchrank>,
 ) -> Status {
     sqlx::query("DELETE FROM sc_schrank WHERE sc_id = $1")
-        .bind(&delete_schrank.sc_id)
+        .bind(delete_schrank.sc_id)
         .execute(&masterbase.connection_pool)
         .await
         .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)

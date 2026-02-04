@@ -10,7 +10,7 @@ pub async fn read_switch_zu_dose(
     sqlx::query_as("SELECT * FROM szd_switch_zu_dose")
         .fetch_all(&masterbase.connection_pool)
         .await
-        .map(|all_switch_zu_dosen| Json(all_switch_zu_dosen))
+        .map(Json)
         .map_err(|_| Status::InternalServerError)
 }
 
@@ -21,9 +21,9 @@ pub async fn create_switch_zu_dose(
 ) -> Status {
     sqlx::query("INSERT INTO szd_switch_zu_dose VALUES ($1, $2, $3, $4, $5)")
         .bind(&switch_zu_dose.szd_sw_name)
-        .bind(&switch_zu_dose.szd_do_id)
+        .bind(switch_zu_dose.szd_do_id)
         .bind(&switch_zu_dose.szd_port)
-        .bind(&switch_zu_dose.szd_vlan)
+        .bind(switch_zu_dose.szd_vlan)
         .execute(&masterbase.connection_pool)
         .await
         .map_or_else(|_| Status::InternalServerError, |_| Status::Created)
@@ -49,13 +49,13 @@ pub async fn update_switch_zu_dose(
         ",
     )
     .bind(&update_switch_zu_dose.switch_zu_dose.szd_sw_name)
-    .bind(&update_switch_zu_dose.switch_zu_dose.szd_do_id)
+    .bind(update_switch_zu_dose.switch_zu_dose.szd_do_id)
     .bind(&update_switch_zu_dose.switch_zu_dose.szd_port)
-    .bind(&update_switch_zu_dose.switch_zu_dose.szd_vlan)
+    .bind(update_switch_zu_dose.switch_zu_dose.szd_vlan)
     .bind(&update_switch_zu_dose.switch_zu_dose.szd_kommentar)
     //
-    .bind(&update_switch_zu_dose.switch_zu_dose.szd_sw_name)
-    .bind(&update_switch_zu_dose.switch_zu_dose.szd_do_id)
+    .bind(&update_switch_zu_dose.szd_sw_name)
+    .bind(update_switch_zu_dose.szd_do_id)
     //
     .execute(&masterbase.connection_pool)
     .await
@@ -75,7 +75,7 @@ pub async fn delete_switch_zu_dose(
 ) -> Status {
     sqlx::query("DELETE FROM szd_switch_zu_dose WHERE szd_sw_name = $1 AND szd_do_id = $2")
         .bind(&delete_switch_zu_dose.szd_sw_name)
-        .bind(&delete_switch_zu_dose.szd_do_id)
+        .bind(delete_switch_zu_dose.szd_do_id)
         .execute(&masterbase.connection_pool)
         .await
         .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)

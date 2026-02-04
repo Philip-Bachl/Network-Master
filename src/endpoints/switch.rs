@@ -10,7 +10,7 @@ pub async fn read_switches_all(
     sqlx::query_as("SELECT * FROM sw_switch")
         .fetch_all(&masterbase.connection_pool)
         .await
-        .map(|all_switches| Json(all_switches))
+        .map(Json)
         .map_err(|_| Status::InternalServerError)
 }
 
@@ -38,7 +38,7 @@ pub async fn update_switch(
 ) -> Status {
     sqlx::query("UPDATE sw_switch SET sw_name = $1, sw_sc_id = $2, sw_ip = $3 WHERE sw_name = $4")
         .bind(&update_switch.switch.sw_name)
-        .bind(&update_switch.switch.sw_sc_id)
+        .bind(update_switch.switch.sw_sc_id)
         .bind(&update_switch.switch.sw_ip)
         .bind(&update_switch.sw_name)
         .execute(&masterbase.connection_pool)
