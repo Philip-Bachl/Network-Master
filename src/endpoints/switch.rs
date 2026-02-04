@@ -7,32 +7,27 @@ use crate::{masterbase::Masterbase, model::Switch};
 pub async fn read_switches_all(
     masterbase: &State<Masterbase>,
 ) -> Result<Json<Vec<Switch>>, Status> {
-    let switches_all = sqlx::query_as("SELECT * FROM sw_switch")
+    sqlx::query_as("SELECT * FROM sw_switch")
         .fetch_all(&masterbase.connection_pool)
         .await
-        .map_err(|_| Status::InternalServerError)?;
-
-    Ok(Json(switches_all))
+        .map(|all_switches| Json(all_switches))
+        .map_err(|_| Status::InternalServerError)
 }
 
 #[post("/switch", data = "<switch>")]
 pub async fn create_switch(masterbase: &State<Masterbase>, switch: Json<Switch>) -> Status {
-    match sqlx::query("INSERT INTO sw_switch VALUES ($1, $2, $3, $4)")
+    sqlx::query("INSERT INTO sw_switch VALUES ($1, $2, $3)")
+        .bind(&switch.sw_name)
+        .bind(switch.sw_sc_id)
         .bind(&switch.sw_ip)
-        .bind(&switch.sw_sc_nummer)
-        .bind(switch.sw_sc_stockwerk)
-        .bind(&switch.sw_sc_ge_name)
         .execute(&masterbase.connection_pool)
         .await
-    {
-        Ok(_) => Status::Created,
-        Err(_) => Status::InternalServerError,
-    }
+        .map_or_else(|_| Status::InternalServerError, |_| Status::Created)
 }
 
 #[derive(Deserialize)]
 pub struct UpdateSwitch {
-    sw_ip: String,
+    sw_name: String,
     switch: Switch,
 }
 
@@ -41,31 +36,19 @@ pub async fn update_switch(
     masterbase: &State<Masterbase>,
     update_switch: Json<UpdateSwitch>,
 ) -> Status {
-    match sqlx::query(
-        "
-            UPDATE sw_switch
-            SET sw_ip = $1, sw_sc_nummer = $2, sw_sc_stockwerk = $3, sw_sc_ge_name = $4
-            WHERE sw_ip = $5
-        ",
-    )
-    .bind(&update_switch.switch.sw_ip)
-    .bind(&update_switch.switch.sw_sc_nummer)
-    .bind(update_switch.switch.sw_sc_stockwerk)
-    .bind(&update_switch.switch.sw_sc_ge_name)
-    //
-    .bind(&update_switch.sw_ip)
-    //
-    .execute(&masterbase.connection_pool)
-    .await
-    {
-        Ok(_) => Status::Accepted,
-        Err(_) => Status::InternalServerError,
-    }
+    sqlx::query("UPDATE sw_switch SET sw_name = $1, sw_sc_id = $2, sw_ip = $3 WHERE sw_name = $4")
+        .bind(&update_switch.switch.sw_name)
+        .bind(&update_switch.switch.sw_sc_id)
+        .bind(&update_switch.switch.sw_ip)
+        .bind(&update_switch.sw_name)
+        .execute(&masterbase.connection_pool)
+        .await
+        .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
 }
 
 #[derive(Deserialize)]
 pub struct DeleteSwitch {
-    sw_ip: String,
+    sw_name: String,
 }
 
 #[delete("/switch", data = "<delete_switch>")]
@@ -73,12 +56,9 @@ pub async fn delete_switch(
     masterbase: &State<Masterbase>,
     delete_switch: Json<DeleteSwitch>,
 ) -> Status {
-    match sqlx::query("DELETE FROM sw_switch WHERE sw_ip = $1")
-        .bind(&delete_switch.sw_ip)
+    sqlx::query("DELETE FROM sw_switch WHERE sw_name = $1")
+        .bind(&delete_switch.sw_name)
         .execute(&masterbase.connection_pool)
         .await
-    {
-        Ok(_) => Status::Ok,
-        Err(_) => Status::InternalServerError,
-    }
+        .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)
 }
