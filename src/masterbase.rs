@@ -24,7 +24,7 @@ impl Masterbase {
     }
 
     pub async fn seed(&self) {
-        let gebaede = [
+        let all_gebaede = [
             Gebaeude {
                 ge_name: String::from("Testgebäude 1"),
             },
@@ -41,20 +41,22 @@ impl Masterbase {
 
         let mut raeume = Vec::new();
         let mut schraenke = Vec::new();
-        for (i, geb) in gebaede.iter().enumerate() {
-            for j in 0..3 {
+        for (gebauede_index, gebaeude) in all_gebaede.iter().enumerate() {
+            for stockwerk in 0..3 {
                 let schrank = Schrank {
-                    sc_nummer: String::from(ABC[(i + j) % ABC_LENGTH]),
-                    sc_stockwerk: j as i32,
-                    sc_ge_name: geb.ge_name.clone(),
+                    sc_id: 0,
+                    sc_ge_name: gebaeude.ge_name.clone(),
+                    sc_nummer: String::from(ABC[(gebauede_index + stockwerk) % ABC_LENGTH]),
+                    sc_stockwerk: stockwerk as i32,
                 };
                 schraenke.push(schrank);
 
-                for k in 0..10 {
+                for raum_index in 0..10 {
                     let raum = Raum {
-                        ra_nummer: format!("{}", j * 100 + k),
-                        ra_stockwerk: j as i32,
-                        ra_ge_name: geb.ge_name.clone(),
+                        ra_id: 0,
+                        ra_nummer: format!("{}", gebauede_index * 100 + raum_index),
+                        ra_stockwerk: stockwerk as i32,
+                        ra_ge_name: gebaeude.ge_name.clone(),
                     };
                     raeume.push(raum);
                 }
@@ -62,16 +64,15 @@ impl Masterbase {
         }
 
         let mut dosen = Vec::new();
-        for (i, raum) in raeume.iter().enumerate() {
-            for j in 0..20 {
+        for (raum_index, _) in raeume.iter().enumerate() {
+            for dosen_index in 0..20 {
                 let dose = Dose {
-                    do_nummer: j.to_string(),
-                    do_ra_nummer: raum.ra_nummer.clone(),
-                    do_ra_stockwerk: raum.ra_stockwerk,
-                    do_ra_ge_name: raum.ra_ge_name.clone(),
-                    do_hat_telefon: i % 2 == 0,
-                    do_hat_pc: i % 3 == 0,
-                    do_hat_drucker: i % 5 == 0,
+                    do_id: 0,
+                    do_ra_id: raum_index as i32 + 1,
+                    do_nummer: dosen_index.to_string(),
+                    do_hat_telefon: dosen_index % 2 == 0,
+                    do_hat_pc: dosen_index % 3 == 0,
+                    do_hat_drucker: dosen_index % 5 == 0,
                 };
 
                 dosen.push(dose);
@@ -79,63 +80,52 @@ impl Masterbase {
         }
 
         let mut switches = Vec::new();
-        for (i, schrank) in schraenke.iter().enumerate() {
-            let switch1 = if i % 3 != 0 {
-                Switch {
-                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 1),
-                    sw_sc_nummer: Some(schrank.sc_nummer.clone()),
-                    sw_sc_stockwerk: Some(schrank.sc_stockwerk),
-                    sw_sc_ge_name: Some(schrank.sc_ge_name.clone()),
-                }
-            } else {
-                Switch {
-                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 1),
-                    sw_sc_nummer: None,
-                    sw_sc_stockwerk: None,
-                    sw_sc_ge_name: None,
-                }
-            };
-            let switch2 = if i % 5 != 0 {
-                Switch {
-                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 2),
-                    sw_sc_nummer: Some(schrank.sc_nummer.clone()),
-                    sw_sc_stockwerk: Some(schrank.sc_stockwerk),
-                    sw_sc_ge_name: Some(schrank.sc_ge_name.clone()),
-                }
-            } else {
-                Switch {
-                    sw_ip: format!("{0}.{0}.{0}.{0}", i * 10 + 2),
-                    sw_sc_nummer: None,
-                    sw_sc_stockwerk: None,
-                    sw_sc_ge_name: None,
-                }
-            };
-            switches.push(switch1);
-            switches.push(switch2);
+        for (schrank_index, schrank) in schraenke.iter().enumerate() {
+            for switch_index in 0..3 {
+                let switch = Switch {
+                    sw_name: format!(
+                        "{}_{}_{}",
+                        schrank.sc_ge_name, schrank.sc_stockwerk, switch_index
+                    ),
+                    sw_sc_id: schrank_index as i32 + 1,
+                    sw_ip: format!("{0}.{0}.{0}.{0}", schrank_index * 100 + switch_index),
+                };
+                switches.push(switch);
+            }
         }
 
-        let switches_length = switches.len();
         let mut switch_zu_dosen = Vec::new();
-        for (i, dose) in dosen.iter().enumerate().step_by(3) {
-            let switch_index = i % switches_length;
-            let switch = &switches[switch_index];
 
-            let switch_zu_dose = SwitchZuDose {
-                sd_do_nummer: dose.do_nummer.clone(),
-                sd_do_ra_nummer: dose.do_ra_nummer.clone(),
-                sd_do_ra_stockwerk: dose.do_ra_stockwerk,
-                sd_do_ra_ge_name: dose.do_ra_ge_name.clone(),
-                sd_sw_ip: switch.sw_ip.clone(),
-                sd_switchport: format!("Fa0/{}", i / 2),
-                sd_kommentar: None,
-            };
-            switch_zu_dosen.push(switch_zu_dose);
+        for switch in switches.iter() {
+            for (dose_index, _) in dosen.iter().enumerate().step_by(3) {
+                let vlan = match dose_index % 10 {
+                    0..=2 => 300,
+                    3 => 200,
+                    _ => 300,
+                };
+
+                let kommentar = if dose_index % 2 == 0 || dose_index % 3 == 0 {
+                    None
+                } else {
+                    Some(String::from("Testkommentar"))
+                };
+
+                let switch_zu_dose = SwitchZuDose {
+                    szd_sw_name: switch.sw_name.clone(),
+                    szd_do_id: dose_index as i32 + 1,
+                    szd_port: format!("Fa0/{}", dose_index),
+                    szd_vlan: vlan,
+                    szd_kommentar: kommentar,
+                };
+
+                switch_zu_dosen.push(switch_zu_dose);
+            }
         }
 
         println!("Inserting Gebäude...");
-        for geb in gebaede {
+        for gebaeude in all_gebaede {
             sqlx::query("INSERT INTO ge_gebaeude VALUES ($1)")
-                .bind(&geb.ge_name)
+                .bind(&gebaeude.ge_name)
                 .execute(&self.connection_pool)
                 .await
                 .unwrap();
@@ -143,23 +133,21 @@ impl Masterbase {
 
         println!("Inserting Räume...");
         for raum in raeume {
-            sqlx::query(
-                "INSERT INTO ra_raum (ra_nummer, ra_stockwerk, ra_ge_name) VALUES ($1, $2, $3)",
-            )
-            .bind(&raum.ra_nummer)
-            .bind(raum.ra_stockwerk)
-            .bind(&raum.ra_ge_name)
-            .execute(&self.connection_pool)
-            .await
-            .unwrap();
+            sqlx::query("INSERT INTO ra_raum VALUES ($1, $2, $3)")
+                .bind(&raum.ra_ge_name)
+                .bind(&raum.ra_nummer)
+                .bind(raum.ra_stockwerk)
+                .execute(&self.connection_pool)
+                .await
+                .unwrap();
         }
 
         println!("Inserting Schränke...");
         for schrank in schraenke {
             sqlx::query("INSERT INTO sc_schrank VALUES ($1, $2, $3)")
+                .bind(&schrank.sc_ge_name)
                 .bind(&schrank.sc_nummer)
                 .bind(schrank.sc_stockwerk)
-                .bind(&schrank.sc_ge_name)
                 .execute(&self.connection_pool)
                 .await
                 .unwrap();
@@ -167,11 +155,9 @@ impl Masterbase {
 
         println!("Inserting Dosen...");
         for dose in dosen {
-            sqlx::query("INSERT INTO do_dose VALUES ($1, $2, $3, $4, $5, $6, $7)")
+            sqlx::query("INSERT INTO do_dose VALUES ($1, $2, $3, $4, $5)")
+                .bind(dose.do_ra_id)
                 .bind(&dose.do_nummer)
-                .bind(&dose.do_ra_nummer)
-                .bind(dose.do_ra_stockwerk)
-                .bind(&dose.do_ra_ge_name)
                 .bind(dose.do_hat_telefon)
                 .bind(dose.do_hat_pc)
                 .bind(dose.do_hat_drucker)
@@ -182,11 +168,10 @@ impl Masterbase {
 
         println!("Inserting Switches...");
         for switch in switches {
-            sqlx::query("INSERT INTO sw_switch VALUES ($1, $2, $3, $4)")
+            sqlx::query("INSERT INTO sw_switch VALUES ($1, $2, $3)")
+                .bind(&switch.sw_name)
+                .bind(switch.sw_sc_id)
                 .bind(&switch.sw_ip)
-                .bind(&switch.sw_sc_nummer)
-                .bind(switch.sw_sc_stockwerk)
-                .bind(&switch.sw_sc_ge_name)
                 .execute(&self.connection_pool)
                 .await
                 .unwrap();
@@ -194,14 +179,11 @@ impl Masterbase {
 
         println!("Inserting SwitchZuDosen...");
         for switch_zu_dose in switch_zu_dosen {
-            sqlx::query("INSERT INTO sd_switch_zu_dose VALUES ($1, $2, $3, $4, $5, $6, $7)")
-                .bind(&switch_zu_dose.sd_do_nummer)
-                .bind(&switch_zu_dose.sd_do_ra_nummer)
-                .bind(switch_zu_dose.sd_do_ra_stockwerk)
-                .bind(&switch_zu_dose.sd_do_ra_ge_name)
-                .bind(&switch_zu_dose.sd_sw_ip)
-                .bind(&switch_zu_dose.sd_switchport)
-                .bind(&switch_zu_dose.sd_kommentar)
+            sqlx::query("INSERT INTO szd_switch_zu_dose VALUES ($1, $2, $3, $4, $5)")
+                .bind(&switch_zu_dose.szd_sw_name)
+                .bind(switch_zu_dose.szd_do_id)
+                .bind(&switch_zu_dose.szd_port)
+                .bind(switch_zu_dose.szd_vlan)
                 .execute(&self.connection_pool)
                 .await
                 .unwrap();
