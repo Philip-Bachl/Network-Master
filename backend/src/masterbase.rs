@@ -125,37 +125,44 @@ impl Masterbase {
         }
 
         println!("Inserting Gebäude...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
         for gebaeude in all_gebaede {
             sqlx::query("INSERT INTO ge_gebaeude VALUES ($1)")
                 .bind(&gebaeude.ge_name)
-                .execute(&self.connection_pool)
+                .execute(&mut *transaction)
                 .await
                 .unwrap();
         }
+        transaction.commit().await.unwrap();
 
         println!("Inserting Räume...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
         for raum in raeume {
             sqlx::query("INSERT INTO ra_raum VALUES (NULL, $1, $2, $3)")
                 .bind(&raum.ra_ge_name)
                 .bind(&raum.ra_nummer)
                 .bind(raum.ra_stockwerk)
-                .execute(&self.connection_pool)
+                .execute(&mut *transaction)
                 .await
                 .unwrap();
         }
+        transaction.commit().await.unwrap();
 
         println!("Inserting Schränke...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
         for schrank in schraenke {
             sqlx::query("INSERT INTO sc_schrank VALUES (NULL, $1, $2, $3)")
                 .bind(&schrank.sc_ge_name)
                 .bind(&schrank.sc_nummer)
                 .bind(schrank.sc_stockwerk)
-                .execute(&self.connection_pool)
+                .execute(&mut *transaction)
                 .await
                 .unwrap();
         }
+        transaction.commit().await.unwrap();
 
         println!("Inserting Dosen...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
         for dose in dosen {
             sqlx::query("INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4, $5)")
                 .bind(dose.do_ra_id)
@@ -163,32 +170,37 @@ impl Masterbase {
                 .bind(dose.do_hat_telefon)
                 .bind(dose.do_hat_pc)
                 .bind(dose.do_hat_drucker)
-                .execute(&self.connection_pool)
+                .execute(&mut *transaction)
                 .await
                 .unwrap();
         }
+        transaction.commit().await.unwrap();
 
         println!("Inserting Switches...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
         for switch in switches {
             sqlx::query("INSERT INTO sw_switch VALUES ($1, $2, $3)")
                 .bind(&switch.sw_name)
                 .bind(switch.sw_sc_id)
                 .bind(&switch.sw_ip)
-                .execute(&self.connection_pool)
+                .execute(&mut *transaction)
                 .await
                 .unwrap();
         }
+        transaction.commit().await.unwrap();
 
         println!("Inserting SwitchZuDosen...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
         for switch_zu_dose in switch_zu_dosen {
             sqlx::query("INSERT INTO szd_switch_zu_dose VALUES ($1, $2, $3, $4, $5)")
                 .bind(&switch_zu_dose.szd_sw_name)
                 .bind(switch_zu_dose.szd_do_id)
                 .bind(&switch_zu_dose.szd_port)
                 .bind(switch_zu_dose.szd_vlan)
-                .execute(&self.connection_pool)
+                .execute(&mut *transaction)
                 .await
                 .unwrap();
         }
+        transaction.commit().await.unwrap();
     }
 }
