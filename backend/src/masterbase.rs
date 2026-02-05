@@ -1,7 +1,7 @@
 use sqlx::{Pool, Sqlite, sqlite::SqliteConnectOptions};
 
 use crate::{
-    error::Error,
+    masterbase_error::MasterbaseError,
     model::{Dose, Gebaeude, Raum, Schrank, Switch, SwitchZuDose},
 };
 
@@ -13,12 +13,14 @@ pub struct Masterbase {
 }
 
 impl Masterbase {
-    pub async fn init(connection_string: &str) -> Result<Masterbase, Error> {
-        let connection_pool = Pool::connect_lazy_with(
+    pub async fn init(connection_string: &str) -> Result<Masterbase, MasterbaseError> {
+        let connection_pool = Pool::connect_with(
             SqliteConnectOptions::new()
                 .filename(connection_string)
                 .create_if_missing(true),
-        );
+        )
+        .await
+        .map_err(MasterbaseError::DatabaseInit)?;
 
         Ok(Masterbase { connection_pool })
     }
@@ -94,32 +96,32 @@ impl Masterbase {
             }
         }
 
+        let switches_length = switches.len();
         let mut switch_zu_dosen = Vec::new();
+        for (dose_index, _) in dosen.iter().enumerate().step_by(3) {
+            let switch = &switches[dose_index % switches_length];
 
-        for switch in switches.iter() {
-            for (dose_index, _) in dosen.iter().enumerate().step_by(3) {
-                let vlan = match dose_index % 10 {
-                    0..=2 => 300,
-                    3 => 200,
-                    _ => 300,
-                };
+            let vlan = match dose_index % 10 {
+                0..=2 => 300,
+                3 => 200,
+                _ => 300,
+            };
 
-                let kommentar = if dose_index % 2 == 0 || dose_index % 3 == 0 {
-                    None
-                } else {
-                    Some(String::from("Testkommentar"))
-                };
+            let kommentar = if dose_index % 2 == 0 || dose_index % 3 == 0 {
+                None
+            } else {
+                Some(String::from("Testkommentar"))
+            };
 
-                let switch_zu_dose = SwitchZuDose {
-                    szd_sw_name: switch.sw_name.clone(),
-                    szd_do_id: dose_index as i32 + 1,
-                    szd_port: format!("Fa0/{}", dose_index),
-                    szd_vlan: vlan,
-                    szd_kommentar: kommentar,
-                };
+            let switch_zu_dose = SwitchZuDose {
+                szd_sw_name: switch.sw_name.clone(),
+                szd_do_id: dose_index as i32 + 1,
+                szd_port: format!("Fa0/{}", dose_index % switches_length),
+                szd_vlan: vlan,
+                szd_kommentar: kommentar,
+            };
 
-                switch_zu_dosen.push(switch_zu_dose);
-            }
+            switch_zu_dosen.push(switch_zu_dose);
         }
 
         println!("Inserting Gebäude...");
@@ -133,7 +135,7 @@ impl Masterbase {
 
         println!("Inserting Räume...");
         for raum in raeume {
-            sqlx::query("INSERT INTO ra_raum VALUES ($1, $2, $3)")
+            sqlx::query("INSERT INTO ra_raum VALUES (NULL, $1, $2, $3)")
                 .bind(&raum.ra_ge_name)
                 .bind(&raum.ra_nummer)
                 .bind(raum.ra_stockwerk)
@@ -144,7 +146,7 @@ impl Masterbase {
 
         println!("Inserting Schränke...");
         for schrank in schraenke {
-            sqlx::query("INSERT INTO sc_schrank VALUES ($1, $2, $3)")
+            sqlx::query("INSERT INTO sc_schrank VALUES (NULL, $1, $2, $3)")
                 .bind(&schrank.sc_ge_name)
                 .bind(&schrank.sc_nummer)
                 .bind(schrank.sc_stockwerk)
@@ -155,7 +157,7 @@ impl Masterbase {
 
         println!("Inserting Dosen...");
         for dose in dosen {
-            sqlx::query("INSERT INTO do_dose VALUES ($1, $2, $3, $4, $5)")
+            sqlx::query("INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4, $5)")
                 .bind(dose.do_ra_id)
                 .bind(&dose.do_nummer)
                 .bind(dose.do_hat_telefon)

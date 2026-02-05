@@ -7,8 +7,8 @@ use rocket::{fs::FileServer, launch, routes};
 use masterbase::Masterbase;
 
 mod endpoints;
-mod error;
 mod masterbase;
+mod masterbase_error;
 mod model;
 
 #[launch]
