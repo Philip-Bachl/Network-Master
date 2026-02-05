@@ -1,0 +1,8 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+backend = { version = "0.1.0", path = "../backend" }
+yew = { version = "0.22.0", features = ["csr"] }
