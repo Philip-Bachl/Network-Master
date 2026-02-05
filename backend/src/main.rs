@@ -32,18 +32,16 @@ async fn rocket() -> _ {
     };
 
     if args.iter().any(|arg| arg == "--reset") {
-        drop(args);
+        let mut transaction = masterbase.connection_pool.begin().await.unwrap();
         for (i, line) in include_str!("../db_scripts/down.sql")
             .split_inclusive(';')
             .chain(include_str!("../db_scripts/up.sql").split_inclusive(';'))
             .enumerate()
         {
-            sqlx::query(line)
-                .execute(&masterbase.connection_pool)
-                .await
-                .unwrap();
+            sqlx::query(line).execute(&mut *transaction).await.unwrap();
             println!("Running reset query line number {i}: {line}");
         }
+        transaction.commit().await.unwrap();
 
         masterbase.seed().await;
     }
@@ -59,7 +57,7 @@ async fn rocket() -> _ {
                 endpoints::gebaeude::delete_gebaeude,
                 //
                 endpoints::raum::create_raum,
-                endpoints::raum::read_raeume_all,
+                endpoints::raum::read_raum_all,
                 endpoints::raum::update_raum,
                 endpoints::raum::delete_raum,
                 //
@@ -69,19 +67,24 @@ async fn rocket() -> _ {
                 endpoints::schrank::delete_schrank,
                 //
                 endpoints::dose::create_dose,
-                endpoints::dose::read_dosen_all,
+                endpoints::dose::read_dose_all,
                 endpoints::dose::update_dose,
                 endpoints::dose::delete_dose,
                 //
                 endpoints::switch::create_switch,
-                endpoints::switch::read_switches_all,
+                endpoints::switch::read_switch_all,
                 endpoints::switch::update_switch,
                 endpoints::switch::delete_switch,
                 //
-                endpoints::switch_zu_dose::create_switch_zu_dose,
-                endpoints::switch_zu_dose::read_switch_zu_dose,
-                endpoints::switch_zu_dose::update_switch_zu_dose,
-                endpoints::switch_zu_dose::delete_switch_zu_dose,
+                endpoints::switchport::create_switchport,
+                endpoints::switchport::read_switchport_all,
+                endpoints::switchport::update_switchport,
+                endpoints::switchport::delete_switchport,
+                //
+                endpoints::device_kind::create_device_kind,
+                endpoints::device_kind::read_device_kind_all,
+                endpoints::device_kind::update_device_kind,
+                endpoints::device_kind::delete_device_kind,
             ],
         )
         .mount("/", FileServer::from("./static"))

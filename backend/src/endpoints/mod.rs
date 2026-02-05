@@ -1,7 +1,8 @@
+pub mod device_kind;
 pub mod dose;
 pub mod gebaeude;
 pub mod raum;
 pub mod schrank;
 pub mod switch;
-pub mod switch_zu_dose;
+pub mod switchport;
 //TODO: Error Handling
