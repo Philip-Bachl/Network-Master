@@ -1,6 +1,8 @@
-DROP TABLE IF EXISTS szd_switch_zu_dose;
-DROP TABLE IF EXISTS do_dose;
-DROP TABLE IF EXISTS sw_switch;
+DROP TABLE IF EXISTS ge_gebaeude;
 DROP TABLE IF EXISTS ra_raum;
 DROP TABLE IF EXISTS sc_schrank;
-DROP TABLE IF EXISTS ge_gebaeude;
+DROP TABLE IF EXISTS dk_device_kind;
+DROP TABLE IF EXISTS do_dose;
+DROP TABLE IF EXISTS sw_switch;
+DROP TABLE IF EXISTS sp_switchport;
+DROP TABLE IF EXISTS dzs_dose_zu_switchport;

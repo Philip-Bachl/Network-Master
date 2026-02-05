@@ -2,6 +2,7 @@ PRAGMA foreign_keys = 0;
 
 CREATE TABLE ge_gebaeude (
     ge_name TEXT NOT NULL,
+    ge_kommentar TEXT,
     PRIMARY KEY (ge_name)
 );
 
@@ -10,6 +11,7 @@ CREATE TABLE ra_raum (
     ra_ge_name TEXT NOT NULL,
     ra_nummer TEXT NOT NULL,
     ra_stockwerk INTEGER NOT NULL,
+    ra_kommentar TEXT,
 
     UNIQUE (ra_ge_name, ra_nummer, ra_stockwerk),
     FOREIGN KEY (ra_ge_name) REFERENCES ge_gebaeude(ge_name)
@@ -20,42 +22,62 @@ CREATE TABLE sc_schrank (
     sc_ge_name TEXT NOT NULL,
     sc_nummer TEXT NOT NULL,
     sc_stockwerk INTEGER NOT NULL,
+    sc_kommentar TEXT,
 
-    UNIQUE (sc_nummer, sc_ge_name, sc_stockwerk),
+    UNIQUE (sc_ge_name, sc_nummer, sc_stockwerk),
     FOREIGN KEY (sc_ge_name) REFERENCES ge_gebaeude(ge_name)
+);
+
+CREATE TABLE dk_device_kind (
+    dk_id INTEGER PRIMARY KEY,
+    dk_name TEXT NOT NULL,
+    dk_kommentar TEXT,
 );
 
 CREATE TABLE do_dose (
     do_id INTEGER PRIMARY KEY,
     do_ra_id INTEGER NOT NULL,
     do_nummer TEXT NOT NULL,
-    do_hat_telefon BOOLEAN NOT NULL,
-    do_hat_pc BOOLEAN NOT NULL,
-    do_hat_drucker BOOLEAN NOT NULL,
+    do_dk_id INTEGER,
+    do_kommentar TEXT,
 
     UNIQUE (do_ra_id, do_nummer),
-    FOREIGN KEY (do_ra_id) REFERENCES ra_raum(ra_id)
+    FOREIGN KEY (do_ra_id) REFERENCES ra_raum(ra_id),
+    FOREIGN KEY (do_dk_id) REFERENCES dk_device_kind(dk_id)
 );
 
 CREATE TABLE sw_switch (
     sw_name TEXT NOT NULL,
     sw_sc_id INTEGER NOT NULL,
     sw_ip TEXT NOT NULL,
+    sw_kommentar TEXT,
     
     PRIMARY KEY (sw_name),
     FOREIGN KEY (sw_sc_id) REFERENCES sc_schrank(sc_id)
 );
 
-CREATE TABLE szd_switch_zu_dose (
-    szd_sw_name TEXT,
-    szd_do_id INTEGER,
-    szd_port TEXT,
-    szd_vlan INTEGER,
-    szd_Kommentar TEXT,
+CREATE TABLE sp_switchport (
+    sp_id INTEGER PRIMARY KEY,
+    sp_sw_name TEXT NOT NULL,
+    sp_port TEXT NOT NULL,
+    sp_vlan INTEGER NOT NULL,
+    sp_dot1x BOOLEAN NOT NULL,
+    sp_kommentar TEXT,
 
-    PRIMARY KEY (szd_sw_name, szd_do_id),
-    FOREIGN KEY (szd_sw_name) REFERENCES sw_switch(sw_name),
-    FOREIGN KEY (szd_do_id) REFERENCES do_dose(do_id)
+    UNIQUE (sp_sw_name, sp_port),
+    FOREIGN KEY (sp_sw_name) REFERENCES sw_switch(sw_name)
+);
+
+CREATE TABLE dzs_dose_zu_switchport (
+    dsz_id INTEGER PRIMARY KEY,
+    dsz_do_id INTEGER NOT NULL,
+    dsz_sp_id INTEGER NOT NULL,
+    dsz_kommentar TEXT,
+
+    UNIQUE (dsz_do_id),
+    UNIQUE (dsz_sp_id),
+    FOREIGN KEY (dsz_do_id) REFERENCES do_dose(do_id),
+    FOREIGN KEY (dsz_sp_id) REFERENCES sp_switchport(sp_id)
 );
 
 PRAGMA foreign_keys = 1;
