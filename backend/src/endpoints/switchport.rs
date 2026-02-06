@@ -6,7 +6,7 @@ use crate::{masterbase::Masterbase, model::Switchport};
 #[get("/switchport")]
 pub async fn read_switchport_all(
     masterbase: &State<Masterbase>,
-) -> Result<Json<Vec<Switchport>>, Status> {
+) -> Result<Json<Vec<Switchport>>, String> {
     sqlx::query_as(
         "
             SELECT * FROM sp_switchport
@@ -15,7 +15,7 @@ pub async fn read_switchport_all(
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
-    .map_err(|_| Status::InternalServerError)
+    .map_err(|err| err.to_string())
 }
 
 #[post("/switchport", data = "<switchport>")]

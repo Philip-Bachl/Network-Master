@@ -6,7 +6,7 @@ use crate::{masterbase::Masterbase, model::DeviceKind};
 #[get("/device_kind")]
 pub async fn read_device_kind_all(
     masterbase: &State<Masterbase>,
-) -> Result<Json<Vec<DeviceKind>>, Status> {
+) -> Result<Json<Vec<DeviceKind>>, String> {
     sqlx::query_as(
         "
             SELECT * FROM dk_device_kind
@@ -15,7 +15,7 @@ pub async fn read_device_kind_all(
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
-    .map_err(|_| Status::InternalServerError)
+    .map_err(|err| err.to_string())
 }
 
 #[post("/device_kind", data = "<device_kind>")]

@@ -7,7 +7,7 @@ use crate::{masterbase::Masterbase, model::Gebaeude};
 #[get("/gebaeude")]
 pub async fn read_gebaeude_all(
     masterbase: &State<Masterbase>,
-) -> Result<Json<Vec<Gebaeude>>, Status> {
+) -> Result<Json<Vec<Gebaeude>>, String> {
     sqlx::query_as(
         "
             SELECT * FROM ge_gebaeude
@@ -16,7 +16,7 @@ pub async fn read_gebaeude_all(
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
-    .map_err(|_| Status::InternalServerError)
+    .map_err(|err| err.to_string())
 }
 
 #[post("/gebaeude", data = "<gebaeude>")]

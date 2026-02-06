@@ -4,7 +4,7 @@ use serde::Deserialize;
 use crate::{masterbase::Masterbase, model::Dose};
 
 #[get("/dose")]
-pub async fn read_dose_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Dose>>, Status> {
+pub async fn read_dose_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Dose>>, String> {
     sqlx::query_as(
         "
             SELECT * FROM do_dose
@@ -13,7 +13,7 @@ pub async fn read_dose_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Do
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
-    .map_err(|_| Status::InternalServerError)
+    .map_err(|err| err.to_string())
 }
 
 #[post("/dose", data = "<dose>")]

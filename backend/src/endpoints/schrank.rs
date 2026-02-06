@@ -6,7 +6,7 @@ use crate::{masterbase::Masterbase, model::Schrank};
 #[get("/schrank")]
 pub async fn read_schrank_all(
     masterbase: &State<Masterbase>,
-) -> Result<Json<Vec<Schrank>>, Status> {
+) -> Result<Json<Vec<Schrank>>, String> {
     sqlx::query_as(
         "
             SELECT * FROM sc_schrank
@@ -15,7 +15,7 @@ pub async fn read_schrank_all(
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
-    .map_err(|_| Status::InternalServerError)
+    .map_err(|err| err.to_string())
 }
 
 #[post("/schrank", data = "<schrank>")]

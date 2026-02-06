@@ -4,7 +4,7 @@ use serde::Deserialize;
 use crate::{masterbase::Masterbase, model::Switch};
 
 #[get("/switch")]
-pub async fn read_switch_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Switch>>, Status> {
+pub async fn read_switch_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Switch>>, String> {
     sqlx::query_as(
         "
             SELECT * FROM sw_switch
@@ -13,7 +13,7 @@ pub async fn read_switch_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
-    .map_err(|_| Status::InternalServerError)
+    .map_err(|err| err.to_string())
 }
 
 #[post("/switch", data = "<switch>")]
