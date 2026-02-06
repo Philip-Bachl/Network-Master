@@ -20,7 +20,10 @@ pub async fn read_gebaeude_all(
 }
 
 #[post("/gebaeude", data = "<gebaeude>")]
-pub async fn create_gebaede(masterbase: &State<Masterbase>, gebaeude: Json<Gebaeude>) -> Status {
+pub async fn create_gebaede(
+    masterbase: &State<Masterbase>,
+    gebaeude: Json<Gebaeude>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO ge_gebaeude VALUES ($1, $2)
@@ -30,7 +33,8 @@ pub async fn create_gebaede(masterbase: &State<Masterbase>, gebaeude: Json<Gebae
     .bind(&gebaeude.ge_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -43,7 +47,7 @@ pub struct UpdateGebaeude {
 pub async fn update_gebaeude(
     masterbase: &State<Masterbase>,
     update_gebaeude: Json<UpdateGebaeude>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE ge_gebaeude SET ge_name = $1, ge_kommentar = $2 WHERE ge_name = $3
@@ -54,7 +58,8 @@ pub async fn update_gebaeude(
     .bind(&update_gebaeude.ge_name)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -66,7 +71,7 @@ pub struct DeleteGebaeude {
 pub async fn delete_gebaeude(
     masterbase: &State<Masterbase>,
     delete_gebaeude: Json<DeleteGebaeude>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM ge_gebaeude WHERE ge_name = $1
@@ -75,5 +80,6 @@ pub async fn delete_gebaeude(
     .bind(&delete_gebaeude.ge_name)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

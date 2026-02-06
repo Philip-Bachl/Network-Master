@@ -22,7 +22,7 @@ pub async fn read_device_kind_all(
 pub async fn create_device_kind(
     masterbase: &State<Masterbase>,
     device_kind: Json<DeviceKind>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO dk_device_kind VALUES (NULL, $1, $2)
@@ -32,14 +32,15 @@ pub async fn create_device_kind(
     .bind(&device_kind.dk_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[put("/device_kind", data = "<device_kind>")]
 pub async fn update_device_kind(
     masterbase: &State<Masterbase>,
     device_kind: Json<DeviceKind>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE dk_device_kind
@@ -54,7 +55,8 @@ pub async fn update_device_kind(
     .bind(device_kind.dk_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -66,7 +68,7 @@ pub struct DeleteDeviceKind {
 pub async fn delete_device_kind(
     masterbase: &State<Masterbase>,
     delete_device_kind: Json<DeleteDeviceKind>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM dk_device_kind
@@ -76,5 +78,6 @@ pub async fn delete_device_kind(
     .bind(delete_device_kind.dk_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

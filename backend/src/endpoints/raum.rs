@@ -17,7 +17,10 @@ pub async fn read_raum_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Ra
 }
 
 #[post("/raum", data = "<raum>")]
-pub async fn create_raum(masterbase: &State<Masterbase>, raum: Json<Raum>) -> Status {
+pub async fn create_raum(
+    masterbase: &State<Masterbase>,
+    raum: Json<Raum>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO ra_raum
@@ -30,11 +33,15 @@ pub async fn create_raum(masterbase: &State<Masterbase>, raum: Json<Raum>) -> St
     .bind(&raum.ra_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[put("/raum", data = "<raum>")]
-pub async fn update_raum(masterbase: &State<Masterbase>, raum: Json<Raum>) -> Status {
+pub async fn update_raum(
+    masterbase: &State<Masterbase>,
+    raum: Json<Raum>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE ra_raum
@@ -53,7 +60,8 @@ pub async fn update_raum(masterbase: &State<Masterbase>, raum: Json<Raum>) -> St
     .bind(raum.ra_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -62,7 +70,10 @@ pub struct DeleteRaum {
 }
 
 #[delete("/raum", data = "<delete_raum>")]
-pub async fn delete_raum(masterbase: &State<Masterbase>, delete_raum: Json<DeleteRaum>) -> Status {
+pub async fn delete_raum(
+    masterbase: &State<Masterbase>,
+    delete_raum: Json<DeleteRaum>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM ra_raum
@@ -72,5 +83,6 @@ pub async fn delete_raum(masterbase: &State<Masterbase>, delete_raum: Json<Delet
     .bind(delete_raum.ra_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

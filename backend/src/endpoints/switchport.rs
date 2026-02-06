@@ -22,7 +22,7 @@ pub async fn read_switchport_all(
 pub async fn create_switchport(
     masterbase: &State<Masterbase>,
     switchport: Json<Switchport>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO sp_switchport
@@ -36,14 +36,15 @@ pub async fn create_switchport(
     .bind(&switchport.sp_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[put("/switchport", data = "<switchport>")]
 pub async fn update_switchport(
     masterbase: &State<Masterbase>,
     switchport: Json<Switchport>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE sp_switchport
@@ -65,7 +66,8 @@ pub async fn update_switchport(
     .bind(switchport.sp_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -77,7 +79,7 @@ pub struct DeleteSwitchport {
 pub async fn delete_switchport(
     masterbase: &State<Masterbase>,
     delete_switchport: Json<DeleteSwitchport>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM sp_switchport
@@ -87,5 +89,6 @@ pub async fn delete_switchport(
     .bind(delete_switchport.sp_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

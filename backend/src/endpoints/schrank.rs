@@ -19,7 +19,10 @@ pub async fn read_schrank_all(
 }
 
 #[post("/schrank", data = "<schrank>")]
-pub async fn create_schrank(masterbase: &State<Masterbase>, schrank: Json<Schrank>) -> Status {
+pub async fn create_schrank(
+    masterbase: &State<Masterbase>,
+    schrank: Json<Schrank>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO sc_schrank
@@ -32,11 +35,15 @@ pub async fn create_schrank(masterbase: &State<Masterbase>, schrank: Json<Schran
     .bind(&schrank.sc_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[put("/schrank", data = "<schrank>")]
-pub async fn update_schrank(masterbase: &State<Masterbase>, schrank: Json<Schrank>) -> Status {
+pub async fn update_schrank(
+    masterbase: &State<Masterbase>,
+    schrank: Json<Schrank>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE sc_schrank
@@ -55,7 +62,8 @@ pub async fn update_schrank(masterbase: &State<Masterbase>, schrank: Json<Schran
     .bind(schrank.sc_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -67,7 +75,7 @@ pub struct DeleteSchrank {
 pub async fn delete_schrank(
     masterbase: &State<Masterbase>,
     delete_schrank: Json<DeleteSchrank>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM sc_schrank WHERE sc_id = $1
@@ -76,5 +84,6 @@ pub async fn delete_schrank(
     .bind(delete_schrank.sc_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

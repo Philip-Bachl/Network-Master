@@ -17,7 +17,10 @@ pub async fn read_dose_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Do
 }
 
 #[post("/dose", data = "<dose>")]
-pub async fn create_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> Status {
+pub async fn create_dose(
+    masterbase: &State<Masterbase>,
+    dose: Json<Dose>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4)
@@ -30,11 +33,15 @@ pub async fn create_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> St
     .bind(&dose.do_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[put("/dose", data = "<dose>")]
-pub async fn update_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> Status {
+pub async fn update_dose(
+    masterbase: &State<Masterbase>,
+    dose: Json<Dose>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE do_dose
@@ -50,7 +57,8 @@ pub async fn update_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> St
     .bind(dose.do_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -59,7 +67,10 @@ pub struct DeleteDose {
 }
 
 #[delete("/dose", data = "<delete_dose>")]
-pub async fn delete_dose(masterbase: &State<Masterbase>, delete_dose: Json<DeleteDose>) -> Status {
+pub async fn delete_dose(
+    masterbase: &State<Masterbase>,
+    delete_dose: Json<DeleteDose>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM do_dose WHERE do_id = $1
@@ -68,5 +79,6 @@ pub async fn delete_dose(masterbase: &State<Masterbase>, delete_dose: Json<Delet
     .bind(delete_dose.do_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

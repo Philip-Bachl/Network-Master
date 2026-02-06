@@ -17,7 +17,10 @@ pub async fn read_switch_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<
 }
 
 #[post("/switch", data = "<switch>")]
-pub async fn create_switch(masterbase: &State<Masterbase>, switch: Json<Switch>) -> Status {
+pub async fn create_switch(
+    masterbase: &State<Masterbase>,
+    switch: Json<Switch>,
+) -> Result<Status, String> {
     sqlx::query(
         "
             INSERT INTO sw_switch
@@ -30,7 +33,8 @@ pub async fn create_switch(masterbase: &State<Masterbase>, switch: Json<Switch>)
     .bind(&switch.sw_kommentar)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Created)
+    .map(|_| Status::Created)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -43,7 +47,7 @@ pub struct UpdateSwitch {
 pub async fn update_switch(
     masterbase: &State<Masterbase>,
     update_switch: Json<UpdateSwitch>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             UPDATE sw_switch
@@ -62,7 +66,8 @@ pub async fn update_switch(
     .bind(&update_switch.sw_name)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Accepted)
+    .map(|_| Status::Accepted)
+    .map_err(|err| err.to_string())
 }
 
 #[derive(Deserialize)]
@@ -74,7 +79,7 @@ pub struct DeleteSwitch {
 pub async fn delete_switch(
     masterbase: &State<Masterbase>,
     delete_switch: Json<DeleteSwitch>,
-) -> Status {
+) -> Result<Status, String> {
     sqlx::query(
         "
             DELETE FROM sw_switch
@@ -84,5 +89,6 @@ pub async fn delete_switch(
     .bind(&delete_switch.sw_name)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or_else(|_| Status::InternalServerError, |_| Status::Ok)
+    .map(|_| Status::Ok)
+    .map_err(|err| err.to_string())
 }

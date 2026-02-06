@@ -89,4 +89,5 @@ async fn rocket() -> _ {
             ],
         )
         .mount("/", FileServer::from("./static"))
+    //.attach(Cors)
 }
