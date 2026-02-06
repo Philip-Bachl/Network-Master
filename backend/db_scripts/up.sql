@@ -32,6 +32,8 @@ CREATE TABLE dk_device_kind (
     dk_id INTEGER PRIMARY KEY,
     dk_name TEXT NOT NULL,
     dk_kommentar TEXT,
+
+    UNIQUE (dk_name)
 );
 
 CREATE TABLE do_dose (

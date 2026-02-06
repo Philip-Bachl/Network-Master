@@ -2,7 +2,7 @@ use sqlx::{Pool, Sqlite, sqlite::SqliteConnectOptions};
 
 use crate::{
     masterbase_error::MasterbaseError,
-    model::{Dose, Gebaeude, Raum, Schrank, Switch, SwitchZuDose},
+    model::{DeviceKind, Dose, DoseZuSwitchPort, Gebaeude, Raum, Schrank, Switch, Switchport},
 };
 
 //mod gebaeude;
@@ -26,55 +26,96 @@ impl Masterbase {
     }
 
     pub async fn seed(&self) {
-        let all_gebaede = [
-            Gebaeude {
-                ge_name: String::from("Testgebäude 1"),
-            },
-            Gebaeude {
-                ge_name: String::from("Testgebäude 2"),
-            },
-            Gebaeude {
-                ge_name: String::from("Testgebäude 3"),
-            },
-        ];
+        const GEBAEUDE_COUNT: usize = 3;
+        const STOCKWERK_COUNT: usize = 3;
+        const RAUM_COUNT: usize = 10;
+        const SCHRANK_COUNT: usize = 3;
+        const DOSE_COUNT: usize = 20;
+        const SWITCH_COUNT: usize = 2;
+        const SWITCHPORT_COUNT: usize = 25;
 
-        const ABC: [char; 10] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
-        const ABC_LENGTH: usize = ABC.len();
+        let mut gebaeude_all = Vec::new();
+        for gebaeude_index in 0..GEBAEUDE_COUNT {
+            let kommentar = Some(String::from("Testkommentar")).filter(|_| gebaeude_index % 2 == 0);
+            let gebaeude = Gebaeude {
+                ge_name: format!("Testgebäude {gebaeude_index}"),
+                ge_kommentar: kommentar,
+            };
+
+            gebaeude_all.push(gebaeude);
+        }
 
         let mut raeume = Vec::new();
         let mut schraenke = Vec::new();
-        for (gebauede_index, gebaeude) in all_gebaede.iter().enumerate() {
-            for stockwerk in 0..3 {
-                let schrank = Schrank {
-                    sc_id: 0,
-                    sc_ge_name: gebaeude.ge_name.clone(),
-                    sc_nummer: String::from(ABC[(gebauede_index + stockwerk) % ABC_LENGTH]),
-                    sc_stockwerk: stockwerk as i32,
-                };
-                schraenke.push(schrank);
+        for gebaeude in gebaeude_all.iter() {
+            for stockwerk_index in 0..STOCKWERK_COUNT {
+                for raum_index in 0..RAUM_COUNT {
+                    let kommentar =
+                        Some(String::from("Testkommentar")).filter(|_| raum_index % 4 == 0);
 
-                for raum_index in 0..10 {
                     let raum = Raum {
                         ra_id: 0,
-                        ra_nummer: format!("{}", gebauede_index * 100 + raum_index),
-                        ra_stockwerk: stockwerk as i32,
                         ra_ge_name: gebaeude.ge_name.clone(),
+                        ra_nummer: raum_index.to_string(),
+                        ra_stockwerk: stockwerk_index as i32 + 1,
+                        ra_kommentar: kommentar,
                     };
+
                     raeume.push(raum);
+                }
+
+                for schrank_index in 0..SCHRANK_COUNT {
+                    let kommentar = Some(String::from("Testkommentar"));
+
+                    let schrank = Schrank {
+                        sc_id: 0,
+                        sc_ge_name: gebaeude.ge_name.clone(),
+                        sc_nummer: schrank_index.to_string(),
+                        sc_stockwerk: stockwerk_index as i32,
+                        sc_kommentar: kommentar,
+                    };
+
+                    schraenke.push(schrank);
                 }
             }
         }
 
+        let device_kinds = [
+            DeviceKind {
+                dk_id: 1,
+                dk_name: String::from("PC"),
+                dk_kommentar: None,
+            },
+            DeviceKind {
+                dk_id: 2,
+                dk_name: String::from("Telefon"),
+                dk_kommentar: None,
+            },
+            DeviceKind {
+                dk_id: 3,
+                dk_name: String::from("PC & Telefon"),
+                dk_kommentar: Some(String::from("Speziell durchgeschleußt")),
+            },
+            DeviceKind {
+                dk_id: 4,
+                dk_name: String::from("Drucker"),
+                dk_kommentar: None,
+            },
+        ];
+
+        let device_kinds_length = device_kinds.len();
         let mut dosen = Vec::new();
         for (raum_index, _) in raeume.iter().enumerate() {
-            for dosen_index in 0..20 {
+            for dosen_index in 0..DOSE_COUNT {
+                let kommentar =
+                    Some(String::from("Testkommentar")).filter(|_| dosen_index % 7 == 0);
                 let dose = Dose {
                     do_id: 0,
                     do_ra_id: raum_index as i32 + 1,
                     do_nummer: dosen_index.to_string(),
-                    do_hat_telefon: dosen_index % 2 == 0,
-                    do_hat_pc: dosen_index % 3 == 0,
-                    do_hat_drucker: dosen_index % 5 == 0,
+                    do_dk_id: Some(dosen_index as i32 % device_kinds_length as i32 + 1)
+                        .filter(|_| dosen_index % 4 == 0),
+                    do_kommentar: kommentar,
                 };
 
                 dosen.push(dose);
@@ -83,123 +124,209 @@ impl Masterbase {
 
         let mut switches = Vec::new();
         for (schrank_index, schrank) in schraenke.iter().enumerate() {
-            for switch_index in 0..3 {
+            for switch_index in 0..SWITCH_COUNT {
+                let kommentar =
+                    Some(String::from("Testkommentar")).filter(|_| switch_index % 2 == 0);
                 let switch = Switch {
                     sw_name: format!(
-                        "{}_{}_{}",
-                        schrank.sc_ge_name, schrank.sc_stockwerk, switch_index
+                        "{}_{}_{}_{}",
+                        schrank.sc_ge_name, schrank.sc_stockwerk, schrank.sc_nummer, switch_index
                     ),
                     sw_sc_id: schrank_index as i32 + 1,
-                    sw_ip: format!("{0}.{0}.{0}.{0}", schrank_index * 100 + switch_index),
+                    sw_ip: format!(
+                        "{0}.{0}.{0}.{0}",
+                        schrank_index * SWITCH_COUNT + switch_index
+                    ),
+                    sw_kommentar: kommentar,
                 };
                 switches.push(switch);
             }
         }
 
-        let switches_length = switches.len();
-        let mut switch_zu_dosen = Vec::new();
-        for (dose_index, _) in dosen.iter().enumerate().step_by(3) {
-            let switch = &switches[dose_index % switches_length];
+        let mut switchports = Vec::new();
+        for switch in switches.iter() {
+            for switchport_index in 0..SWITCHPORT_COUNT {
+                let vlan = match switchport_index % 10 {
+                    0..=2 => 300,
+                    3 => 200,
+                    _ => 300,
+                };
+                let kommentar =
+                    Some(String::from("Testkommentar")).filter(|_| switchport_index % 2 == 0);
 
-            let vlan = match dose_index % 10 {
-                0..=2 => 300,
-                3 => 200,
-                _ => 300,
+                let switchport = Switchport {
+                    sp_id: 0,
+                    sp_sw_name: switch.sw_name.clone(),
+                    sp_port: format!("fa0/{:02}", switchport_index),
+                    sp_vlan: vlan,
+                    sp_dot1x: switchport_index % 6 == 0,
+                    sp_kommentar: kommentar,
+                };
+
+                switchports.push(switchport);
+            }
+        }
+
+        let dose_zu_switchport_count = dosen.len().min(switchports.len());
+        let mut dose_zu_switchports = Vec::new();
+        for dose_zu_switchport_index in 0..dose_zu_switchport_count {
+            let kommentar =
+                Some(String::from("Testkommentar")).filter(|_| dose_zu_switchport_index % 6 == 0);
+
+            let dose_zu_switchport = DoseZuSwitchPort {
+                dsz_id: dose_zu_switchport_index as i32 + 1,
+                dsz_do_id: dose_zu_switchport_index as i32 + 1,
+                dsz_sp_id: dose_zu_switchport_index as i32 + 1,
+                dsz_kommentar: kommentar,
             };
 
-            let kommentar = if dose_index % 2 == 0 || dose_index % 3 == 0 {
-                None
-            } else {
-                Some(String::from("Testkommentar"))
-            };
-
-            let switch_zu_dose = SwitchZuDose {
-                szd_sw_name: switch.sw_name.clone(),
-                szd_do_id: dose_index as i32 + 1,
-                szd_port: format!("Fa0/{}", dose_index % switches_length),
-                szd_vlan: vlan,
-                szd_kommentar: kommentar,
-            };
-
-            switch_zu_dosen.push(switch_zu_dose);
+            dose_zu_switchports.push(dose_zu_switchport);
         }
 
         println!("Inserting Gebäude...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
-        for gebaeude in all_gebaede {
-            sqlx::query("INSERT INTO ge_gebaeude VALUES ($1)")
-                .bind(&gebaeude.ge_name)
-                .execute(&mut *transaction)
-                .await
-                .unwrap();
+        for gebaeude in gebaeude_all {
+            sqlx::query(
+                "
+                        INSERT INTO ge_gebaeude VALUES ($1, $2)
+                    ",
+            )
+            .bind(&gebaeude.ge_name)
+            .bind(&gebaeude.ge_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
         }
         transaction.commit().await.unwrap();
 
         println!("Inserting Räume...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
         for raum in raeume {
-            sqlx::query("INSERT INTO ra_raum VALUES (NULL, $1, $2, $3)")
-                .bind(&raum.ra_ge_name)
-                .bind(&raum.ra_nummer)
-                .bind(raum.ra_stockwerk)
-                .execute(&mut *transaction)
-                .await
-                .unwrap();
+            sqlx::query(
+                "
+                        INSERT INTO ra_raum
+                        VALUES (NULL, $1, $2, $3, $4)
+                    ",
+            )
+            .bind(&raum.ra_ge_name)
+            .bind(&raum.ra_nummer)
+            .bind(raum.ra_stockwerk)
+            .bind(&raum.ra_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
         }
         transaction.commit().await.unwrap();
 
         println!("Inserting Schränke...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
         for schrank in schraenke {
-            sqlx::query("INSERT INTO sc_schrank VALUES (NULL, $1, $2, $3)")
-                .bind(&schrank.sc_ge_name)
-                .bind(&schrank.sc_nummer)
-                .bind(schrank.sc_stockwerk)
-                .execute(&mut *transaction)
-                .await
-                .unwrap();
+            sqlx::query(
+                "
+                        INSERT INTO sc_schrank
+                        VALUES (NULL, $1, $2, $3, $4)
+                    ",
+            )
+            .bind(&schrank.sc_ge_name)
+            .bind(&schrank.sc_nummer)
+            .bind(schrank.sc_stockwerk)
+            .bind(&schrank.sc_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
+        }
+        transaction.commit().await.unwrap();
+
+        println!("Inserting DeviceKinds...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
+        for device_kind in device_kinds {
+            sqlx::query(
+                "
+                        INSERT INTO dk_device_kind
+                        VALUES (NULL, $1, $2)
+                    ",
+            )
+            .bind(device_kind.dk_name)
+            .bind(device_kind.dk_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
         }
         transaction.commit().await.unwrap();
 
         println!("Inserting Dosen...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
         for dose in dosen {
-            sqlx::query("INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4, $5)")
-                .bind(dose.do_ra_id)
-                .bind(&dose.do_nummer)
-                .bind(dose.do_hat_telefon)
-                .bind(dose.do_hat_pc)
-                .bind(dose.do_hat_drucker)
-                .execute(&mut *transaction)
-                .await
-                .unwrap();
+            sqlx::query(
+                "
+                        INSERT INTO do_dose
+                        VALUES (NULL, $1, $2, $3, $4)
+                    ",
+            )
+            .bind(dose.do_ra_id)
+            .bind(&dose.do_nummer)
+            .bind(dose.do_dk_id)
+            .bind(&dose.do_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
         }
         transaction.commit().await.unwrap();
 
         println!("Inserting Switches...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
         for switch in switches {
-            sqlx::query("INSERT INTO sw_switch VALUES ($1, $2, $3)")
-                .bind(&switch.sw_name)
-                .bind(switch.sw_sc_id)
-                .bind(&switch.sw_ip)
-                .execute(&mut *transaction)
-                .await
-                .unwrap();
+            sqlx::query(
+                "
+                        INSERT INTO sw_switch
+                        VALUES ($1, $2, $3, $4)
+                    ",
+            )
+            .bind(&switch.sw_name)
+            .bind(switch.sw_sc_id)
+            .bind(&switch.sw_ip)
+            .bind(&switch.sw_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
         }
         transaction.commit().await.unwrap();
 
-        println!("Inserting SwitchZuDosen...");
+        println!("Inserting Switchports...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
-        for switch_zu_dose in switch_zu_dosen {
-            sqlx::query("INSERT INTO szd_switch_zu_dose VALUES ($1, $2, $3, $4, $5)")
-                .bind(&switch_zu_dose.szd_sw_name)
-                .bind(switch_zu_dose.szd_do_id)
-                .bind(&switch_zu_dose.szd_port)
-                .bind(switch_zu_dose.szd_vlan)
-                .execute(&mut *transaction)
-                .await
-                .unwrap();
+        for switchport in switchports {
+            sqlx::query(
+                "
+                        INSERT INTO sp_switchport
+                        VALUES (NULL, $1, $2, $3, $4, $5)
+                    ",
+            )
+            .bind(&switchport.sp_sw_name)
+            .bind(&switchport.sp_port)
+            .bind(switchport.sp_vlan)
+            .bind(switchport.sp_dot1x)
+            .bind(&switchport.sp_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
+        }
+        transaction.commit().await.unwrap();
+
+        println!("Inserting DoseZuSwitchports...");
+        let mut transaction = self.connection_pool.begin().await.unwrap();
+        for dose_zu_switchport in dose_zu_switchports {
+            sqlx::query(
+                "
+                        INSERT INTO dzs_dose_zu_switchport
+                        VALUES (NULL, $1, $2, $3)
+                    ",
+            )
+            .bind(dose_zu_switchport.dsz_do_id)
+            .bind(dose_zu_switchport.dsz_sp_id)
+            .bind(&dose_zu_switchport.dsz_kommentar)
+            .execute(&mut *transaction)
+            .await
+            .unwrap();
         }
         transaction.commit().await.unwrap();
     }

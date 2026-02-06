@@ -1,4 +1,5 @@
-use rocket::{State, get, http::Status, post, put, serde::json::Json};
+use rocket::{State, delete, get, http::Status, post, put, serde::json::Json};
+use serde::Deserialize;
 
 use crate::{masterbase::Masterbase, model::Switchport};
 
@@ -30,8 +31,8 @@ pub async fn create_switchport(
     )
     .bind(&switchport.sp_sw_name)
     .bind(&switchport.sp_port)
-    .bind(&switchport.sp_vlan)
-    .bind(&switchport.sp_dot1x)
+    .bind(switchport.sp_vlan)
+    .bind(switchport.sp_dot1x)
     .bind(&switchport.sp_kommentar)
     .execute(&masterbase.connection_pool)
     .await
@@ -58,23 +59,24 @@ pub async fn update_switchport(
     )
     .bind(&switchport.sp_sw_name)
     .bind(&switchport.sp_port)
-    .bind(&switchport.sp_vlan)
-    .bind(&switchport.sp_dot1x)
+    .bind(switchport.sp_vlan)
+    .bind(switchport.sp_dot1x)
     .bind(&switchport.sp_kommentar)
     .bind(switchport.sp_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Created)
+    .map_or(Status::InternalServerError, |_| Status::Accepted)
 }
 
+#[derive(Deserialize)]
 pub struct DeleteSwitchport {
     sp_id: i32,
 }
 
-#[put("/switchport", data = "<delete_switchport>")]
+#[delete("/switchport", data = "<delete_switchport>")]
 pub async fn delete_switchport(
     masterbase: &State<Masterbase>,
-    delete_switchport: Json<Switchport>,
+    delete_switchport: Json<DeleteSwitchport>,
 ) -> Status {
     sqlx::query(
         "
@@ -85,5 +87,5 @@ pub async fn delete_switchport(
     .bind(delete_switchport.sp_id)
     .execute(&masterbase.connection_pool)
     .await
-    .map_or(Status::InternalServerError, |_| Status::Created)
+    .map_or(Status::InternalServerError, |_| Status::Ok)
 }

@@ -24,7 +24,7 @@ pub async fn create_dose(masterbase: &State<Masterbase>, dose: Json<Dose>) -> St
         ",
     )
     .bind(dose.do_id)
-    .bind(&dose.do_ra_id)
+    .bind(dose.do_ra_id)
     .bind(&dose.do_nummer)
     .bind(dose.do_dk_id)
     .bind(&dose.do_kommentar)

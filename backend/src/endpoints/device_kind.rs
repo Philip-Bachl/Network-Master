@@ -1,4 +1,4 @@
-use rocket::{State, get, http::Status, post, put, serde::json::Json};
+use rocket::{State, delete, get, http::Status, post, put, serde::json::Json};
 use serde::Deserialize;
 
 use crate::{masterbase::Masterbase, model::DeviceKind};
@@ -62,7 +62,7 @@ pub struct DeleteDeviceKind {
     dk_id: i32,
 }
 
-#[put("/device_kind", data = "<delete_device_kind>")]
+#[delete("/device_kind", data = "<delete_device_kind>")]
 pub async fn delete_device_kind(
     masterbase: &State<Masterbase>,
     delete_device_kind: Json<DeleteDeviceKind>,
@@ -70,7 +70,7 @@ pub async fn delete_device_kind(
     sqlx::query(
         "
             DELETE FROM dk_device_kind
-            WHERE dk_id = $3
+            WHERE dk_id = $1
         ",
     )
     .bind(delete_device_kind.dk_id)

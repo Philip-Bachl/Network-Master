@@ -32,16 +32,17 @@ async fn rocket() -> _ {
     };
 
     if args.iter().any(|arg| arg == "--reset") {
-        let mut transaction = masterbase.connection_pool.begin().await.unwrap();
         for (i, line) in include_str!("../db_scripts/down.sql")
             .split_inclusive(';')
             .chain(include_str!("../db_scripts/up.sql").split_inclusive(';'))
             .enumerate()
         {
-            sqlx::query(line).execute(&mut *transaction).await.unwrap();
             println!("Running reset query line number {i}: {line}");
+            sqlx::query(line)
+                .execute(&masterbase.connection_pool)
+                .await
+                .unwrap();
         }
-        transaction.commit().await.unwrap();
 
         masterbase.seed().await;
     }

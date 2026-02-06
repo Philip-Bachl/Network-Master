@@ -3,13 +3,13 @@ use sqlx::prelude::FromRow;
 
 //TODO: add ids
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Gebaeude {
     pub ge_name: String,
     pub ge_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Raum {
     pub ra_id: i32,
     pub ra_ge_name: String,
@@ -18,7 +18,7 @@ pub struct Raum {
     pub ra_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Schrank {
     pub sc_id: i32,
     pub sc_ge_name: String,
@@ -27,14 +27,14 @@ pub struct Schrank {
     pub sc_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct DeviceKind {
     pub dk_id: i32,
     pub dk_name: String,
     pub dk_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Dose {
     pub do_id: i32,
     pub do_ra_id: i32,
@@ -43,7 +43,7 @@ pub struct Dose {
     pub do_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Switch {
     pub sw_name: String,
     pub sw_sc_id: i32,
@@ -51,7 +51,7 @@ pub struct Switch {
     pub sw_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Switchport {
     pub sp_id: i32,
     pub sp_sw_name: String,
@@ -61,10 +61,10 @@ pub struct Switchport {
     pub sp_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct DoseZuSwitchPort {
     pub dsz_id: i32,
     pub dsz_do_id: i32,
-    pub dsz_sw_id: i32,
+    pub dsz_sp_id: i32,
     pub dsz_kommentar: Option<String>,
 }
