@@ -26,7 +26,6 @@ pub async fn create_dose(
             INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4)
         ",
     )
-    .bind(dose.do_id)
     .bind(dose.do_ra_id)
     .bind(&dose.do_nummer)
     .bind(dose.do_dk_id)

@@ -24,7 +24,7 @@ pub async fn create_switch(
     sqlx::query(
         "
             INSERT INTO sw_switch
-            VALUES ($1, $2, $3)
+            VALUES ($1, $2, $3, $4)
         ",
     )
     .bind(&switch.sw_name)
