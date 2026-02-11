@@ -62,7 +62,7 @@ pub struct Switchport {
 }
 
 #[derive(Serialize, Deserialize, FromRow, Debug)]
-pub struct DoseZuSwitchPort {
+pub struct DoseZuSwitchport {
     pub dsz_id: i32,
     pub dsz_do_id: i32,
     pub dsz_sp_id: i32,

@@ -2,7 +2,7 @@ use sqlx::{Pool, Sqlite, sqlite::SqliteConnectOptions};
 
 use crate::{
     masterbase_error::MasterbaseError,
-    model::{DeviceKind, Dose, DoseZuSwitchPort, Gebaeude, Raum, Schrank, Switch, Switchport},
+    model::{DeviceKind, Dose, DoseZuSwitchport, Gebaeude, Raum, Schrank, Switch, Switchport},
 };
 
 //mod gebaeude;
@@ -173,7 +173,7 @@ impl Masterbase {
             let kommentar =
                 Some(String::from("Testkommentar")).filter(|_| dose_zu_switchport_index % 6 == 0);
 
-            let dose_zu_switchport = DoseZuSwitchPort {
+            let dose_zu_switchport = DoseZuSwitchport {
                 dsz_id: dose_zu_switchport_index as i32 + 1,
                 dsz_do_id: dose_zu_switchport_index as i32 + 1,
                 dsz_sp_id: dose_zu_switchport_index as i32 + 1,
