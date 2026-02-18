@@ -88,6 +88,6 @@ async fn rocket() -> _ {
                 endpoints::device_kind::delete_device_kind,
             ],
         )
-        .mount("/", FileServer::from("./static"))
+        .mount("/", FileServer::from("./dist"))
     //.attach(Cors)
 }

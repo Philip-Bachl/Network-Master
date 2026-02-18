@@ -1,5 +1,12 @@
-use backend::test;
+use yew::{Html, component, html};
+
+#[component]
+fn App() -> Html {
+    html! {
+        { for (0..20).into_iter() }
+    }
+}
 
 fn main() {
-    println!("{}", test());
+    yew::Renderer::<App>::new().render();
 }
