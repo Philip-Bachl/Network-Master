@@ -1,14 +1,21 @@
-use yew::{Html, component, html};
+use yew::{Html, Suspense, component, html};
 
-use crate::sidebar::sidebar_component::SidebarComponent;
+use crate::sidebar_component::SidebarComponent;
 
 mod model;
-mod sidebar;
+mod sidebar_component;
+mod tab_component;
+mod util;
 
 #[component]
 fn App() -> Html {
+    //TODO: resizing sidebar
     html! {
-        <SidebarComponent />
+    <>
+        <Suspense>
+            <SidebarComponent />
+        </Suspense>
+    </>
     }
 }
 

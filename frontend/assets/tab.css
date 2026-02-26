@@ -1,0 +1,35 @@
+.tab {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.open>.tab-content {
+    display: flex !important;
+}
+
+.open>.tab-title>.arrow {
+    transform: rotateZ(0deg) !important;
+}
+
+.tab-title {
+    display: flex;
+    flex-direction: row;
+
+    gap: 10px;
+
+    cursor: default;
+}
+
+.arrow {
+    transform: rotateZ(-90deg);
+}
+
+.tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+
+    padding-left: calc(var(--font-size) * 2);
+}
