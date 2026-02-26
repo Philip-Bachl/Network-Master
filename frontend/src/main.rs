@@ -1,9 +1,14 @@
 use yew::{Html, component, html};
 
+use crate::sidebar::sidebar_component::SidebarComponent;
+
+mod model;
+mod sidebar;
+
 #[component]
 fn App() -> Html {
     html! {
-        { for (0..20).into_iter() }
+        <SidebarComponent />
     }
 }
 

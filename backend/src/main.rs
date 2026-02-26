@@ -47,6 +47,12 @@ async fn rocket() -> _ {
         masterbase.seed().await;
     }
 
+    let file_server_folder = if args.iter().any(|arg| arg == "--simple") {
+        "./static"
+    } else {
+        "./dist"
+    };
+
     rocket::build()
         .manage(masterbase)
         .mount(
@@ -88,6 +94,6 @@ async fn rocket() -> _ {
                 endpoints::device_kind::delete_device_kind,
             ],
         )
-        .mount("/", FileServer::from("./dist"))
+        .mount("/", FileServer::from(file_server_folder))
     //.attach(Cors)
 }

@@ -1,2 +1,3 @@
 trunk build
-xcopy .\dist\ ..\backend\dist\ /Y
+del ..\backend\dist\ /s /q
+xcopy .\dist\ ..\backend\dist\ /y /s
