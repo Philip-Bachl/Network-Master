@@ -32,7 +32,7 @@
 #sidebarContent {
     display: flex;
     flex-direction: column;
-    gap: calc(var(--font-size) * 2);
+    gap: 20px;
 
     height: 100%;
     overflow-y: auto;
@@ -42,17 +42,4 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-}
-
-.schrank-icon {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-
-    width: var(--font-size);
-    aspect-ratio: 1;
-}
-
-.schrank-icon svg {
-    width: calc(var(--font-size) * 0.5) !important;
 }
