@@ -15,7 +15,7 @@ pub fn TabComponent(
         children,
     }: &TabProps,
 ) -> Html {
-    let open = use_state_eq(|| true);
+    let open = use_state_eq(|| false);
 
     let open_clone = open.clone();
     let onclick = Callback::from(move |_| {

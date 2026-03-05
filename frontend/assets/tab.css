@@ -18,8 +18,6 @@
     flex-direction: row;
 
     gap: 10px;
-
-    cursor: default;
 }
 
 .arrow {

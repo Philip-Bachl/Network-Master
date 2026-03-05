@@ -1,6 +1,6 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, vec};
 
-use crate::model::Schrank;
+use crate::model::{Raum, Schrank};
 
 pub async fn fetch<T: serde::de::DeserializeOwned>(url: &str) -> Option<T> {
     let response = match gloo_net::http::Request::get(url).send().await {
@@ -28,11 +28,11 @@ pub fn alert(message: &str) {
     let _ = window.alert_with_message(message);
 }
 
-// Gebäude => Stockwerk => Schrank
-pub fn map_schraenke_to_ge_name(
-    schraenke: Vec<Schrank>,
-) -> HashMap<String, HashMap<i32, Vec<Schrank>>> {
-    let mut gebaeude_map: HashMap<String, HashMap<i32, Vec<Schrank>>> = HashMap::new();
+// Gebäude => Stockwerk => Schrank & Raum
+pub type StockwerkMap = HashMap<i32, (Vec<Schrank>, Vec<Raum>)>;
+pub type GebaeudeMap = HashMap<String, StockwerkMap>;
+pub fn map_schraenke_raeume(schraenke: Vec<Schrank>, raeume: Vec<Raum>) -> GebaeudeMap {
+    let mut gebaeude_map: GebaeudeMap = HashMap::new();
 
     for schrank in schraenke.into_iter() {
         let stockwerk_map = match gebaeude_map.get_mut(&schrank.sc_ge_name) {
@@ -40,21 +40,97 @@ pub fn map_schraenke_to_ge_name(
             None => {
                 let _ = gebaeude_map.insert(
                     schrank.sc_ge_name.clone(),
-                    [(schrank.sc_stockwerk, vec![schrank])].into(),
+                    [(schrank.sc_stockwerk, (vec![schrank], Vec::new()))].into(),
                 );
                 continue;
             }
         };
 
         match stockwerk_map.get_mut(&schrank.sc_stockwerk) {
-            Some(vec) => vec.push(schrank),
+            Some((vec, _)) => vec.push(schrank),
             None => {
-                let _ = stockwerk_map.insert(schrank.sc_stockwerk, vec![schrank]);
+                let _ = stockwerk_map.insert(schrank.sc_stockwerk, (vec![schrank], Vec::new()));
+            }
+        };
+    }
+
+    for raum in raeume.into_iter() {
+        let stockwerk_map = match gebaeude_map.get_mut(&raum.ra_ge_name) {
+            Some(smap) => smap,
+            None => {
+                let _ = gebaeude_map.insert(
+                    raum.ra_ge_name.clone(),
+                    [(raum.ra_stockwerk, (Vec::new(), vec![raum]))].into(),
+                );
+                continue;
+            }
+        };
+
+        match stockwerk_map.get_mut(&raum.ra_stockwerk) {
+            Some((_, vec)) => vec.push(raum),
+            None => {
+                let _ = stockwerk_map.insert(raum.ra_stockwerk, (Vec::new(), vec![raum]));
             }
         };
     }
 
     gebaeude_map
+}
+
+//Todo: switch to below implementation
+pub fn map_schraenke_raeume2(schraenke: Vec<Schrank>, raeume: Vec<Raum>) -> impl Iterator {
+    let mut gebaeude_map: GebaeudeMap = HashMap::new();
+
+    for schrank in schraenke.into_iter() {
+        let stockwerk_map = match gebaeude_map.get_mut(&schrank.sc_ge_name) {
+            Some(smap) => smap,
+            None => {
+                let _ = gebaeude_map.insert(
+                    schrank.sc_ge_name.clone(),
+                    [(schrank.sc_stockwerk, (vec![schrank], Vec::new()))].into(),
+                );
+                continue;
+            }
+        };
+
+        match stockwerk_map.get_mut(&schrank.sc_stockwerk) {
+            Some((vec, _)) => vec.push(schrank),
+            None => {
+                let _ = stockwerk_map.insert(schrank.sc_stockwerk, (vec![schrank], Vec::new()));
+            }
+        };
+    }
+
+    for raum in raeume.into_iter() {
+        let stockwerk_map = match gebaeude_map.get_mut(&raum.ra_ge_name) {
+            Some(smap) => smap,
+            None => {
+                let _ = gebaeude_map.insert(
+                    raum.ra_ge_name.clone(),
+                    [(raum.ra_stockwerk, (Vec::new(), vec![raum]))].into(),
+                );
+                continue;
+            }
+        };
+
+        match stockwerk_map.get_mut(&raum.ra_stockwerk) {
+            Some((_, vec)) => vec.push(raum),
+            None => {
+                let _ = stockwerk_map.insert(raum.ra_stockwerk, (Vec::new(), vec![raum]));
+            }
+        };
+    }
+
+    gebaeude_map.into_iter().map(|(ge_name, stockwerk_map)| {
+        (
+            ge_name,
+            stockwerk_map
+                .into_iter()
+                .map(|(stockwerk, (schraenke, raeume))| {
+                    (stockwerk, schraenke.into_iter(), raeume.into_iter())
+                }),
+        )
+    })
 }
 
 pub fn pretty_stockwerk_number(stockwerk: i32) -> String {
@@ -64,17 +140,3 @@ pub fn pretty_stockwerk_number(stockwerk: i32) -> String {
         s @ 1.. => format!("{} OG", s),
     }
 }
-/*pub fn map_schraenke_to_ge_name(schraenke: &[Schrank]) -> HashMap<String, Vec<Schrank>> {
-    let mut map: HashMap<String, Vec<Schrank>> = HashMap::new();
-    for schrank in schraenke {
-        let schrank = schrank.clone();
-
-        if let Some(vec) = map.get_mut(&schrank.sc_ge_name) {
-            vec.push(schrank);
-        } else {
-            map.insert(schrank.sc_ge_name.clone(), vec![schrank]);
-        }
-    }
-
-    map
-}*/

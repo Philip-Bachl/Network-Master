@@ -8,6 +8,10 @@
 
     background-color: var(--level-1);
     border-radius: 10px;
+
+
+    cursor: default;
+    user-select: none;
 }
 
 #sidebar svg {
@@ -38,8 +42,14 @@
     overflow-y: auto;
 }
 
-.schrank {
+.schrank,
+.raum {
     display: flex;
     flex-direction: row;
     gap: 10px;
+}
+
+.divider {
+    height: 3px;
+    background-color: var(--color);
 }

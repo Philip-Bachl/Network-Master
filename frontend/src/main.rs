@@ -11,11 +11,10 @@ mod util;
 fn App() -> Html {
     //TODO: resizing sidebar
     html! {
-    <>
         <Suspense>
             <SidebarComponent />
+            //<DetailsComponent />
         </Suspense>
-    </>
     }
 }
 

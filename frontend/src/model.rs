@@ -9,7 +9,7 @@ pub struct Gebaeude {
     pub ge_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Raum {
     pub ra_id: i32,
     pub ra_ge_name: String,
