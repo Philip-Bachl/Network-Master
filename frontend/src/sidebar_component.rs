@@ -19,7 +19,6 @@ pub fn SidebarComponent() -> HtmlResult {
             .unwrap_or_default()
     })?;
 
-    //let full_map = util::map_schraenke_to_ge_name(schrank_list.to_vec());
     let full_map = util::map_schraenke_raeume(schrank_list.to_vec(), raum_list.to_vec());
 
     let gebaeude_img = html! {
@@ -40,10 +39,9 @@ pub fn SidebarComponent() -> HtmlResult {
             <div id="sidebarContent">
                 for (ge_name, stockwerk_map) in full_map {
                     <TabComponent title={ge_name.clone()} img={gebaeude_img.clone()}>
-                        for (stockwerk, (schraenke, raeume)) in stockwerk_map {
+                        for (stockwerk, schraenke, raeume) in stockwerk_map {
                             <TabComponent title={pretty_stockwerk_number(stockwerk)} img={stockwerk_img.clone()}>
                                 <div class="schraenke">
-
                                     for schrank in schraenke.iter() {
                                         <div class="schrank">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -56,10 +54,10 @@ pub fn SidebarComponent() -> HtmlResult {
                                     }
                                 </div>
                                 {
-                                    if !schraenke.is_empty() && !raeume.is_empty() {
-                                        divider.clone()
-                                    } else {
+                                    if schraenke.is_empty() || raeume.is_empty() {
                                         html! {""}
+                                    } else {
+                                        divider.clone()
                                     }
                                 }
                                 <div class="raeume">
@@ -82,36 +80,3 @@ pub fn SidebarComponent() -> HtmlResult {
         </div>
     })
 }
-/*
-for (ge_name, stockwerk_map) in full_map {
-    <div class="tab" key={ge_name.clone()}>
-        <div class="tab-title">
-            <svg class="arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                <path style="fill: var(--color);" d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z"/>
-            </svg>
-            <div>
-                {ge_name}
-            </div>
-        </div>
-        <div class="tab-content">
-            for (stockwerk, schraenke) in stockwerk_map {
-                <div class="tab">
-                    <div class="tab-title">
-
-                    </div>
-                    <div class="tab-content">
-
-                    </div>
-                </div>
-                <div class="stockwerk-title">{format!("Stockwerk: {}", stockwerk)}</div>
-                <div class="schraenke-container">
-                    for schrank in schraenke {
-                        <div class="schrank">
-                            {format!("Schrank: {}", schrank.sc_nummer)}
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-    </div>
-}*/

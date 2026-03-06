@@ -1,8 +1,8 @@
-use yew::{Callback, Html, Properties, component, html, use_state_eq};
+use yew::{AttrValue, Callback, Html, Properties, component, html, use_state_eq};
 
 #[derive(Properties, PartialEq)]
 pub struct TabProps {
-    pub title: String,
+    pub title: AttrValue,
     pub img: Html,
     pub children: Html,
 }
