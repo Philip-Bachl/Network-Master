@@ -39,6 +39,7 @@ pub struct Dose {
     pub do_id: i32,
     pub do_ra_id: i32,
     pub do_nummer: String,
+    pub do_sp_id: Option<i32>,
     pub do_dk_id: Option<i32>,
     pub do_kommentar: Option<String>,
 }
@@ -59,12 +60,4 @@ pub struct Switchport {
     pub sp_vlan: i32,
     pub sp_dot1x: bool,
     pub sp_kommentar: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, FromRow, Debug)]
-pub struct DoseZuSwitchport {
-    pub dsz_id: i32,
-    pub dsz_do_id: i32,
-    pub dsz_sp_id: i32,
-    pub dsz_kommentar: Option<String>,
 }

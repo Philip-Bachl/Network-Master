@@ -2,7 +2,7 @@ use sqlx::{Pool, Sqlite, sqlite::SqliteConnectOptions};
 
 use crate::{
     masterbase_error::MasterbaseError,
-    model::{DeviceKind, Dose, DoseZuSwitchport, Gebaeude, Raum, Schrank, Switch, Switchport},
+    model::{DeviceKind, Dose, Gebaeude, Raum, Schrank, Switch, Switchport},
 };
 
 //mod gebaeude;
@@ -103,25 +103,6 @@ impl Masterbase {
             },
         ];
 
-        let device_kinds_length = device_kinds.len();
-        let mut dosen = Vec::new();
-        for (raum_index, _) in raeume.iter().enumerate() {
-            for dosen_index in 0..DOSE_COUNT {
-                let kommentar =
-                    Some(String::from("Testkommentar")).filter(|_| dosen_index % 7 == 0);
-                let dose = Dose {
-                    do_id: 0,
-                    do_ra_id: raum_index as i32 + 1,
-                    do_nummer: dosen_index.to_string(),
-                    do_dk_id: Some(dosen_index as i32 % device_kinds_length as i32 + 1)
-                        .filter(|_| dosen_index % 4 == 0),
-                    do_kommentar: kommentar,
-                };
-
-                dosen.push(dose);
-            }
-        }
-
         let mut switches = Vec::new();
         for (schrank_index, schrank) in schraenke.iter().enumerate() {
             for switch_index in 0..SWITCH_COUNT {
@@ -167,20 +148,27 @@ impl Masterbase {
             }
         }
 
-        let dose_zu_switchport_count = dosen.len().min(switchports.len());
-        let mut dose_zu_switchports = Vec::new();
-        for dose_zu_switchport_index in 0..dose_zu_switchport_count {
-            let kommentar =
-                Some(String::from("Testkommentar")).filter(|_| dose_zu_switchport_index % 6 == 0);
+        let device_kinds_length = device_kinds.len();
+        let switchports_length = switchports.len();
+        let mut dosen = Vec::new();
+        for (raum_index, _) in raeume.iter().enumerate() {
+            for dosen_index in 0..DOSE_COUNT {
+                let kommentar =
+                    Some(String::from("Testkommentar")).filter(|_| dosen_index % 7 == 0);
 
-            let dose_zu_switchport = DoseZuSwitchport {
-                dsz_id: dose_zu_switchport_index as i32 + 1,
-                dsz_do_id: dose_zu_switchport_index as i32 + 1,
-                dsz_sp_id: dose_zu_switchport_index as i32 + 1,
-                dsz_kommentar: kommentar,
-            };
+                let dose = Dose {
+                    do_id: 0,
+                    do_ra_id: raum_index as i32 + 1,
+                    do_nummer: dosen_index.to_string(),
+                    do_sp_id: Some((dosen_index as i32 + 1) % switchports_length as i32)
+                        .filter(|_| dosen_index % 4 == 0),
+                    do_dk_id: Some((dosen_index as i32 + 1) % device_kinds_length as i32)
+                        .filter(|_| dosen_index % 4 == 0),
+                    do_kommentar: kommentar,
+                };
 
-            dose_zu_switchports.push(dose_zu_switchport);
+                dosen.push(dose);
+            }
         }
 
         println!("Inserting Gebäude...");
@@ -254,25 +242,6 @@ impl Masterbase {
         }
         transaction.commit().await.unwrap();
 
-        println!("Inserting Dosen...");
-        let mut transaction = self.connection_pool.begin().await.unwrap();
-        for dose in dosen {
-            sqlx::query(
-                "
-                        INSERT INTO do_dose
-                        VALUES (NULL, $1, $2, $3, $4)
-                    ",
-            )
-            .bind(dose.do_ra_id)
-            .bind(&dose.do_nummer)
-            .bind(dose.do_dk_id)
-            .bind(&dose.do_kommentar)
-            .execute(&mut *transaction)
-            .await
-            .unwrap();
-        }
-        transaction.commit().await.unwrap();
-
         println!("Inserting Switches...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
         for switch in switches {
@@ -312,18 +281,20 @@ impl Masterbase {
         }
         transaction.commit().await.unwrap();
 
-        println!("Inserting DoseZuSwitchports...");
+        println!("Inserting Dosen...");
         let mut transaction = self.connection_pool.begin().await.unwrap();
-        for dose_zu_switchport in dose_zu_switchports {
+        for dose in dosen {
             sqlx::query(
                 "
-                        INSERT INTO dzs_dose_zu_switchport
-                        VALUES (NULL, $1, $2, $3)
+                        INSERT INTO do_dose
+                        VALUES (NULL, $1, $2, $3, $4, $5)
                     ",
             )
-            .bind(dose_zu_switchport.dsz_do_id)
-            .bind(dose_zu_switchport.dsz_sp_id)
-            .bind(&dose_zu_switchport.dsz_kommentar)
+            .bind(dose.do_ra_id)
+            .bind(&dose.do_nummer)
+            .bind(dose.do_sp_id)
+            .bind(dose.do_dk_id)
+            .bind(&dose.do_kommentar)
             .execute(&mut *transaction)
             .await
             .unwrap();

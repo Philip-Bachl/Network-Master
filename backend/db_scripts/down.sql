@@ -7,6 +7,5 @@ DROP TABLE IF EXISTS dk_device_kind;
 DROP TABLE IF EXISTS do_dose;
 DROP TABLE IF EXISTS sw_switch;
 DROP TABLE IF EXISTS sp_switchport;
-DROP TABLE IF EXISTS dzs_dose_zu_switchport;
 
 PRAGMA foreign_keys = 1;

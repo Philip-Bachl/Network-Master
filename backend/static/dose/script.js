@@ -49,6 +49,8 @@ class Dose {
     /**@type {number} */
     do_nummer;
     /**@type {number} */
+    do_sp_id;
+    /**@type {number} */
     do_dk_id;
     /**@type {string} */
     do_kommentar;
@@ -108,6 +110,7 @@ addDoseButton.addEventListener("mousedown", () => {
 
     const dose = {
         do_id: 0,
+        do_sp_id: null, //TODO: change!
         do_ra_id: parseInt(raumId),
         do_nummer: doseNummer.value,
         do_dk_id: deviceKindKey,

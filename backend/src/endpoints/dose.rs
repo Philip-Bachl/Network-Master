@@ -23,11 +23,12 @@ pub async fn create_dose(
 ) -> Result<Status, String> {
     sqlx::query(
         "
-            INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4)
+            INSERT INTO do_dose VALUES (NULL, $1, $2, $3, $4, $5)
         ",
     )
     .bind(dose.do_ra_id)
     .bind(&dose.do_nummer)
+    .bind(dose.do_sp_id)
     .bind(dose.do_dk_id)
     .bind(&dose.do_kommentar)
     .execute(&masterbase.connection_pool)
@@ -45,12 +46,13 @@ pub async fn update_dose(
         "
             UPDATE do_dose
             SET
-            do_ra_id = $1, do_nummer = $2, do_dk_id = $3, do_kommentar = $4
+            do_ra_id = $1, do_nummer = $2, do_sp_id = $3, do_dk_id = $4, do_kommentar = $5
             WHERE do_id = $5
         ",
     )
     .bind(dose.do_ra_id)
     .bind(&dose.do_nummer)
+    .bind(dose.do_sp_id)
     .bind(dose.do_dk_id)
     .bind(&dose.do_kommentar)
     .bind(dose.do_id)

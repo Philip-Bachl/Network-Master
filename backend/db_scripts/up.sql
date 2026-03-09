@@ -40,11 +40,13 @@ CREATE TABLE do_dose (
     do_id INTEGER PRIMARY KEY,
     do_ra_id INTEGER NOT NULL,
     do_nummer TEXT NOT NULL,
+    do_sp_id INTEGER,
     do_dk_id INTEGER,
     do_kommentar TEXT,
 
     UNIQUE (do_ra_id, do_nummer),
     FOREIGN KEY (do_ra_id) REFERENCES ra_raum(ra_id),
+    FOREIGN KEY (do_sp_id) REFERENCES sp_switchport(sp_id),
     FOREIGN KEY (do_dk_id) REFERENCES dk_device_kind(dk_id)
 );
 
@@ -68,18 +70,6 @@ CREATE TABLE sp_switchport (
 
     UNIQUE (sp_sw_name, sp_port),
     FOREIGN KEY (sp_sw_name) REFERENCES sw_switch(sw_name)
-);
-
-CREATE TABLE dzs_dose_zu_switchport (
-    dsz_id INTEGER PRIMARY KEY,
-    dsz_do_id INTEGER NOT NULL,
-    dsz_sp_id INTEGER NOT NULL,
-    dsz_kommentar TEXT,
-
-    UNIQUE (dsz_do_id),
-    UNIQUE (dsz_sp_id),
-    FOREIGN KEY (dsz_do_id) REFERENCES do_dose(do_id),
-    FOREIGN KEY (dsz_sp_id) REFERENCES sp_switchport(sp_id)
 );
 
 PRAGMA foreign_keys = 1;

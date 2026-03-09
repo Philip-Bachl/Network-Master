@@ -39,6 +39,7 @@ pub struct Dose {
     pub do_id: i32,
     pub do_ra_id: i32,
     pub do_nummer: String,
+    pub do_sp_id: Option<i32>,
     pub do_dk_id: Option<i32>,
     pub do_kommentar: Option<String>,
 }
