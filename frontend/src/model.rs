@@ -1,15 +1,13 @@
-use implicit_clone::ImplicitClone;
 use serde::{Deserialize, Serialize};
+use yew::AttrValue;
 
-//TODO: add ids
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, ImplicitClone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Gebaeude {
     pub ge_name: String,
     pub ge_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Raum {
     pub ra_id: i32,
     pub ra_ge_name: String,
@@ -17,8 +15,20 @@ pub struct Raum {
     pub ra_stockwerk: i32,
     pub ra_kommentar: Option<String>,
 }
+impl Raum {
+    pub fn pretty_raum_number(&self) -> AttrValue {
+        //TODO: will likely change to just be ra_nummer as ra_nummer will include the ra_stockwerk (makes input easier)
+        let tail = if self.ra_nummer.len() == 1 {
+            &format!("0{}", self.ra_nummer)
+        } else {
+            &self.ra_nummer
+        };
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, ImplicitClone)]
+        format!("{}{}", self.ra_stockwerk, tail).into()
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Schrank {
     pub sc_id: i32,
     pub sc_ge_name: String,
@@ -44,7 +54,7 @@ pub struct Dose {
     pub do_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, ImplicitClone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Switch {
     pub sw_name: String,
     pub sw_sc_id: i32,

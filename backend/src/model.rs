@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 
-//TODO: add ids
-
 #[derive(Serialize, Deserialize, FromRow, Debug)]
 pub struct Gebaeude {
     pub ge_name: String,

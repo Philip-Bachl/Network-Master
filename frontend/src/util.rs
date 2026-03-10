@@ -76,7 +76,7 @@ pub fn map_schraenke_raeume(schraenke: Vec<Schrank>, raeume: Vec<Raum>) -> FullV
         };
     }
 
-    gebaeude_map
+    let mut gebaeude_vec: FullVec = gebaeude_map
         .into_iter()
         .map(|(ge_name, stockwerk_map)| {
             let mut stockwerk_vec: Vec<_> = stockwerk_map
@@ -93,7 +93,9 @@ pub fn map_schraenke_raeume(schraenke: Vec<Schrank>, raeume: Vec<Raum>) -> FullV
 
             (AttrValue::from(ge_name), stockwerk_vec)
         })
-        .collect()
+        .collect();
+    gebaeude_vec.sort_by(|a, b| a.0.cmp(&b.0));
+    gebaeude_vec
 }
 
 pub fn pretty_stockwerk_number(stockwerk: i32) -> String {
