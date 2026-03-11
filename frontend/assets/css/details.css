@@ -25,4 +25,71 @@
 
 #detailsContent {
     height: 100%;
+
+    overflow-y: auto;
+}
+
+#switches {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#switches img {
+    flex: none;
+    place-self: center;
+
+    width: calc(var(--font-size) * 1.5);
+}
+
+.dot1x {
+    position: relative;
+}
+
+.dot1x::after {
+    content: "";
+
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    aspect-ratio: 1;
+    width: calc(var(--font-size) * 1.5);
+    transform: scale(0.5) translate(20px, -20px);
+
+    background-image: url("/assets/svg/dot1x.svg");
+    filter: drop-shadow(0 2px 7px black);
+}
+
+.switch {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 20px;
+
+    border-radius: 10px;
+    background-color: var(--level-2);
+}
+
+.switch-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.switchport {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 5px;
+
+    font-size: calc(var(--font-size) * 0.5);
+}
+
+.switchport-border {
+    border: 2px solid var(--color);
+    border-radius: 10px;
 }

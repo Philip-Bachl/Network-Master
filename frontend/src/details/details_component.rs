@@ -1,4 +1,4 @@
-use yew::{Html, Properties, Suspense, UseStateHandle, component, html};
+use yew::{Html, Properties, UseStateHandle, component, html};
 
 use crate::{SidebarSelection, details::schrank_details_component::SchrankDetailsComponent};
 
@@ -23,11 +23,9 @@ pub fn DetailsComponent(
     html! {
         <div id="details">
             <div id="detailsTitle">{"Details"}</div>
-                <div id="detailsContent">
-                    <Suspense>
-                        {content}
-                    </Suspense>
-                </div>
+            <div id="detailsContent">
+                {content}
+            </div>
         </div>
     }
 }

@@ -16,16 +16,33 @@ pub enum SidebarSelection {
     Nothing,
 }
 
+//TODO: most components clone data to their children
+//      -> change to use heap allocation instead (Rc and alike)
+
 #[component]
 fn App() -> Html {
     let sidebar_selection = use_state(|| SidebarSelection::Nothing);
     //TODO: resizing sidebar
+
+    let sidebar_fallback = html! {
+        <div id="sidebar">
+            <div id="sidebarTitle">{"Locations"}</div>
+            <div id="sidebarContent"></div>
+        </div>
+    };
+    let details_fallback = html! {
+        <div id="details">
+            <div id="detailsTitle">{"Details"}</div>
+            <div id="detailsContent"></div>
+        </div>
+    };
+
     html! {
         <>
-            <Suspense>
+            <Suspense fallback={sidebar_fallback}>
                 <SidebarComponent sidebar_selection={sidebar_selection.clone()} />
             </Suspense>
-            <Suspense>
+            <Suspense fallback={details_fallback}>
                 <DetailsComponent sidebar_selection={sidebar_selection} />
             </Suspense>
         </>
