@@ -15,25 +15,6 @@ pub async fn read_switch_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<
     .map(Json)
     .map_err(|err| err.to_string())
 }
-#[get("/switch/schrank/<sc_id>")]
-pub async fn read_switch_of_schrank(
-    masterbase: &State<Masterbase>,
-    sc_id: &str,
-) -> Result<Json<Vec<Switch>>, String> {
-    println!("{}", sc_id);
-    sqlx::query_as(
-        "
-            SELECT *
-            FROM sw_switch
-            WHERE sw_sc_id = $1
-        ",
-    )
-    .bind(sc_id)
-    .fetch_all(&masterbase.connection_pool)
-    .await
-    .map(Json)
-    .map_err(|err| err.to_string())
-}
 
 #[post("/switch", data = "<switch>")]
 pub async fn create_switch(

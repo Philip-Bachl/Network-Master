@@ -1,3 +1,4 @@
+pub mod details;
 pub mod device_kind;
 pub mod dose;
 pub mod gebaeude;

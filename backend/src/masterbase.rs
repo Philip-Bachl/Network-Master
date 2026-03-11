@@ -149,7 +149,6 @@ impl Masterbase {
         }
 
         let device_kinds_length = device_kinds.len();
-        let switchports_length = switchports.len();
         let mut dosen = Vec::new();
         for (raum_index, _) in raeume.iter().enumerate() {
             for dosen_index in 0..DOSE_COUNT {
@@ -160,8 +159,7 @@ impl Masterbase {
                     do_id: 0,
                     do_ra_id: raum_index as i32 + 1,
                     do_nummer: dosen_index.to_string(),
-                    do_sp_id: Some((dosen_index as i32 + 1) % switchports_length as i32)
-                        .filter(|_| dosen_index % 4 == 0),
+                    do_sp_id: None,
                     do_dk_id: Some((dosen_index as i32 + 1) % device_kinds_length as i32)
                         .filter(|_| dosen_index % 4 == 0),
                     do_kommentar: kommentar,
@@ -169,6 +167,10 @@ impl Masterbase {
 
                 dosen.push(dose);
             }
+        }
+
+        for (switchport_index, _) in switchports.iter().enumerate().step_by(3) {
+            dosen[switchport_index + 1].do_sp_id = Some(switchport_index as i32 + 1);
         }
 
         println!("Inserting Gebäude...");

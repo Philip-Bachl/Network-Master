@@ -80,7 +80,6 @@ async fn rocket() -> _ {
                 //
                 endpoints::switch::create_switch,
                 endpoints::switch::read_switch_all,
-                endpoints::switch::read_switch_of_schrank,
                 endpoints::switch::update_switch,
                 endpoints::switch::delete_switch,
                 //
@@ -94,6 +93,10 @@ async fn rocket() -> _ {
                 endpoints::device_kind::update_device_kind,
                 endpoints::device_kind::delete_device_kind,
             ],
+        )
+        .mount(
+            "/api/details",
+            routes![endpoints::details::read_switch_details,],
         )
         .mount("/", FileServer::from(file_server_folder))
     //.attach(Cors)

@@ -10,7 +10,7 @@ pub async fn read_dose_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Do
             SELECT * FROM do_dose
         ",
     )
-    .fetch_all(&masterbase.connection_pool)
+    .fetch_all(&masterbase.connection_pool) //TODO: could be bad to fetch all, maybe add a LIMIT flag
     .await
     .map(Json)
     .map_err(|err| err.to_string())
