@@ -83,22 +83,22 @@ impl Masterbase {
         let device_kinds = [
             DeviceKind {
                 dk_id: 1,
-                dk_name: String::from("PC"),
+                dk_name: String::from("pc"),
                 dk_kommentar: None,
             },
             DeviceKind {
                 dk_id: 2,
-                dk_name: String::from("Telefon"),
+                dk_name: String::from("telefon"),
                 dk_kommentar: None,
             },
             DeviceKind {
                 dk_id: 3,
-                dk_name: String::from("PC & Telefon"),
+                dk_name: String::from("pc_plus_telefon"),
                 dk_kommentar: Some(String::from("Speziell durchgeschleußt")),
             },
             DeviceKind {
                 dk_id: 4,
-                dk_name: String::from("Drucker"),
+                dk_name: String::from("drucker"),
                 dk_kommentar: None,
             },
         ];
@@ -160,8 +160,8 @@ impl Masterbase {
                     do_ra_id: raum_index as i32 + 1,
                     do_nummer: dosen_index.to_string(),
                     do_sp_id: None,
-                    do_dk_id: Some((dosen_index as i32 + 1) % device_kinds_length as i32)
-                        .filter(|_| dosen_index % 4 == 0),
+                    do_dk_id: Some((dosen_index % device_kinds_length + 1) as i32)
+                        .filter(|_| dosen_index % 6 != 0),
                     do_kommentar: kommentar,
                 };
 

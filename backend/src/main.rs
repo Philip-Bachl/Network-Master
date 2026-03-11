@@ -80,6 +80,7 @@ async fn rocket() -> _ {
                 //
                 endpoints::switch::create_switch,
                 endpoints::switch::read_switch_all,
+                endpoints::switch::read_switch_of_schrank,
                 endpoints::switch::update_switch,
                 endpoints::switch::delete_switch,
                 //
