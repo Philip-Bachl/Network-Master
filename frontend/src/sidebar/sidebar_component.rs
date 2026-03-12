@@ -64,48 +64,52 @@ fn render_stockwerk(
     raeume: Vec<Raum>,
     sidebar_selection: UseStateHandle<SidebarSelection>,
 ) -> Html {
-    let add_divider = !schraenke.is_empty() && !raeume.is_empty();
     html! {
         <TabComponent title={pretty_stockwerk_number(stockwerk)} img_url="assets/svg/stockwerk.svg">
-            <div class="schraenke">
-                for schrank in schraenke {
-                    {render_schrank(schrank, sidebar_selection.clone())}
-                }
-            </div>
-            if add_divider {
-                <div class="divider" />
-            }
-            <div class="raeume">
-                for raum in raeume {
-                    {render_raum(raum, sidebar_selection.clone())}
-                }
-            </div>
+            <TabComponent title="Räume" img_url="assets/svg/raum.svg">
+                <div class="raeume">
+                    for raum in raeume {
+                        {render_raum(raum, sidebar_selection.clone())}
+                    }
+                </div>
+            </TabComponent>
+            <TabComponent title="Schränke" img_url="assets/svg/schrank.svg">
+                <div class="schraenke">
+                    for schrank in schraenke {
+                        {render_schrank(schrank, sidebar_selection.clone())}
+                    }
+                </div>
+            </TabComponent>
         </TabComponent>
     }
 }
 
 fn render_schrank(schrank: Schrank, sidebar_selection: UseStateHandle<SidebarSelection>) -> Html {
-    let schrank_clone = schrank.clone();
+    let schrank_sc_nummer = schrank.sc_nummer.clone();
     let onclick = Callback::from(move |_| {
-        sidebar_selection.set(SidebarSelection::Schrank(schrank_clone.clone()));
+        sidebar_selection.set(SidebarSelection::Schrank(schrank.clone()));
     });
 
     html! {
         <div class="schrank" {onclick}>
             <img src="assets/svg/schrank.svg" />
             <div>
-                {&schrank.sc_nummer}
+                {schrank_sc_nummer}
             </div>
         </div>
     }
 }
 
 fn render_raum(raum: Raum, sidebar_selection: UseStateHandle<SidebarSelection>) -> Html {
+    let raum_ra_nummer = raum.ra_nummer.clone();
+    let onclick = Callback::from(move |_| {
+        sidebar_selection.set(SidebarSelection::Raum(raum.clone()));
+    });
     html! {
-        <div class="raum">
+        <div class="raum" {onclick}>
             <img src="assets/svg/raum.svg" />
             <div>
-                {raum.pretty_raum_number()}
+                {raum_ra_nummer}
             </div>
         </div>
     }

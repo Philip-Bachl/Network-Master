@@ -13,14 +13,12 @@ struct SwitchportDetail {
 }
 
 #[derive(PartialEq, Properties)]
-pub struct SwitchDetailsComponentProps {
+pub struct SwitchComponentProps {
     pub switch: Switch,
 }
 
 #[component]
-pub fn SwitchDetailsComponent(
-    SwitchDetailsComponentProps { switch }: &SwitchDetailsComponentProps,
-) -> HtmlResult {
+pub fn SwitchComponent(SwitchComponentProps { switch }: &SwitchComponentProps) -> HtmlResult {
     let switchport_details = use_future_with(switch.sw_name.clone(), |sw_name| async move {
         util::fetch::<Vec<SwitchportDetail>>(&format!("/api/details/switch/{}", sw_name))
             .await

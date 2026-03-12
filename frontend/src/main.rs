@@ -1,7 +1,8 @@
 use yew::{Html, Suspense, component, html, use_state};
 
 use crate::{
-    details::details_component::DetailsComponent, model::Schrank,
+    details::details_component::DetailsComponent,
+    model::{Raum, Schrank},
     sidebar::sidebar_component::SidebarComponent,
 };
 
@@ -13,6 +14,7 @@ mod util;
 #[derive(PartialEq, Debug)]
 pub enum SidebarSelection {
     Schrank(Schrank),
+    Raum(Raum),
     Nothing,
 }
 
@@ -32,7 +34,7 @@ fn App() -> Html {
     };
     let details_fallback = html! {
         <div id="details">
-            <div id="detailsTitle">{"Details"}</div>
+            <div id="detailsTitle"></div>
             <div id="detailsContent"></div>
         </div>
     };

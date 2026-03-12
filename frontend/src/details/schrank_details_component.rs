@@ -1,7 +1,7 @@
 use yew::{HtmlResult, Properties, component, html, suspense::use_future_with};
 
 use crate::{
-    details::switch_details_component::SwitchDetailsComponent,
+    details::switch_component::SwitchComponent,
     model::{Schrank, Switch},
     util,
 };
@@ -25,7 +25,7 @@ pub fn SchrankDetailsComponent(
     Ok(html! {
         <div id="switches">
             for switch in switches.iter().cloned() {
-                <SwitchDetailsComponent switch={switch} />
+                <SwitchComponent switch={switch} />
             }
         </div>
     })

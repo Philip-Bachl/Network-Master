@@ -97,7 +97,10 @@ async fn rocket() -> _ {
         )
         .mount(
             "/api/details",
-            routes![endpoints::details::read_switch_details,],
+            routes![
+                endpoints::details::read_switch_details,
+                endpoints::details::read_raum_details,
+            ],
         )
         .mount("/", FileServer::from(file_server_folder))
     //.attach(Cors)
