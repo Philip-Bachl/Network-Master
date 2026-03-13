@@ -66,20 +66,24 @@ fn render_stockwerk(
 ) -> Html {
     html! {
         <TabComponent title={pretty_stockwerk_number(stockwerk)} img_url="assets/svg/stockwerk.svg">
-            <TabComponent title="Räume" img_url="assets/svg/raum.svg">
-                <div class="raeume">
-                    for raum in raeume {
-                        {render_raum(raum, sidebar_selection.clone())}
-                    }
-                </div>
-            </TabComponent>
-            <TabComponent title="Schränke" img_url="assets/svg/schrank.svg">
-                <div class="schraenke">
-                    for schrank in schraenke {
-                        {render_schrank(schrank, sidebar_selection.clone())}
-                    }
-                </div>
-            </TabComponent>
+            if !raeume.is_empty() {
+                <TabComponent title="Räume" img_url="assets/svg/raum.svg">
+                    <div class="raeume">
+                        for raum in raeume {
+                            {render_raum(raum, sidebar_selection.clone())}
+                        }
+                    </div>
+                </TabComponent>
+            }
+            if !schraenke.is_empty() {
+                <TabComponent title="Schränke" img_url="assets/svg/schrank.svg">
+                    <div class="schraenke">
+                        for schrank in schraenke {
+                            {render_schrank(schrank, sidebar_selection.clone())}
+                        }
+                    </div>
+                </TabComponent>
+            }
         </TabComponent>
     }
 }

@@ -17,9 +17,12 @@ pub fn SchrankDetailsComponent(
 ) -> HtmlResult {
     let sc_id = schrank.sc_id;
     let switches = use_future_with(sc_id, |sc_id| async move {
-        util::fetch::<Vec<Switch>>(&format!("/api/switch/schrank/{}", sc_id))
-            .await
-            .unwrap_or_default()
+        util::fetch::<Vec<Switch>>(&format!(
+            "/api/switch/schrank/{}",
+            urlencoding::encode(&sc_id.to_string())
+        ))
+        .await
+        .unwrap_or_default()
     })?;
 
     Ok(html! {

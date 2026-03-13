@@ -34,7 +34,7 @@ fn App() -> Html {
     };
     let details_fallback = html! {
         <div id="details">
-            <div id="detailsTitle"></div>
+            <div id="detailsTitle">{"Loading..."}</div>
             <div id="detailsContent"></div>
         </div>
     };

@@ -20,9 +20,12 @@ pub struct SwitchComponentProps {
 #[component]
 pub fn SwitchComponent(SwitchComponentProps { switch }: &SwitchComponentProps) -> HtmlResult {
     let switchport_details = use_future_with(switch.sw_name.clone(), |sw_name| async move {
-        util::fetch::<Vec<SwitchportDetail>>(&format!("/api/details/switch/{}", sw_name))
-            .await
-            .unwrap_or_default()
+        util::fetch::<Vec<SwitchportDetail>>(&format!(
+            "/api/details/switch/{}",
+            urlencoding::encode(&sw_name)
+        ))
+        .await
+        .unwrap_or_default()
     })?;
 
     Ok(html! {

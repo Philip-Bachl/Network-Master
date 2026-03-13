@@ -26,7 +26,7 @@ pub fn DetailsComponent(
             format!("{} - {}", raum.ra_nummer, raum.ra_ge_name),
             html! {<RaumDetailsComponent raum={raum.clone()} />},
         ),
-        SidebarSelection::Nothing => (String::from(""), html! {}),
+        SidebarSelection::Nothing => (String::from("Details"), html! {}),
     };
 
     html! {

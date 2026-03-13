@@ -25,9 +25,12 @@ pub fn RaumDetailsComponent(
     RaumDetailsComponentProps { raum }: &RaumDetailsComponentProps,
 ) -> HtmlResult {
     let dose_details = use_future_with(raum.ra_id, |ra_id| async move {
-        util::fetch::<Vec<DoseDetail>>(&format!("/api/details/raum/{}", ra_id))
-            .await
-            .unwrap_or_default()
+        util::fetch::<Vec<DoseDetail>>(&format!(
+            "/api/details/raum/{}",
+            urlencoding::encode(&ra_id.to_string())
+        ))
+        .await
+        .unwrap_or_default()
     })?;
 
     //TODO: fix dose ordering
