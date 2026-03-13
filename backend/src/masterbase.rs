@@ -45,32 +45,47 @@ impl Masterbase {
             gebaeude_all.push(gebaeude);
         }
 
-        let mut raeume = Vec::new();
-        let mut schraenke = Vec::new();
-        for gebaeude in gebaeude_all.iter() {
+        let mut raeume = Vec::with_capacity(gebaeude_all.len() * STOCKWERK_COUNT * RAUM_COUNT);
+        for (gebaeude_index, gebaeude) in gebaeude_all.iter().enumerate() {
             for stockwerk_index in 0..STOCKWERK_COUNT {
                 for raum_index in 0..RAUM_COUNT {
                     let kommentar =
                         Some(String::from("Testkommentar")).filter(|_| raum_index % 4 == 0);
 
                     let raum = Raum {
-                        ra_id: 0,
+                        ra_id: (raum_index
+                            + stockwerk_index * RAUM_COUNT
+                            + gebaeude_index * STOCKWERK_COUNT * RAUM_COUNT)
+                            as i32,
                         ra_ge_name: gebaeude.ge_name.clone(),
-                        ra_nummer: raum_index.to_string(),
-                        ra_stockwerk: stockwerk_index as i32 + 1,
+                        ra_nummer: format!("{}{:02}", stockwerk_index, raum_index),
+                        ra_stockwerk: (stockwerk_index as i32 - (STOCKWERK_COUNT >> 1) as i32),
                         ra_kommentar: kommentar,
                     };
 
                     raeume.push(raum);
                 }
+            }
+        }
 
+        let mut schraenke = Vec::new();
+        for (gebaeude_index, gebaeude) in gebaeude_all.iter().enumerate() {
+            for stockwerk_index in 0..STOCKWERK_COUNT {
                 for schrank_index in 0..SCHRANK_COUNT {
-                    let kommentar = Some(String::from("Testkommentar"));
+                    let kommentar =
+                        Some(String::from("Testkommentar")).filter(|_| schrank_index % 2 == 0);
 
                     let schrank = Schrank {
-                        sc_id: 0,
+                        sc_id: (schrank_index
+                            + stockwerk_index * SCHRANK_COUNT
+                            + gebaeude_index * STOCKWERK_COUNT * SCHRANK_COUNT)
+                            as i32,
                         sc_ge_name: gebaeude.ge_name.clone(),
-                        sc_nummer: schrank_index.to_string(),
+                        sc_nummer: generate_schrank_name(
+                            schrank_index as i32,
+                            &gebaeude.ge_name,
+                            stockwerk_index as i32,
+                        ),
                         sc_stockwerk: stockwerk_index as i32,
                         sc_kommentar: kommentar,
                     };
@@ -82,42 +97,42 @@ impl Masterbase {
 
         let device_kinds = [
             DeviceKind {
-                dk_id: 1,
+                dk_id: 0,
                 dk_name: String::from("pc"),
                 dk_kommentar: None,
             },
             DeviceKind {
-                dk_id: 2,
+                dk_id: 1,
                 dk_name: String::from("telefon"),
                 dk_kommentar: None,
             },
             DeviceKind {
-                dk_id: 3,
+                dk_id: 2,
                 dk_name: String::from("pc_plus_telefon"),
                 dk_kommentar: Some(String::from("Speziell durchgeschleußt")),
             },
             DeviceKind {
-                dk_id: 4,
+                dk_id: 3,
                 dk_name: String::from("drucker"),
                 dk_kommentar: None,
             },
         ];
 
         let mut switches = Vec::new();
-        for (schrank_index, schrank) in schraenke.iter().enumerate() {
+        for schrank in schraenke.iter() {
             for switch_index in 0..SWITCH_COUNT {
                 let kommentar =
-                    Some(String::from("Testkommentar")).filter(|_| switch_index % 2 == 0);
+                    Some(String::from("Testkommentar")).filter(|_| switch_index % 3 != 0);
+
                 let switch = Switch {
-                    sw_name: format!(
-                        "{}_{}_{}_{}",
-                        schrank.sc_ge_name, schrank.sc_stockwerk, schrank.sc_nummer, switch_index
+                    sw_name: generate_switch_name(
+                        schrank.sc_id,
+                        &schrank.sc_ge_name,
+                        schrank.sc_stockwerk,
+                        switch_index as i32,
                     ),
-                    sw_sc_id: schrank_index as i32 + 1,
-                    sw_ip: format!(
-                        "{0}.{0}.{0}.{0}",
-                        schrank_index * SWITCH_COUNT + switch_index
-                    ),
+                    sw_sc_id: schrank.sc_id,
+                    sw_ip: format!("172.196.{}.{}", schrank.sc_id, switch_index),
                     sw_kommentar: kommentar,
                 };
                 switches.push(switch);
@@ -125,7 +140,7 @@ impl Masterbase {
         }
 
         let mut switchports = Vec::new();
-        for switch in switches.iter() {
+        for (switch_index, switch) in switches.iter().enumerate() {
             for switchport_index in 0..SWITCHPORT_COUNT {
                 let vlan = match switchport_index % 10 {
                     0..=2 => 300,
@@ -136,11 +151,11 @@ impl Masterbase {
                     Some(String::from("Testkommentar")).filter(|_| switchport_index % 2 == 0);
 
                 let switchport = Switchport {
-                    sp_id: 0,
+                    sp_id: (switchport_index + switch_index * SWITCHPORT_COUNT) as i32,
                     sp_sw_name: switch.sw_name.clone(),
-                    sp_port: format!("fa0/{:02}", switchport_index),
+                    sp_port: format!("fa0/{}", switchport_index),
                     sp_vlan: vlan,
-                    sp_dot1x: switchport_index % 6 == 0,
+                    sp_dot1x: switchport_index % 7 == 0 || switchport_index % 8 == 0,
                     sp_kommentar: kommentar,
                 };
 
@@ -150,18 +165,18 @@ impl Masterbase {
 
         let device_kinds_length = device_kinds.len();
         let mut dosen = Vec::new();
-        for (raum_index, _) in raeume.iter().enumerate() {
+        for raum in raeume.iter() {
             for dosen_index in 0..DOSE_COUNT {
                 let kommentar =
                     Some(String::from("Testkommentar")).filter(|_| dosen_index % 7 == 0);
 
                 let dose = Dose {
-                    do_id: 0,
-                    do_ra_id: raum_index as i32 + 1,
+                    do_id: dosen_index as i32 + raum.ra_id * DOSE_COUNT as i32,
+                    do_ra_id: raum.ra_id,
                     do_nummer: dosen_index.to_string(),
                     do_sp_id: None,
-                    do_dk_id: Some((dosen_index % device_kinds_length + 1) as i32)
-                        .filter(|_| dosen_index % 6 != 0),
+                    do_dk_id: Some((dosen_index % device_kinds_length) as i32)
+                        .filter(|_| dosen_index % 7 != 0),
                     do_kommentar: kommentar,
                 };
 
@@ -169,8 +184,8 @@ impl Masterbase {
             }
         }
 
-        for (switchport_index, _) in switchports.iter().enumerate().step_by(3) {
-            dosen[switchport_index + 1].do_sp_id = Some(switchport_index as i32 + 1);
+        for switchport in switchports.iter().step_by(3) {
+            dosen[switchport.sp_id as usize].do_sp_id = Some(switchport.sp_id);
         }
 
         println!("Inserting Gebäude...");
@@ -195,9 +210,10 @@ impl Masterbase {
             sqlx::query(
                 "
                         INSERT INTO ra_raum
-                        VALUES (NULL, $1, $2, $3, $4)
+                        VALUES ($1, $2, $3, $4, $5)
                     ",
             )
+            .bind(raum.ra_id)
             .bind(&raum.ra_ge_name)
             .bind(&raum.ra_nummer)
             .bind(raum.ra_stockwerk)
@@ -214,9 +230,10 @@ impl Masterbase {
             sqlx::query(
                 "
                         INSERT INTO sc_schrank
-                        VALUES (NULL, $1, $2, $3, $4)
+                        VALUES ($1, $2, $3, $4, $5)
                     ",
             )
+            .bind(schrank.sc_id)
             .bind(&schrank.sc_ge_name)
             .bind(&schrank.sc_nummer)
             .bind(schrank.sc_stockwerk)
@@ -233,9 +250,10 @@ impl Masterbase {
             sqlx::query(
                 "
                         INSERT INTO dk_device_kind
-                        VALUES (NULL, $1, $2)
+                        VALUES ($1, $2, $3)
                     ",
             )
+            .bind(device_kind.dk_id)
             .bind(device_kind.dk_name)
             .bind(device_kind.dk_kommentar)
             .execute(&mut *transaction)
@@ -269,9 +287,10 @@ impl Masterbase {
             sqlx::query(
                 "
                         INSERT INTO sp_switchport
-                        VALUES (NULL, $1, $2, $3, $4, $5)
+                        VALUES ($1, $2, $3, $4, $5, $6)
                     ",
             )
+            .bind(switchport.sp_id)
             .bind(&switchport.sp_sw_name)
             .bind(&switchport.sp_port)
             .bind(switchport.sp_vlan)
@@ -289,9 +308,10 @@ impl Masterbase {
             sqlx::query(
                 "
                         INSERT INTO do_dose
-                        VALUES (NULL, $1, $2, $3, $4, $5)
+                        VALUES ($1, $2, $3, $4, $5, $6)
                     ",
             )
+            .bind(dose.do_id)
             .bind(dose.do_ra_id)
             .bind(&dose.do_nummer)
             .bind(dose.do_sp_id)
@@ -303,4 +323,39 @@ impl Masterbase {
         }
         transaction.commit().await.unwrap();
     }
+}
+
+fn pretty_stockwerk_number(stockwerk: i32) -> String {
+    match stockwerk {
+        0 => String::from("EG"),
+        s @ ..=-1 => format!("{} UG", s.abs()),
+        s @ 1.. => format!("{} OG", s),
+    }
+}
+
+fn generate_schrank_name(sc_id: i32, sc_ge_name: &str, sc_stockwerk: i32) -> String {
+    let mut chars = sc_ge_name.chars();
+
+    format!(
+        "{}{}-{}-{}.{}",
+        chars.next().unwrap(),
+        chars.last().unwrap(),
+        pretty_stockwerk_number(sc_stockwerk),
+        sc_stockwerk,
+        sc_id
+    )
+}
+
+fn generate_switch_name(sc_id: i32, sc_ge_name: &str, sc_stockwerk: i32, suffix: i32) -> String {
+    let mut chars = sc_ge_name.chars();
+
+    format!(
+        "{}{}-{}-{}.{}/{}",
+        chars.next().unwrap(),
+        chars.last().unwrap(),
+        pretty_stockwerk_number(sc_stockwerk),
+        sc_stockwerk,
+        sc_id,
+        suffix
+    )
 }
