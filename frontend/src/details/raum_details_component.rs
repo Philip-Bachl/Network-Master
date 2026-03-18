@@ -25,7 +25,7 @@ pub fn RaumDetailsComponent(
     RaumDetailsComponentProps { raum }: &RaumDetailsComponentProps,
 ) -> HtmlResult {
     let dose_details = use_future_with(raum.ra_id, |ra_id| async move {
-        util::fetch::<Vec<DoseDetail>>(&format!(
+        util::fetch_get::<Vec<DoseDetail>>(&format!(
             "/api/details/raum/{}",
             urlencoding::encode(&ra_id.to_string())
         ))

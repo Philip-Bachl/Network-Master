@@ -72,6 +72,8 @@
 
     border-radius: 10px;
     background-color: var(--level-2);
+
+    position: relative;
 }
 
 .switch-content {
@@ -94,6 +96,28 @@
 .switchport-border {
     border: 2px solid var(--color);
     border-radius: 10px;
+}
+
+.delete-switch-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    transform: rotate(45deg)
+}
+
+#addSwitchButton {
+    aspect-ratio: 1;
+
+    padding: 20px;
+
+    background-color: var(--level-2);
+    border: 2px solid var(--color);
+    border-radius: 20px;
+}
+
+.faded {
+    opacity: 0.5;
 }
 
 /*switch details*/

@@ -153,7 +153,7 @@ impl Masterbase {
                 let switchport = Switchport {
                     sp_id: (switchport_index + switch_index * SWITCHPORT_COUNT) as i32,
                     sp_sw_name: switch.sw_name.clone(),
-                    sp_port: format!("fa0/{}", switchport_index),
+                    sp_port: format!("fa0/{:02}", switchport_index + 1),
                     sp_vlan: vlan,
                     sp_dot1x: switchport_index % 7 == 0 || switchport_index % 8 == 0,
                     sp_kommentar: kommentar,
@@ -328,8 +328,8 @@ impl Masterbase {
 fn pretty_stockwerk_number(stockwerk: i32) -> String {
     match stockwerk {
         0 => String::from("EG"),
-        s @ ..=-1 => format!("{} UG", s.abs()),
-        s @ 1.. => format!("{} OG", s),
+        s @ ..=-1 => format!("{}UG", s.abs()),
+        s @ 1.. => format!("{}OG", s),
     }
 }
 

@@ -20,12 +20,12 @@ pub fn SidebarComponent(
     SidebarComponentProps { sidebar_selection }: &SidebarComponentProps,
 ) -> HtmlResult {
     let schrank_list = use_future(|| async {
-        util::fetch::<Vec<Schrank>>("/api/schrank")
+        util::fetch_get::<Vec<Schrank>>("/api/schrank")
             .await
             .unwrap_or_default()
     })?;
     let raum_list = use_future(|| async {
-        util::fetch::<Vec<Raum>>("/api/raum")
+        util::fetch_get::<Vec<Raum>>("/api/raum")
             .await
             .unwrap_or_default()
     })?;

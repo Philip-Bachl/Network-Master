@@ -67,6 +67,7 @@ dependencies = [
  "gloo-net 0.6.0",
  "implicit-clone",
  "serde",
+ "serde_json",
  "tokio",
  "urlencoding",
  "wasm-bindgen-futures",

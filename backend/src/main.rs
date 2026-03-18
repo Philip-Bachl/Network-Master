@@ -70,6 +70,7 @@ async fn rocket() -> _ {
                 //
                 endpoints::schrank::create_schrank,
                 endpoints::schrank::read_schrank_all,
+                endpoints::schrank::read_schrank_per_gebaeude,
                 endpoints::schrank::update_schrank,
                 endpoints::schrank::delete_schrank,
                 //
@@ -79,6 +80,7 @@ async fn rocket() -> _ {
                 endpoints::dose::delete_dose,
                 //
                 endpoints::switch::create_switch,
+                endpoints::switch::create_switch_with_ports,
                 endpoints::switch::read_switch_all,
                 endpoints::switch::read_switch_of_schrank,
                 endpoints::switch::update_switch,

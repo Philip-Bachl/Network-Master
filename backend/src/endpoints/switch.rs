@@ -55,6 +55,56 @@ pub async fn create_switch(
     .map(|_| Status::Created)
     .map_err(|err| err.to_string())
 }
+#[post("/switch/port/<prefix>/<count>", data = "<switch>")]
+pub async fn create_switch_with_ports(
+    masterbase: &State<Masterbase>,
+    prefix: &str,
+    count: i32,
+    switch: Json<Switch>,
+) -> Result<Status, String> {
+    let mut transaction = masterbase
+        .connection_pool
+        .begin()
+        .await
+        .map_err(|err| err.to_string())?;
+
+    sqlx::query(
+        "
+            INSERT INTO sw_switch
+            VALUES ($1, $2, $3, $4)
+        ",
+    )
+    .bind(&switch.sw_name)
+    .bind(switch.sw_sc_id)
+    .bind(&switch.sw_ip)
+    .bind(&switch.sw_kommentar)
+    .execute(&mut *transaction)
+    .await
+    .map_err(|err| err.to_string())?;
+
+    for i in 1..=count {
+        sqlx::query(
+            "
+            INSERT INTO sp_switchport
+            VALUES (NULL, $1, $2, $3, $4, $5)
+        ",
+        )
+        .bind(&switch.sw_name)
+        .bind(format!("{prefix}{:02}", i))
+        .bind(0)
+        .bind(false)
+        .bind(None::<String>)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|err| err.to_string())?;
+    }
+
+    transaction
+        .commit()
+        .await
+        .map(|_| Status::Created)
+        .map_err(|err| err.to_string())
+}
 
 #[derive(Deserialize)]
 pub struct UpdateSwitch {
@@ -101,8 +151,8 @@ pub async fn delete_switch(
 ) -> Result<Status, String> {
     sqlx::query(
         "
-            DELETE FROM sw_switch
-            WHERE sw_name = $1
+            DELETE FROM sp_switchport
+            WHERE sp_sw_name = $1
         ",
     )
     .bind(&delete_switch.sw_name)
@@ -110,4 +160,17 @@ pub async fn delete_switch(
     .await
     .map(|_| Status::Ok)
     .map_err(|err| err.to_string())
+    .and(
+        sqlx::query(
+            "
+            DELETE FROM sw_switch
+            WHERE sw_name = $1
+        ",
+        )
+        .bind(&delete_switch.sw_name)
+        .execute(&masterbase.connection_pool)
+        .await
+        .map(|_| Status::Ok)
+        .map_err(|err| err.to_string()),
+    ) //TODO: error handling on all endpoints
 }

@@ -17,6 +17,24 @@ pub async fn read_schrank_all(
     .map(Json)
     .map_err(|err| err.to_string())
 }
+#[get("/schrank/gebaeude/<ge_name>")]
+pub async fn read_schrank_per_gebaeude(
+    masterbase: &State<Masterbase>,
+    ge_name: &str,
+) -> Result<Json<Vec<Schrank>>, String> {
+    sqlx::query_as(
+        "
+            SELECT *
+            FROM sc_schrank
+            WHERE sc_ge_name = $1
+        ",
+    )
+    .bind(ge_name)
+    .fetch_all(&masterbase.connection_pool)
+    .await
+    .map(Json)
+    .map_err(|err| err.to_string())
+}
 
 #[post("/schrank", data = "<schrank>")]
 pub async fn create_schrank(

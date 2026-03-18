@@ -1,10 +1,11 @@
 use std::{collections::HashMap, vec};
 
+use web_sys::wasm_bindgen::JsValue;
 use yew::AttrValue;
 
 use crate::model::{Raum, Schrank};
 
-pub async fn fetch<T: serde::de::DeserializeOwned>(url: &str) -> Option<T> {
+pub async fn fetch_get<T: serde::de::DeserializeOwned>(url: &str) -> Option<T> {
     let response = match gloo_net::http::Request::get(url).send().await {
         Ok(res) => res,
         Err(err) => {
@@ -22,6 +23,38 @@ pub async fn fetch<T: serde::de::DeserializeOwned>(url: &str) -> Option<T> {
     };
 
     Some(json)
+}
+pub async fn fetch_post_with_body(url: &str, body: impl Into<JsValue>) {
+    let request = match gloo_net::http::Request::post(url)
+        .header("Content-Type", "application/json")
+        .body(body)
+    {
+        Ok(req) => req,
+        Err(err) => {
+            alert(&format!("{:?}", err));
+            return;
+        }
+    };
+
+    if let Err(err) = request.send().await {
+        alert(&format!("{:?}", err));
+    }
+}
+pub async fn fetch_delete_with_body(url: &str, body: impl Into<JsValue>) {
+    let request = match gloo_net::http::Request::delete(url)
+        .header("Content-Type", "application/json")
+        .body(body)
+    {
+        Ok(req) => req,
+        Err(err) => {
+            alert(&format!("{:?}", err));
+            return;
+        }
+    };
+
+    if let Err(err) = request.send().await {
+        alert(&format!("{:?}", err));
+    }
 }
 pub fn alert(message: &str) {
     let Some(window) = web_sys::window() else {
@@ -101,7 +134,7 @@ pub fn map_schraenke_raeume(schraenke: Vec<Schrank>, raeume: Vec<Raum>) -> FullV
 pub fn pretty_stockwerk_number(stockwerk: i32) -> String {
     match stockwerk {
         0 => String::from("EG"),
-        s @ ..=-1 => format!("{} UG", s.abs()),
-        s @ 1.. => format!("{} OG", s),
+        s @ ..=-1 => format!("{}UG", s.abs()),
+        s @ 1.. => format!("{}OG", s),
     }
 }
