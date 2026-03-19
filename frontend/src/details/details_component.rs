@@ -24,11 +24,15 @@ pub fn DetailsComponent(
     let (title, content) = match **sidebar_selection {
         SidebarSelection::Schrank(ref schrank) => (
             format!("{} - {}", schrank.sc_nummer, schrank.sc_ge_name),
-            html! {<SchrankDetailsComponent schrank={schrank.clone()} modal_state={modal_state.clone()}/>},
+            html! {
+                <SchrankDetailsComponent schrank={schrank.clone()} modal_state={modal_state.clone()} />
+            },
         ),
         SidebarSelection::Raum(ref raum) => (
             format!("{} - {}", raum.ra_nummer, raum.ra_ge_name),
-            html! {<RaumDetailsComponent raum={raum.clone()} />},
+            html! {
+                <RaumDetailsComponent raum={raum.clone()} modal_state={modal_state} />
+            },
         ),
         SidebarSelection::Nothing => (String::from("Details"), html! {}),
     };

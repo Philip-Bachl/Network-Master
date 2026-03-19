@@ -45,18 +45,11 @@ pub fn AddSwitchComponent(
         .await
         .unwrap_or_default()
     })?;
-    let selected_schrank_id = use_state_eq(|| start_schrank.sc_id.to_string());
 
     //let selected_gebaeude_name_clone = selected_gebaeude_name.clone();
     let on_select_gebaeude = Callback::from(move |event: Event| {
         let select: HtmlSelectElement = event.target_unchecked_into();
         selected_gebaeude_name.set(select.value());
-    });
-
-    //let selected_schrank_id_clone = selected_schrank_id.clone();
-    let on_select_schrank = Callback::from(move |event: Event| {
-        let select: HtmlSelectElement = event.target_unchecked_into();
-        selected_schrank_id.set(select.value());
     });
 
     let modal_state_clone = modal_state.clone();
@@ -99,7 +92,7 @@ pub fn AddSwitchComponent(
                     <option selected={ start_schrank.sc_ge_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
                 }
             </select>
-            <select id="schrankSelect" ref={form_data.switch_schrank_select_ref} onchange={on_select_schrank}>
+            <select id="schrankSelect" ref={form_data.switch_schrank_select_ref}>
                 for schrank in schrank_list.iter().cloned() {
                     <option selected={ start_schrank.sc_id == schrank.sc_id }  value={schrank.sc_id.to_string()}>{schrank.sc_nummer}</option>
                 }
@@ -137,8 +130,8 @@ pub fn AddSwitchComponent(
                 type="text"
             />
             <div id="buttons">
-                <input type="button" id="switchCreateButton" onclick={on_create_button_click} value="Erstellen"/>
-                <input type="button" id="switchCancelButton" onclick={on_cancel_button_click} value="Abbrechen"/>
+                <input type="button" id="createButton" onclick={on_create_button_click} value="Erstellen"/>
+                <input type="button" id="cancelButton" onclick={on_cancel_button_click} value="Abbrechen"/>
             </div>
         </div>
     })

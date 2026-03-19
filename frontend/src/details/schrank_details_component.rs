@@ -25,7 +25,7 @@ pub fn SchrankDetailsComponent(
 ) -> HtmlResult {
     let sc_id = schrank.sc_id;
     let switches_deps = use_state(|| false);
-    let switches = use_future_with((sc_id, switches_deps.clone()), |deps| async move {
+    let switches = use_future_with((sc_id, *switches_deps), |deps| async move {
         let sc_id = deps.0;
         util::fetch_get::<Vec<Switch>>(&format!(
             "/api/switch/schrank/{}",
@@ -52,7 +52,7 @@ pub fn SchrankDetailsComponent(
             for switch in switches.iter().cloned() {
                 <SwitchComponent switch={switch} switches_deps={switches_deps.clone()}/>
             }
-            <img src="assets/svg/plus.svg" id="addSwitchButton" onclick={on_add_switch_button_click} />
+            <img src="assets/svg/plus.svg" id="addButton" onclick={on_add_switch_button_click} />
         </div>
     })
 }

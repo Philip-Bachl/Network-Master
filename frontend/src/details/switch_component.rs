@@ -66,7 +66,7 @@ pub fn SwitchComponent(
                     {render_switchport(switchport_detail)}
                 }
             </div>
-            <img class="delete-switch-button" src="assets/svg/plus.svg" onclick={on_delete_switch_button_click} />
+            <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_switch_button_click} />
         </div>
     })
 }

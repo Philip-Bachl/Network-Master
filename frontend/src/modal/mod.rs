@@ -1,2 +1,3 @@
+pub mod add_dose_component;
 pub mod add_switch_component;
 pub mod modal_component;

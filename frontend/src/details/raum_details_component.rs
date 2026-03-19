@@ -1,7 +1,10 @@
-use serde::Deserialize;
-use yew::{Html, HtmlResult, Properties, component, html, suspense::use_future_with};
+use serde::{Deserialize, Serialize};
+use yew::{
+    Callback, Html, HtmlResult, Properties, UseStateHandle, component, html,
+    suspense::use_future_with, use_state,
+};
 
-use crate::{model::Raum, util};
+use crate::{ModalState, model::Raum, util};
 
 #[derive(Deserialize)]
 pub struct DoseDetail {
@@ -18,13 +21,16 @@ pub struct DoseDetail {
 #[derive(PartialEq, Properties)]
 pub struct RaumDetailsComponentProps {
     pub raum: Raum,
+    pub modal_state: UseStateHandle<ModalState>,
 }
 
 #[component]
 pub fn RaumDetailsComponent(
-    RaumDetailsComponentProps { raum }: &RaumDetailsComponentProps,
+    RaumDetailsComponentProps { raum, modal_state }: &RaumDetailsComponentProps,
 ) -> HtmlResult {
-    let dose_details = use_future_with(raum.ra_id, |ra_id| async move {
+    let dosen_deps = use_state(|| false);
+    let dose_details = use_future_with((raum.ra_id, *dosen_deps), |deps| async move {
+        let ra_id = deps.0;
         util::fetch_get::<Vec<DoseDetail>>(&format!(
             "/api/details/raum/{}",
             urlencoding::encode(&ra_id.to_string())
@@ -33,17 +39,32 @@ pub fn RaumDetailsComponent(
         .unwrap_or_default()
     })?;
 
+    let modal_state_clone = modal_state.clone();
+    let raum_clone = raum.clone();
+    let dosen_deps_clone = dosen_deps.clone();
+    let on_add_dose_button_click = Callback::from(move |_| {
+        modal_state_clone.set(ModalState::AddDose(
+            raum_clone.clone(),
+            dosen_deps_clone.clone(),
+        ));
+    });
+
     //TODO: fix dose ordering
     Ok(html! {
         <div id="dosen">
             for dose_detail in dose_details.iter() {
-                {render_dose_detail(dose_detail)}
+                {render_dose_detail(dose_detail, dosen_deps.clone())}
             }
+            <img src="assets/svg/plus.svg" id="addButton" onclick={on_add_dose_button_click} />
         </div>
     })
 }
 
-fn render_dose_detail(dose_detail: &DoseDetail) -> Html {
+#[derive(Serialize)]
+pub struct DeleteDose {
+    do_id: i32,
+}
+fn render_dose_detail(dose_detail: &DoseDetail, dosen_deps: UseStateHandle<bool>) -> Html {
     let img_src = match dose_detail.dk_name {
         Some(ref dk_name) => format!("assets/svg/{}.svg", dk_name),
         None => String::from("assets/svg/plus.svg"), //TODO: make clickable to add device
@@ -59,6 +80,20 @@ fn render_dose_detail(dose_detail: &DoseDetail) -> Html {
     } else {
         ""
     };
+
+    let do_id = dose_detail.do_id;
+    let dosen_deps_clone = dosen_deps.clone();
+    let on_delete_dose_button_click = Callback::from(move |_| {
+        let Ok(serialized_delete_dose) = serde_json::to_string(&DeleteDose { do_id }) else {
+            //TODO: error handling
+            return;
+        };
+        let switches_deps_clone_clone = dosen_deps_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            util::fetch_delete_with_body("/api/dose", serialized_delete_dose).await;
+            switches_deps_clone_clone.set(!*switches_deps_clone_clone);
+        }); // add error handling to fetch_delete_with_body and then here to notify the user if theres a foreign key falure (ports connected)
+    });
 
     html! {
         <div class="dose">
@@ -84,6 +119,7 @@ fn render_dose_detail(dose_detail: &DoseDetail) -> Html {
                     {sw_ip}
                 </div>
             </div>
+            <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_dose_button_click} />
         </div>
     }
 }

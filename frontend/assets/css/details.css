@@ -29,6 +29,30 @@
     overflow-y: auto;
 }
 
+.delete-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    width: var(--font-size);
+
+    transform: rotate(45deg)
+}
+
+#addButton {
+    flex: none;
+    place-self: center;
+
+    width: calc(var(--font-size) * 1.5);
+    aspect-ratio: 1;
+
+    padding: 20px;
+
+    background-color: var(--level-2);
+    border: 2px solid var(--color);
+    border-radius: 20px;
+}
+
 /*switch details*/
 
 #switches {
@@ -98,24 +122,6 @@
     border-radius: 10px;
 }
 
-.delete-switch-button {
-    position: absolute;
-    right: 0;
-    top: 0;
-
-    transform: rotate(45deg)
-}
-
-#addSwitchButton {
-    aspect-ratio: 1;
-
-    padding: 20px;
-
-    background-color: var(--level-2);
-    border: 2px solid var(--color);
-    border-radius: 20px;
-}
-
 .faded {
     opacity: 0.5;
 }
@@ -136,11 +142,17 @@
     text-wrap: nowrap;
 }
 
+#dosen>#addButton {
+    grid-column: span 3;
+}
+
 .dose {
     display: grid;
     grid-template-columns: subgrid;
     grid-auto-flow: column;
     grid-column: span 3;
+
+    position: relative;
 
     align-items: center;
     gap: 20px;

@@ -3,7 +3,7 @@ use yew::{Html, Suspense, UseStateHandle, component, html, use_state, use_state_
 use crate::{
     details::details_component::DetailsComponent,
     modal::modal_component::ModalComponent,
-    model::{Raum, Schrank},
+    model::{Dose, Raum, Schrank},
     sidebar::sidebar_component::SidebarComponent,
 };
 
@@ -23,6 +23,7 @@ pub enum SidebarSelection {
 #[derive(PartialEq)]
 pub enum ModalState {
     AddSwitch(Schrank, UseStateHandle<bool>),
+    AddDose(Raum, UseStateHandle<bool>),
     Nothing,
 }
 

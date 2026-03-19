@@ -16,6 +16,11 @@
     color: black;
 }
 
+#createButton,
+#cancelButton {
+    background-color: var(--level-1) !important;
+}
+
 #addSwitch {
     display: flex;
     flex-direction: column;
@@ -46,7 +51,35 @@
     justify-content: space-between;
 }
 
-#switchCreateButton,
-#switchCancelButton {
-    background-color: var(--level-1) !important;
+
+/*TODO: refactor this VVV ^^^ */
+
+#addDose {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 10px;
+
+    background-color: var(--level-1);
+    border: 2px solid var(--color);
+    border-radius: 10px;
+}
+
+#addDose input,
+#addDose select {
+    padding: 10px;
+
+    font-size: inherit;
+    color: inherit;
+
+    background-color: var(--level-2);
+    border: 2px solid var(--color);
+    border-radius: 10px;
+}
+
+#addDose #buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
