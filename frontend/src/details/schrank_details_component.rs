@@ -16,6 +16,8 @@ pub struct SchrankDetailsComponentProps {
     pub modal_state: UseStateHandle<ModalState>,
 }
 
+//TODO: refactor to only use a single request
+
 #[component]
 pub fn SchrankDetailsComponent(
     SchrankDetailsComponentProps {

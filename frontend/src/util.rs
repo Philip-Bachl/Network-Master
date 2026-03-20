@@ -1,9 +1,9 @@
-use std::{collections::HashMap, vec};
+use std::{collections::HashMap, hash::Hash, vec};
 
 use web_sys::wasm_bindgen::JsValue;
 use yew::AttrValue;
 
-use crate::model::{Raum, Schrank};
+use crate::model::{Gebaeude, Raum, Schrank};
 
 pub async fn fetch_get<T: serde::de::DeserializeOwned>(url: &str) -> Option<T> {
     let response = match gloo_net::http::Request::get(url).send().await {
@@ -82,8 +82,15 @@ pub fn alert(message: &str) {
 type FullMap = HashMap<String, HashMap<i32, (Vec<Schrank>, Vec<Raum>)>>;
 type FullVec = Vec<(AttrValue, Vec<(i32, Vec<Schrank>, Vec<Raum>)>)>;
 
-pub fn map_schraenke_raeume(schraenke: Vec<Schrank>, raeume: Vec<Raum>) -> FullVec {
-    let mut gebaeude_map: FullMap = HashMap::new();
+pub fn map_schraenke_raeume(
+    gebaeude: Vec<Gebaeude>,
+    schraenke: Vec<Schrank>,
+    raeume: Vec<Raum>,
+) -> FullVec {
+    let mut gebaeude_map: FullMap = gebaeude
+        .into_iter()
+        .map(|g| (g.ge_name, HashMap::new()))
+        .collect();
 
     for schrank in schraenke.into_iter() {
         let stockwerk_map = match gebaeude_map.get_mut(&schrank.sc_ge_name) {

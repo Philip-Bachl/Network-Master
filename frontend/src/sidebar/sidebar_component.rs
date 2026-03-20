@@ -1,11 +1,13 @@
 use crate::{
     SidebarSelection,
+    model::Gebaeude,
     sidebar::tab_component::TabComponent,
     util::{self, pretty_stockwerk_number},
 };
 use yew::{
     AttrValue, Callback, Html, HtmlResult, Properties, UseStateHandle, component, html,
-    suspense::use_future,
+    suspense::{use_future, use_future_with},
+    use_state,
 };
 
 use crate::model::{Raum, Schrank};
@@ -19,18 +21,31 @@ pub struct SidebarComponentProps {
 pub fn SidebarComponent(
     SidebarComponentProps { sidebar_selection }: &SidebarComponentProps,
 ) -> HtmlResult {
+    let gebaeude_deps = use_state(|| false);
+    let gebaeude_list = use_future_with(*gebaeude_deps, |_| async {
+        util::fetch_get::<Vec<Gebaeude>>("/api/gebaeude")
+            .await
+            .unwrap_or_default()
+    })?;
+
+    //TODO
     let schrank_list = use_future(|| async {
         util::fetch_get::<Vec<Schrank>>("/api/schrank")
             .await
             .unwrap_or_default()
     })?;
+    //TODO
     let raum_list = use_future(|| async {
         util::fetch_get::<Vec<Raum>>("/api/raum")
             .await
             .unwrap_or_default()
     })?;
 
-    let full_vec = util::map_schraenke_raeume(schrank_list.to_vec(), raum_list.to_vec());
+    let full_vec = util::map_schraenke_raeume(
+        gebaeude_list.to_vec(),
+        schrank_list.to_vec(),
+        raum_list.to_vec(),
+    );
 
     Ok(html! {
         <div id="sidebar">

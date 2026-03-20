@@ -10,6 +10,8 @@ pub struct ModalComponentProps {
     pub modal_state: UseStateHandle<ModalState>,
 }
 
+//TODO: Refactor to use a more central approach for modals
+
 #[component]
 pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps) -> Html {
     let content = match **modal_state {
