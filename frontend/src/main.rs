@@ -3,7 +3,7 @@ use yew::{Html, Suspense, UseStateHandle, component, html, use_state, use_state_
 use crate::{
     details::details_component::DetailsComponent,
     modal::modal_component::ModalComponent,
-    model::{Dose, Raum, Schrank},
+    model::{Raum, Schrank},
     sidebar::sidebar_component::SidebarComponent,
 };
 

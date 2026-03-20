@@ -211,7 +211,6 @@ async fn handle_create_button_click(
         return;
     };
 
-    //TODO: decide if to use if let or a second if like with switch_ip
     let Some(switchports_count) = form_data
         .switchports_count_ref
         .cast::<HtmlInputElement>()

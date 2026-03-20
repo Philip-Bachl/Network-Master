@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash, vec};
+use std::{collections::HashMap, vec};
 
 use web_sys::wasm_bindgen::JsValue;
 use yew::AttrValue;

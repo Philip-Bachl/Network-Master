@@ -84,6 +84,7 @@ fn render_dose_detail(dose_detail: &DoseDetail, dosen_deps: UseStateHandle<bool>
     let do_id = dose_detail.do_id;
     let dosen_deps_clone = dosen_deps.clone();
     let on_delete_dose_button_click = Callback::from(move |_| {
+        // TODO: maybe add check to only delete a dose when nothing's connected to it
         let Ok(serialized_delete_dose) = serde_json::to_string(&DeleteDose { do_id }) else {
             //TODO: error handling
             return;
