@@ -4,10 +4,24 @@ use sqlx::prelude::FromRow;
 
 use crate::masterbase::Masterbase;
 
-#[derive(Serialize, FromRow)]
+/*#[derive(Serialize, FromRow)]
 pub struct SwitchportDetail {
     sp_port: String,
     sp_dot1x: bool,
+    do_id: Option<i32>,
+    do_nummer: Option<String>,
+    dk_name: Option<String>,
+}*/
+
+#[derive(Serialize, FromRow)]
+pub struct SwitchportDetail {
+    sp_id: i32,
+    sp_sw_name: String,
+    sp_port: String,
+    sp_vlan: i32,
+    sp_dot1x: bool,
+    sp_kommentar: Option<String>,
+
     do_id: Option<i32>,
     do_nummer: Option<String>,
     dk_name: Option<String>,
@@ -20,7 +34,7 @@ pub async fn read_switch_details(
 ) -> Result<Json<Vec<SwitchportDetail>>, String> {
     sqlx::query_as(
         "
-            SELECT sp.sp_port, sp.sp_dot1x, do.do_id, do.do_nummer, dk.dk_name
+            SELECT sp.*, do.do_id, do.do_nummer, dk.dk_name
             FROM sp_switchport as sp
             LEFT JOIN do_dose as do ON do.do_sp_id = sp.sp_id
             LEFT JOIN dk_device_kind as dk ON do.do_dk_id = dk.dk_id

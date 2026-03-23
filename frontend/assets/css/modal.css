@@ -16,12 +16,31 @@
     color: black;
 }
 
-#createButton,
-#cancelButton {
+#modal input,
+#modal select {
+    padding: 10px;
+
+    font-size: inherit;
+    color: inherit;
+
+    background-color: var(--level-2);
+    border: 2px solid var(--color);
+    border-radius: 10px;
+}
+
+#buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#buttons>* {
     background-color: var(--level-1) !important;
 }
 
-#addSwitch {
+#addSwitch,
+#addDose,
+#editSwitchport {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -33,53 +52,13 @@
     border-radius: 10px;
 }
 
-#addSwitch input,
-#addSwitch select {
-    padding: 10px;
-
-    font-size: inherit;
-    color: inherit;
-
-    background-color: var(--level-2);
-    border: 2px solid var(--color);
-    border-radius: 10px;
-}
-
-#addSwitch #buttons {
+#dot1x {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    gap: 20px;
 }
 
-
-/*TODO: refactor this VVV ^^^ */
-
-#addDose {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    padding: 10px;
-
-    background-color: var(--level-1);
-    border: 2px solid var(--color);
-    border-radius: 10px;
-}
-
-#addDose input,
-#addDose select {
-    padding: 10px;
-
-    font-size: inherit;
-    color: inherit;
-
-    background-color: var(--level-2);
-    border: 2px solid var(--color);
-    border-radius: 10px;
-}
-
-#addDose #buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+#dot1x input {
+    width: var(--font-size);
 }

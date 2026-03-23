@@ -52,7 +52,7 @@ pub fn SchrankDetailsComponent(
     Ok(html! {
         <div id="switches" ref={switches_ref.clone()}>
             for switch in switches.iter().cloned() {
-                <SwitchComponent switch={switch} switches_deps={switches_deps.clone()}/>
+                <SwitchComponent switch={switch} switches_deps={switches_deps.clone()} modal_state={modal_state.clone()} />
             }
             <img src="assets/svg/plus.svg" id="addButton" onclick={on_add_switch_button_click} />
         </div>

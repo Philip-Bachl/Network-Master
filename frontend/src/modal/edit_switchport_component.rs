@@ -93,21 +93,26 @@ pub fn EditSwitchportComponent(
                 pattern="[0-9]+"
                 value={switchport.sp_vlan.to_string()}
             />
-            <input
-                ref={form_data.dot1x_ref}
-                placeholder="Dot1x"
-                id="switchportsPrefixInput"
-                type="checkbox"
-                checked={switchport.sp_dot1x}
-            />
+            <div id="dot1x">
+                <label for="dot1x">{ "dot1x:" }</label>
+                <input
+                    ref={form_data.dot1x_ref}
+                    placeholder="Dot1x"
+                    id="switchportDot1xInput"
+                    type="checkbox"
+                    checked={switchport.sp_dot1x}
+                    name="dot1x"
+                />
+            </div>
             <input
                 ref={form_data.kommentar_ref}
                 placeholder="Optional: Kommentar"
                 id="switchportKommentarInput"
                 type="text"
+                value={ switchport.sp_kommentar.clone() }
             />
             <div id="buttons">
-                <input type="button" id="createButton" onclick={on_create_button_click} value="Erstellen"/>
+                <input type="button" id="acceptButton" onclick={on_create_button_click} value="Speichern"/>
                 <input type="button" id="cancelButton" onclick={on_cancel_button_click} value="Abbrechen"/>
             </div>
         </div>
@@ -142,18 +147,20 @@ async fn handle_create_button_click(
         .port_ref
         .cast::<HtmlInputElement>()
         .map(|i| i.value())
+        .filter(|v| !v.is_empty())
     else {
-        //TODO: error handling
+        util::alert("Port Feld ist leer");
         return;
     };
 
     let Some(vlan) = form_data
         .vlan_ref
         .cast::<HtmlInputElement>()
+        .filter(|i| i.check_validity())
         .map(|i| i.value())
         .and_then(|v| v.parse::<i32>().ok())
     else {
-        //TODO: error handling
+        util::alert("Vlan Feld ist nicht in der Form: <Zahl>");
         return;
     };
 

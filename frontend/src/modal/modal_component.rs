@@ -2,7 +2,10 @@ use yew::{Html, Properties, UseStateHandle, component, html};
 
 use crate::{
     ModalState,
-    modal::{add_dose_component::AddDoseComponent, add_switch_component::AddSwitchComponent},
+    modal::{
+        add_dose_component::AddDoseComponent, add_switch_component::AddSwitchComponent,
+        edit_switchport_component::EditSwitchportComponent,
+    },
 };
 
 #[derive(PartialEq, Properties)]
@@ -22,6 +25,13 @@ pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps)
         }
         ModalState::AddDose(ref raum, ref dosen_deps) => html! {
             <AddDoseComponent modal_state={modal_state} start_raum={raum.clone()} dosen_deps={dosen_deps.clone()}/>
+        },
+        ModalState::EditSwitchport(
+            ref start_switch,
+            ref switchport,
+            ref switchport_details_deps,
+        ) => html! {
+            <EditSwitchportComponent modal_state={modal_state} start_switch={start_switch.clone()} switchport={switchport.clone()} switchport_details_deps={switchport_details_deps.clone()} />
         },
         ModalState::Nothing => {
             return html! {};

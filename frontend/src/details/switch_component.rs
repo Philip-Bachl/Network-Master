@@ -1,18 +1,40 @@
 use serde::{Deserialize, Serialize};
 use yew::{
     Callback, Html, HtmlResult, Properties, UseStateHandle, component, html,
-    suspense::use_future_with,
+    suspense::use_future_with, use_state,
 };
 
-use crate::{model::Switch, util};
+use crate::{
+    ModalState,
+    model::{Switch, Switchport},
+    util,
+};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 struct SwitchportDetail {
+    sp_id: i32,
+    sp_sw_name: String,
     sp_port: String,
+    sp_vlan: i32,
     sp_dot1x: bool,
+    sp_kommentar: Option<String>,
+
     do_id: Option<i32>,
     do_nummer: Option<String>,
     dk_name: Option<String>,
+}
+
+impl From<SwitchportDetail> for Switchport {
+    fn from(value: SwitchportDetail) -> Self {
+        Switchport {
+            sp_id: value.sp_id,
+            sp_sw_name: value.sp_sw_name,
+            sp_port: value.sp_port,
+            sp_vlan: value.sp_vlan,
+            sp_dot1x: value.sp_dot1x,
+            sp_kommentar: value.sp_kommentar,
+        }
+    }
 }
 
 #[derive(Serialize)]
@@ -24,6 +46,7 @@ pub struct DeleteSwitch {
 pub struct SwitchComponentProps {
     pub switch: Switch,
     pub switches_deps: UseStateHandle<bool>,
+    pub modal_state: UseStateHandle<ModalState>,
 }
 
 #[component]
@@ -31,16 +54,22 @@ pub fn SwitchComponent(
     SwitchComponentProps {
         switch,
         switches_deps,
+        modal_state,
     }: &SwitchComponentProps,
 ) -> HtmlResult {
-    let switchport_details = use_future_with(switch.sw_name.clone(), |sw_name| async move {
-        util::fetch_get::<Vec<SwitchportDetail>>(&format!(
-            "/api/details/switch/{}",
-            urlencoding::encode(&sw_name)
-        ))
-        .await
-        .unwrap_or_default()
-    })?;
+    let switchport_details_deps = use_state(|| false);
+    let switchport_details = use_future_with(
+        (switch.sw_name.clone(), *switchport_details_deps),
+        |deps| async move {
+            let sw_name = deps.0.clone();
+            util::fetch_get::<Vec<SwitchportDetail>>(&format!(
+                "/api/details/switch/{}",
+                urlencoding::encode(&sw_name)
+            ))
+            .await
+            .unwrap_or_default()
+        },
+    )?;
 
     let switch_name_clone = switch.sw_name.clone();
     let switches_deps_clone = switches_deps.clone();
@@ -63,7 +92,7 @@ pub fn SwitchComponent(
             <div class="switch-title">{format!("{} - {}", &switch.sw_name, &switch.sw_ip)}</div>
             <div class="switch-content">
                 for switchport_detail in switchport_details.iter() {
-                    {render_switchport(switchport_detail)}
+                    {render_switchport(switchport_detail, modal_state.clone(), switch.clone(), switchport_details_deps.clone())}
                 }
             </div>
             <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_switch_button_click} />
@@ -71,7 +100,12 @@ pub fn SwitchComponent(
     })
 }
 
-fn render_switchport(switchport_detail: &SwitchportDetail) -> Html {
+fn render_switchport(
+    switchport_detail: &SwitchportDetail,
+    modal_state: UseStateHandle<ModalState>,
+    switch: Switch,
+    switchport_details_deps: UseStateHandle<bool>,
+) -> Html {
     let img_src = match switchport_detail.dk_name {
         Some(ref dk_name) => format!("assets/svg/{}.svg", dk_name),
         None => String::from("assets/svg/switchport.svg"),
@@ -88,8 +122,17 @@ fn render_switchport(switchport_detail: &SwitchportDetail) -> Html {
         ""
     };
 
+    let switchport: Switchport = switchport_detail.clone().into();
+    let onclick = Callback::from(move |_| {
+        modal_state.set(ModalState::EditSwitchport(
+            switch.clone(),
+            switchport.clone(),
+            switchport_details_deps.clone(),
+        ));
+    });
+
     html! {
-        <div class={format!("switchport{}{}", border, dot1x)}>
+        <div class={format!("switchport{}{}", border, dot1x)} {onclick}>
             <img  class={ if switchport_detail.sp_dot1x { "dot1x" } else { "" } } src={img_src} />
             <div>{&switchport_detail.sp_port}</div>
             <div>{switchport_detail.do_nummer.as_deref().unwrap_or_default()}</div>
