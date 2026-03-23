@@ -62,7 +62,7 @@ pub struct Switch {
     pub sw_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(PartialEq, Serialize, Deserialize, Debug)]
 pub struct Switchport {
     pub sp_id: i32,
     pub sp_sw_name: String,

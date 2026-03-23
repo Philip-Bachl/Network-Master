@@ -40,6 +40,22 @@ pub async fn fetch_post_with_body(url: &str, body: impl Into<JsValue>) {
         alert(&format!("{:?}", err));
     }
 }
+pub async fn fetch_put_with_body(url: &str, body: impl Into<JsValue>) {
+    let request = match gloo_net::http::Request::put(url)
+        .header("Content-Type", "application/json")
+        .body(body)
+    {
+        Ok(req) => req,
+        Err(err) => {
+            alert(&format!("{:?}", err));
+            return;
+        }
+    };
+
+    if let Err(err) = request.send().await {
+        alert(&format!("{:?}", err));
+    }
+}
 pub async fn fetch_delete_with_body(url: &str, body: impl Into<JsValue>) {
     let request = match gloo_net::http::Request::delete(url)
         .header("Content-Type", "application/json")

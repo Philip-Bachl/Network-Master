@@ -126,7 +126,7 @@ pub fn AddSwitchComponent(
             <input
                 ref={form_data.switch_kommentar_ref}
                 placeholder="Optional: Kommentar"
-                id="switchIpInput"
+                id="switchKommentarInput"
                 type="text"
             />
             <div id="buttons">
