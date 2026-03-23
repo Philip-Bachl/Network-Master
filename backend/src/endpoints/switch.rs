@@ -20,7 +20,6 @@ pub async fn read_switch_of_schrank(
     masterbase: &State<Masterbase>,
     sc_id: &str,
 ) -> Result<Json<Vec<Switch>>, String> {
-    println!("{}", sc_id);
     sqlx::query_as(
         "
             SELECT *
@@ -29,6 +28,25 @@ pub async fn read_switch_of_schrank(
         ",
     )
     .bind(sc_id)
+    .fetch_all(&masterbase.connection_pool)
+    .await
+    .map(Json)
+    .map_err(|err| err.to_string())
+}
+#[get("/switch/gebaeude/<ge_name>")]
+pub async fn read_switch_of_gebaeude(
+    masterbase: &State<Masterbase>,
+    ge_name: &str,
+) -> Result<Json<Vec<Switch>>, String> {
+    sqlx::query_as(
+        "
+            SELECT *
+            FROM sw_switch as sw
+            INNER JOIN sc_schrank as sc ON sw.sw_sc_id = sc.sc_id
+            WHERE sc.sc_ge_name = $1
+        ",
+    )
+    .bind(ge_name)
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)

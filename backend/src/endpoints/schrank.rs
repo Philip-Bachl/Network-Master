@@ -18,7 +18,7 @@ pub async fn read_schrank_all(
     .map_err(|err| err.to_string())
 }
 #[get("/schrank/gebaeude/<ge_name>")]
-pub async fn read_schrank_per_gebaeude(
+pub async fn read_schrank_of_gebaeude(
     masterbase: &State<Masterbase>,
     ge_name: &str,
 ) -> Result<Json<Vec<Schrank>>, String> {

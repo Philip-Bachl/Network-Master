@@ -17,6 +17,24 @@ pub async fn read_switchport_all(
     .map(Json)
     .map_err(|err| err.to_string())
 }
+#[get("/switchport/switch/<sw_name>")]
+pub async fn read_switchport_of_switch(
+    masterbase: &State<Masterbase>,
+    sw_name: &str,
+) -> Result<Json<Vec<Switchport>>, String> {
+    sqlx::query_as(
+        "
+            SELECT *
+            FROM sp_switchport
+            WHERE sp_sw_name = $1
+        ",
+    )
+    .bind(sw_name)
+    .fetch_all(&masterbase.connection_pool)
+    .await
+    .map(Json)
+    .map_err(|err| err.to_string())
+}
 
 #[post("/switchport", data = "<switchport>")]
 pub async fn create_switchport(

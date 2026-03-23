@@ -65,12 +65,13 @@ async fn rocket() -> _ {
                 //
                 endpoints::raum::create_raum,
                 endpoints::raum::read_raum_all,
+                endpoints::raum::read_raum_of_gebaeude,
                 endpoints::raum::update_raum,
                 endpoints::raum::delete_raum,
                 //
                 endpoints::schrank::create_schrank,
                 endpoints::schrank::read_schrank_all,
-                endpoints::schrank::read_schrank_per_gebaeude,
+                endpoints::schrank::read_schrank_of_gebaeude,
                 endpoints::schrank::update_schrank,
                 endpoints::schrank::delete_schrank,
                 //
@@ -83,11 +84,13 @@ async fn rocket() -> _ {
                 endpoints::switch::create_switch_with_ports,
                 endpoints::switch::read_switch_all,
                 endpoints::switch::read_switch_of_schrank,
+                endpoints::switch::read_switch_of_gebaeude,
                 endpoints::switch::update_switch,
                 endpoints::switch::delete_switch,
                 //
                 endpoints::switchport::create_switchport,
                 endpoints::switchport::read_switchport_all,
+                endpoints::switchport::read_switchport_of_switch,
                 endpoints::switchport::update_switchport,
                 endpoints::switchport::delete_switchport,
                 //

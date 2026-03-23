@@ -38,9 +38,7 @@
     background-color: var(--level-1) !important;
 }
 
-#addSwitch,
-#addDose,
-#editSwitchport {
+#modal>* {
     display: flex;
     flex-direction: column;
     gap: 10px;

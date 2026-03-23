@@ -50,13 +50,23 @@ pub async fn read_switch_details(
 }
 
 #[derive(Serialize, FromRow)]
-pub struct DoseDetails {
+pub struct DoseDetail {
     do_id: i32,
+    do_ra_id: i32,
     do_nummer: String,
+    do_sp_id: Option<i32>,
+    do_dk_id: Option<i32>,
+    do_kommentar: Option<String>,
+
     dk_name: Option<String>,
+
+    sp_id: Option<i32>,
+    sp_sw_name: Option<String>,
     sp_port: Option<String>,
-    sp_dot1x: Option<bool>,
     sp_vlan: Option<i32>,
+    sp_dot1x: Option<bool>,
+    sp_kommentar: Option<String>,
+
     sw_name: Option<String>,
     sw_ip: Option<String>,
 }
@@ -65,10 +75,10 @@ pub struct DoseDetails {
 pub async fn read_raum_details(
     masterbase: &State<Masterbase>,
     ra_id: i32,
-) -> Result<Json<Vec<DoseDetails>>, String> {
+) -> Result<Json<Vec<DoseDetail>>, String> {
     sqlx::query_as(
         "
-            SELECT do.do_id, do.do_nummer, dk.dk_name, sp.sp_port, sp.sp_dot1x, sp.sp_vlan, sw.sw_name, sw.sw_ip 
+            SELECT do.*, dk.dk_name, sp.*, sp.sp_vlan, sw.sw_name, sw.sw_ip 
             FROM ra_raum as ra
             INNER JOIN do_dose as do ON do.do_ra_id = ra.ra_id
             LEFT JOIN dk_device_kind as dk ON do.do_dk_id = dk.dk_id

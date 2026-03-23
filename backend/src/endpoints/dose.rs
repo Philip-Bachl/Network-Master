@@ -42,12 +42,13 @@ pub async fn update_dose(
     masterbase: &State<Masterbase>,
     dose: Json<Dose>,
 ) -> Result<Status, String> {
+    println!("{:?}", dose);
     sqlx::query(
         "
             UPDATE do_dose
             SET
             do_ra_id = $1, do_nummer = $2, do_sp_id = $3, do_dk_id = $4, do_kommentar = $5
-            WHERE do_id = $5
+            WHERE do_id = $6
         ",
     )
     .bind(dose.do_ra_id)

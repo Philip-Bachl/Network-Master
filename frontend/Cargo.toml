@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 gloo-net = "0.6.0"
-implicit-clone = "0.6.0"
 serde = "1.0.228"
 serde_json = "1.0.149"
 tokio = { version = "1.49.0", default-features = false, features = ["macros"] }

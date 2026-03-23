@@ -3,7 +3,7 @@ use yew::{Html, Suspense, UseStateHandle, component, html, use_state, use_state_
 use crate::{
     details::details_component::DetailsComponent,
     modal::modal_component::ModalComponent,
-    model::{Raum, Schrank, Switch, Switchport},
+    model::{Dose, Raum, Schrank, Switch, Switchport},
     sidebar::sidebar_component::SidebarComponent,
 };
 
@@ -24,7 +24,8 @@ pub enum SidebarSelection {
 pub enum ModalState {
     AddSwitch(Schrank, UseStateHandle<bool>),
     AddDose(Raum, UseStateHandle<bool>),
-    EditSwitchport(Switch, Switchport, UseStateHandle<bool>),
+    EditSwitchport(Switch, Switchport, UseStateHandle<bool>), //TODO: <-- change to be consistant: either switchport/dose as first or second elements VVV
+    EditDose(Dose, Raum, Option<Switchport>, UseStateHandle<bool>),
     Nothing,
 }
 

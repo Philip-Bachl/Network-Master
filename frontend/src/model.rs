@@ -37,14 +37,14 @@ pub struct Schrank {
     pub sc_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeviceKind {
     pub dk_id: i32,
     pub dk_name: String,
     pub dk_kommentar: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Dose {
     pub do_id: i32,
     pub do_ra_id: i32,

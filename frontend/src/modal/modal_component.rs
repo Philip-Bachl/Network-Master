@@ -4,7 +4,7 @@ use crate::{
     ModalState,
     modal::{
         add_dose_component::AddDoseComponent, add_switch_component::AddSwitchComponent,
-        edit_switchport_component::EditSwitchportComponent,
+        edit_dose_component::EditDoseComponent, edit_switchport_component::EditSwitchportComponent,
     },
 };
 
@@ -32,6 +32,9 @@ pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps)
             ref switchport_details_deps,
         ) => html! {
             <EditSwitchportComponent modal_state={modal_state} start_switch={start_switch.clone()} switchport={switchport.clone()} switchport_details_deps={switchport_details_deps.clone()} />
+        },
+        ModalState::EditDose(ref dose, ref raum, ref switchport, ref dosen_details_ref) => html! {
+            <EditDoseComponent dose={dose.clone()} start_raum={raum.clone()} start_switchport={switchport.clone()} dosen_details_deps={dosen_details_ref.clone()} modal_state={modal_state.clone()} />
         },
         ModalState::Nothing => {
             return html! {};

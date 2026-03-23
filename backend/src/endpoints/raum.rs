@@ -15,6 +15,24 @@ pub async fn read_raum_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Ra
     .map(Json)
     .map_err(|err| err.to_string())
 }
+#[get("/raum/gebaeude/<ge_name>")]
+pub async fn read_raum_of_gebaeude(
+    masterbase: &State<Masterbase>,
+    ge_name: &str,
+) -> Result<Json<Vec<Raum>>, String> {
+    sqlx::query_as(
+        "
+            SELECT *
+            FROM ra_raum
+            WHERE ra_ge_name = $1
+        ",
+    )
+    .bind(ge_name)
+    .fetch_all(&masterbase.connection_pool)
+    .await
+    .map(Json)
+    .map_err(|err| err.to_string())
+}
 
 #[post("/raum", data = "<raum>")]
 pub async fn create_raum(

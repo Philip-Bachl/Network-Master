@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[derive(Deserialize, Clone)]
-struct SwitchportDetail {
+pub struct SwitchportDetail {
     sp_id: i32,
     sp_sw_name: String,
     sp_port: String,

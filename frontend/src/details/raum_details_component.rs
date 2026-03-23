@@ -4,18 +4,72 @@ use yew::{
     suspense::use_future_with, use_state,
 };
 
-use crate::{ModalState, model::Raum, util};
+use crate::{
+    ModalState,
+    model::{Dose, Raum, Switchport},
+    util,
+};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct DoseDetail {
     do_id: i32,
+    do_ra_id: i32,
     do_nummer: String,
+    do_sp_id: Option<i32>,
+    do_dk_id: Option<i32>,
+    do_kommentar: Option<String>,
+
     dk_name: Option<String>,
+
+    sp_id: Option<i32>,
+    sp_sw_name: Option<String>,
     sp_port: Option<String>,
-    sp_dot1x: Option<bool>,
     sp_vlan: Option<i32>,
+    sp_dot1x: Option<bool>,
+    sp_kommentar: Option<String>,
+
     sw_name: Option<String>,
     sw_ip: Option<String>,
+}
+
+impl From<DoseDetail> for Dose {
+    fn from(value: DoseDetail) -> Self {
+        Dose {
+            do_id: value.do_id,
+            do_ra_id: value.do_ra_id,
+            do_nummer: value.do_nummer,
+            do_sp_id: value.do_sp_id,
+            do_dk_id: value.do_dk_id,
+            do_kommentar: value.do_kommentar,
+        }
+    }
+}
+
+//TODO: solve this technical dept VVV
+impl From<DoseDetail> for Option<Switchport> {
+    fn from(value: DoseDetail) -> Self {
+        let DoseDetail {
+            sp_id: Some(sp_id),
+            sp_sw_name: Some(sp_sw_name),
+            sp_port: Some(sp_port),
+            sp_vlan: Some(sp_vlan),
+            sp_dot1x: Some(sp_dot1x),
+            sp_kommentar,
+            ..
+        } = value
+        else {
+            return None;
+        };
+
+        Some(Switchport {
+            sp_id,
+            sp_sw_name,
+            sp_port,
+            sp_vlan,
+            sp_dot1x,
+            sp_kommentar,
+        })
+    }
 }
 
 #[derive(PartialEq, Properties)]
@@ -53,7 +107,7 @@ pub fn RaumDetailsComponent(
     Ok(html! {
         <div id="dosen">
             for dose_detail in dose_details.iter() {
-                {render_dose_detail(dose_detail, dosen_deps.clone())}
+                {render_dose_detail(dose_detail, raum.clone(), dosen_deps.clone(),modal_state.clone())}
             }
             <img src="assets/svg/plus.svg" id="addButton" onclick={on_add_dose_button_click} />
         </div>
@@ -64,7 +118,12 @@ pub fn RaumDetailsComponent(
 pub struct DeleteDose {
     do_id: i32,
 }
-fn render_dose_detail(dose_detail: &DoseDetail, dosen_deps: UseStateHandle<bool>) -> Html {
+fn render_dose_detail(
+    dose_detail: &DoseDetail,
+    raum: Raum,
+    dosen_deps: UseStateHandle<bool>,
+    modal_state: UseStateHandle<ModalState>,
+) -> Html {
     let img_src = match dose_detail.dk_name {
         Some(ref dk_name) => format!("assets/svg/{}.svg", dk_name),
         None => String::from("assets/svg/plus.svg"), //TODO: make clickable to add device
@@ -89,15 +148,27 @@ fn render_dose_detail(dose_detail: &DoseDetail, dosen_deps: UseStateHandle<bool>
             //TODO: error handling
             return;
         };
-        let switches_deps_clone_clone = dosen_deps_clone.clone();
+        let dosen_deps_clone_clone = dosen_deps_clone.clone();
         wasm_bindgen_futures::spawn_local(async move {
             util::fetch_delete_with_body("/api/dose", serialized_delete_dose).await;
-            switches_deps_clone_clone.set(!*switches_deps_clone_clone);
+            dosen_deps_clone_clone.set(!*dosen_deps_clone_clone);
         }); // add error handling to fetch_delete_with_body and then here to notify the user if theres a foreign key falure (ports connected)
     });
 
+    let modal_state_clone = modal_state.clone();
+    let dose_clone: Dose = dose_detail.clone().into();
+    let switchport_clone: Option<Switchport> = dose_detail.clone().into();
+    let onclick = Callback::from(move |_| {
+        modal_state_clone.set(ModalState::EditDose(
+            dose_clone.clone(),
+            raum.clone(),
+            switchport_clone.clone(),
+            dosen_deps.clone(),
+        ));
+    });
+
     html! {
-        <div class="dose">
+        <div class="dose" {onclick}>
             <div>{&dose_detail.do_nummer}</div>
             <div class={line_classes}></div>
             <div class="dose-info">

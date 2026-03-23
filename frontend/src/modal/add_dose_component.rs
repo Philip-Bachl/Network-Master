@@ -44,20 +44,18 @@ pub fn AddDoseComponent(
     })?;
     let selected_gebaeude_name = use_state_eq(|| start_raum.ra_ge_name.clone());
 
-    let raum_list = use_future_with(selected_gebaeude_name.clone(), |_| async move {
-        util::fetch_get::<Vec<Raum>>("/api/raum")
-            .await
-            .unwrap_or_default()
+    let raum_list = use_future_with(selected_gebaeude_name.clone(), |ge_name| async move {
+        util::fetch_get::<Vec<Raum>>(&format!(
+            "/api/raum/gebaeude/{}",
+            urlencoding::encode(&ge_name),
+        ))
+        .await
+        .unwrap_or_default()
     })?;
-    let selected_raum_nummer = use_state_eq(|| start_raum.ra_id.to_string());
 
     let on_select_gebaeude = Callback::from(move |event: yew::Event| {
         let select: HtmlSelectElement = event.target_unchecked_into();
         selected_gebaeude_name.set(select.value());
-    });
-    let on_select_raum = Callback::from(move |event: yew::Event| {
-        let select: HtmlSelectElement = event.target_unchecked_into();
-        selected_raum_nummer.set(select.value());
     });
 
     let form_data = FormData {
@@ -94,7 +92,7 @@ pub fn AddDoseComponent(
                     <option selected={ start_raum.ra_ge_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
                 }
             </select>
-            <select id="raumSelect" onchange={on_select_raum} ref={form_data.dose_raum_select_ref}>
+            <select id="raumSelect" ref={form_data.dose_raum_select_ref}>
                 for raum in raum_list.iter().cloned() {
                     <option selected={ start_raum.ra_id == raum.ra_id } value={raum.ra_id.to_string()}>{raum.ra_nummer}</option>
                 }
@@ -111,6 +109,7 @@ pub fn AddDoseComponent(
                 placeholder="Optional: Kommentar" //TODO: change "Optional: ..." to "... (Optional)"
                 ref={form_data.dose_kommentar_ref}
             />
+            //TODO: add way to create with device/switchport already connected
 
             <div id="buttons"> //TODO: extract into seperate component
                 <input type="button" id="CreateButton" onclick={on_create_button_click} value="Erstellen"/>
