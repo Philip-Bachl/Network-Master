@@ -51,7 +51,41 @@
     gap: 10px;
 }
 
-.divider {
-    height: 3px;
-    background-color: var(--color);
+#addMenu {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 20px;
+
+    border-top: 3px solid var(--color);
+}
+
+#addMenu>img {
+    flex: none;
+    align-self: start;
+
+    width: calc(var(--font-size) * 1.5);
+    aspect-ratio: 1;
+
+    padding: 20px;
+
+    background-color: var(--level-2);
+    border: 2px solid var(--color);
+    border-radius: 20px;
+}
+
+#addMenu #options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 20px;
+
+    background-color: var(--level-2);
+    border-radius: 10px;
+}
+
+#options .option {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }

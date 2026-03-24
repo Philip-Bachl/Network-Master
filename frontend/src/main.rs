@@ -26,6 +26,9 @@ pub enum ModalState {
     AddDose(Raum, UseStateHandle<bool>),
     EditSwitchport(Switch, Switchport, UseStateHandle<bool>), //TODO: <-- change to be consistant: either switchport/dose as first or second elements VVV
     EditDose(Dose, Raum, Option<Switchport>, UseStateHandle<bool>),
+    AddGebaeude(UseStateHandle<bool>),
+    AddRaum(UseStateHandle<bool>),
+    AddSchrank(UseStateHandle<bool>),
     Nothing,
 }
 
@@ -50,16 +53,21 @@ fn App() -> Html {
             <div id="detailsContent"></div>
         </div>
     };
+    let modal_fallback = html! {
+        <div id="modal">
+            <div id="modalLoading">{ "Loading..." }</div>
+        </div>
+    };
 
     html! {
         <>
             <Suspense fallback={sidebar_fallback}>
-                <SidebarComponent sidebar_selection={sidebar_selection.clone()} />
+                <SidebarComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} />
             </Suspense>
             <Suspense fallback={details_fallback}>
                 <DetailsComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} />
             </Suspense>
-            <Suspense> //TODO: add fallback
+            <Suspense fallback={modal_fallback}>
                 <ModalComponent modal_state={modal_state} />
             </Suspense>
         </>

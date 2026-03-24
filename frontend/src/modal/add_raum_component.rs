@@ -12,9 +12,9 @@ use crate::{
 
 #[derive(PartialEq, Properties)]
 pub struct AddRaumComponentProps {
-    modal_state: UseStateHandle<ModalState>,
-    raeume_deps: UseStateHandle<bool>,
-    start_gebaeude: Gebaeude,
+    pub modal_state: UseStateHandle<ModalState>,
+    pub raeume_deps: UseStateHandle<bool>,
+    pub start_gebaeude: Option<Gebaeude>,
 }
 
 #[component]
@@ -30,6 +30,12 @@ pub fn AddRaumComponent(
             .await
             .unwrap_or_default()
     })?;
+
+    let start_gebaeude_name = start_gebaeude
+        .as_ref()
+        .or(gebaeude_list.first())
+        .map(|sg| &sg.ge_name[..])
+        .unwrap_or_default();
 
     let form_data = FormData {
         raum_gebaeude_select: use_node_ref(),
@@ -60,7 +66,7 @@ pub fn AddRaumComponent(
         <div id="addSwitch">
             <select id="gebaeudeSelect" ref={form_data.raum_gebaeude_select}>
                 for gebaeude in gebaeude_list.iter().cloned() {
-                    <option selected={ start_gebaeude.ge_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
+                    <option selected={ start_gebaeude_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
                 }
             </select>
             <input
@@ -71,7 +77,7 @@ pub fn AddRaumComponent(
             />
             <input
                 ref={form_data.raum_stockwerk}
-                placeholder="Stockwerk: -1 = 1UG, 0 = EG, 1 = 1OG, ..."
+                placeholder="-1=1UG,0=EG,1=1OG, ..."
                 id="raumStockwerkInput"
                 type="text"
                 pattern="[0-9]+"

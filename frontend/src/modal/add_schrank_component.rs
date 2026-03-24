@@ -12,9 +12,9 @@ use crate::{
 
 #[derive(PartialEq, Properties)]
 pub struct AddSchrankComponentProps {
-    modal_state: UseStateHandle<ModalState>,
-    schraenke_deps: UseStateHandle<bool>,
-    start_gebaeude: Gebaeude,
+    pub modal_state: UseStateHandle<ModalState>,
+    pub schraenke_deps: UseStateHandle<bool>,
+    pub start_gebaeude: Option<Gebaeude>,
 }
 
 #[component]
@@ -30,6 +30,12 @@ pub fn AddSchrankComponent(
             .await
             .unwrap_or_default()
     })?;
+
+    let start_gebaeude_name = start_gebaeude
+        .as_ref()
+        .or(gebaeude_list.first())
+        .map(|sg| &sg.ge_name[..])
+        .unwrap_or_default();
 
     let form_data = FormData {
         schrank_gebaeude_name: use_node_ref(),
@@ -58,18 +64,18 @@ pub fn AddSchrankComponent(
         <div id="addSwitch">
             <select id="gebaeudeSelect" ref={form_data.schrank_gebaeude_name}>
                 for gebaeude in gebaeude_list.iter().cloned() {
-                    <option selected={ start_gebaeude.ge_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
+                    <option selected={ start_gebaeude_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
                 }
             </select>
             <input
                 ref={form_data.schrank_nummer}
-                placeholder="Raum Nummer"
+                placeholder="Schrank Nummer"
                 id="schrankNummerInput"
                 type="text"
             />
             <input
                 ref={form_data.schrank_stockwerk}
-                placeholder="Stockwerk: -1 = 1UG, 0 = EG, 1 = 1OG, ..."
+                placeholder="-1=1UG,0=EG,1=1OG, ..."
                 id="schrankStockwerkInput"
                 type="text"
                 pattern="[0-9]+"

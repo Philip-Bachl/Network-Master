@@ -3,8 +3,10 @@ use yew::{Html, Properties, UseStateHandle, component, html};
 use crate::{
     ModalState,
     modal::{
-        add_dose_component::AddDoseComponent, add_switch_component::AddSwitchComponent,
-        edit_dose_component::EditDoseComponent, edit_switchport_component::EditSwitchportComponent,
+        add_dose_component::AddDoseComponent, add_gebaeude_component::AddGebaeudeComponent,
+        add_raum_component::AddRaumComponent, add_schrank_component::AddSchrankComponent,
+        add_switch_component::AddSwitchComponent, edit_dose_component::EditDoseComponent,
+        edit_switchport_component::EditSwitchportComponent,
     },
 };
 
@@ -35,6 +37,15 @@ pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps)
         },
         ModalState::EditDose(ref dose, ref raum, ref switchport, ref dosen_details_ref) => html! {
             <EditDoseComponent dose={dose.clone()} start_raum={raum.clone()} start_switchport={switchport.clone()} dosen_details_deps={dosen_details_ref.clone()} modal_state={modal_state.clone()} />
+        },
+        ModalState::AddGebaeude(ref gebaeude_deps) => html! {
+            <AddGebaeudeComponent modal_state={modal_state.clone()} gebaeude_deps={gebaeude_deps.clone()} />
+        },
+        ModalState::AddRaum(ref raeume_deps) => html! {
+            <AddRaumComponent modal_state={modal_state.clone()} raeume_deps={raeume_deps.clone()} start_gebaeude={None} /> //TODO: read currently selected value (if any) of sidebar and use that as start_gebaeude
+        },
+        ModalState::AddSchrank(ref schraenke_deps) => html! {
+            <AddSchrankComponent modal_state={modal_state.clone()} schraenke_deps={schraenke_deps.clone()} start_gebaeude={None} /> //TODO: read currently selected value (if any) of sidebar and use that as start_gebaeude
         },
         ModalState::Nothing => {
             return html! {};

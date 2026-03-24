@@ -1,13 +1,12 @@
 use crate::{
-    SidebarSelection,
+    ModalState, SidebarSelection,
     model::Gebaeude,
-    sidebar::tab_component::TabComponent,
+    sidebar::{add_menu::AddMenuComponent, tab_component::TabComponent},
     util::{self, pretty_stockwerk_number},
 };
 use yew::{
     AttrValue, Callback, Html, HtmlResult, Properties, UseStateHandle, component, html,
-    suspense::{use_future, use_future_with},
-    use_state,
+    suspense::use_future_with, use_state,
 };
 
 use crate::model::{Raum, Schrank};
@@ -15,11 +14,15 @@ use crate::model::{Raum, Schrank};
 #[derive(PartialEq, Properties)]
 pub struct SidebarComponentProps {
     pub sidebar_selection: UseStateHandle<SidebarSelection>,
+    pub modal_state: UseStateHandle<ModalState>,
 }
 
 #[component]
 pub fn SidebarComponent(
-    SidebarComponentProps { sidebar_selection }: &SidebarComponentProps,
+    SidebarComponentProps {
+        sidebar_selection,
+        modal_state,
+    }: &SidebarComponentProps,
 ) -> HtmlResult {
     let gebaeude_deps = use_state(|| false);
     let gebaeude_list = use_future_with(*gebaeude_deps, |_| async {
@@ -28,14 +31,15 @@ pub fn SidebarComponent(
             .unwrap_or_default()
     })?;
 
-    //TODO
-    let schrank_list = use_future(|| async {
+    let schraenke_deps = use_state(|| false);
+    let schrank_list = use_future_with(*schraenke_deps, |_| async {
         util::fetch_get::<Vec<Schrank>>("/api/schrank")
             .await
             .unwrap_or_default()
     })?;
-    //TODO
-    let raum_list = use_future(|| async {
+
+    let raeume_deps = use_state(|| false);
+    let raum_list = use_future_with(*raeume_deps, |_| async {
         util::fetch_get::<Vec<Raum>>("/api/raum")
             .await
             .unwrap_or_default()
@@ -55,6 +59,7 @@ pub fn SidebarComponent(
                     {render_gebaeude(ge_name, stockwerk_vec, sidebar_selection.clone())}
                 }
             </div>
+            <AddMenuComponent modal_state={modal_state.clone()} gebaeude_deps={gebaeude_deps} raeume_deps={raeume_deps} schraenke_deps={schraenke_deps} />
         </div>
     })
 }

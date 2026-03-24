@@ -165,21 +165,21 @@ pub fn EditDoseComponent(
             </select>
             //TODO: add schrank select (maybe)
             <select id="switchSelect" onchange={on_select_switch}>
-                <option selected={ dose.do_sp_id.is_none() } value={""}>{"<Nichts>"}</option>
+                <option selected={ dose.do_sp_id.is_none() } value={""}>{"<Switch>"}</option>
 
                 for switch in switch_list.iter().cloned() {
                     <option selected={ start_switchport.clone().map(|sp| sp.sp_sw_name).unwrap_or_default() == switch.sw_name } value={switch.sw_name.clone()}>{switch.sw_name}</option>
                 }
             </select>
             <select id="switchportSelect" ref={form_data.dose_switchport_select_ref} onchange={on_select_switchport}>
-                <option selected={ dose.do_sp_id.is_none() } value={""}>{"<Nichts>"}</option>
+                <option selected={ dose.do_sp_id.is_none() } value={""}>{"<Kein Port verbunden>"}</option>
 
                 for switchport in switchport_list.iter().cloned() {
                     <option selected={ start_switchport.clone().map(|sp| sp.sp_id).unwrap_or_default() == switchport.sp_id } value={switchport.sp_id.to_string()}>{switchport.sp_port}</option>
                 }
             </select>
             <select id="deviceKindSelect" ref={form_data.dose_device_kind_select_ref} onchange={on_select_device_kind}>
-                <option selected={ dose.do_dk_id.is_none() } value={""}>{"<Nichts>"}</option>
+                <option selected={ dose.do_dk_id.is_none() } value={""}>{"<Kein Gerät verbunden>"}</option>
                 for device_kind in device_kind_list.iter().cloned() {
                     <option selected={ dose.do_dk_id == Some(device_kind.dk_id) } value={device_kind.dk_id.to_string()}>{device_kind.dk_name}</option>
                     //TODO: find a way to display icons instead of text (option elements dont allow anything but text, probably have to create custom select)

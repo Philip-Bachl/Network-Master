@@ -5,8 +5,8 @@ use crate::{ModalState, model::Gebaeude, util};
 
 #[derive(PartialEq, Properties)]
 pub struct AddGebaeudeComponentProps {
-    modal_state: UseStateHandle<ModalState>,
-    gebaeude_deps: UseStateHandle<bool>,
+    pub modal_state: UseStateHandle<ModalState>,
+    pub gebaeude_deps: UseStateHandle<bool>,
 }
 
 //TODO: add trigger for this modal

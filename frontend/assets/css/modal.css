@@ -11,9 +11,14 @@
     width: 100vw;
 }
 
+#modal #modalLoading {
+    font-size: calc(2 * var(--font-size));
+}
+
 #modal input:invalid {
-    background-color: tomato;
-    color: black;
+    /*background-color: tomato;
+    color: black;*/
+    background-color: firebrick;
 }
 
 #modal input,
