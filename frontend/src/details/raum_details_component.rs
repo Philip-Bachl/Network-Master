@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[derive(Deserialize, Clone)]
-pub struct DoseDetail {
+struct DoseDetail {
     do_id: i32,
     do_ra_id: i32,
     do_nummer: String,
@@ -141,9 +141,12 @@ fn render_dose_detail(
     };
 
     let do_id = dose_detail.do_id;
+    let can_delete_dose = dose_detail.do_sp_id.is_none();
     let dosen_deps_clone = dosen_deps.clone();
     let on_delete_dose_button_click = Callback::from(move |_| {
-        // TODO: maybe add check to only delete a dose when nothing's connected to it
+        if !can_delete_dose {
+            return;
+        }
         let Ok(serialized_delete_dose) = serde_json::to_string(&DeleteDose { do_id }) else {
             //TODO: error handling
             return;
