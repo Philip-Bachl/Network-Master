@@ -20,7 +20,7 @@ impl Masterbase {
                 .create_if_missing(true),
         )
         .await
-        .map_err(MasterbaseError::DatabaseInit)?;
+        .map_err(|_| MasterbaseError::DatabaseInit)?;
 
         Ok(Masterbase { connection_pool })
     }

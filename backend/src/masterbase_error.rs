@@ -1,5 +1,5 @@
 #[derive(Debug)]
 pub enum MasterbaseError {
-    DatabaseInit(sqlx::Error),
+    DatabaseInit,
     //DatabaseSeed(sqlx::Error),
 }
