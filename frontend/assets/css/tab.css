@@ -31,3 +31,11 @@
 
     padding-left: calc(var(--font-size) * 2);
 }
+
+.tab .delete-button {
+    align-self: center;
+
+    width: var(--font-size);
+
+    transform: rotate(45deg);
+}

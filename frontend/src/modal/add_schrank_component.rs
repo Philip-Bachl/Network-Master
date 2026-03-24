@@ -78,7 +78,7 @@ pub fn AddSchrankComponent(
                 placeholder="-1=1UG,0=EG,1=1OG, ..."
                 id="schrankStockwerkInput"
                 type="text"
-                pattern="[0-9]+"
+                pattern="-?[0-9]+"
             />
             <input
                 ref={form_data.schrank_kommentar}

@@ -80,7 +80,7 @@ pub fn AddRaumComponent(
                 placeholder="-1=1UG,0=EG,1=1OG, ..."
                 id="raumStockwerkInput"
                 type="text"
-                pattern="[0-9]+"
+                pattern="-?[0-9]+"
             />
             <input
                 ref={form_data.raum_kommentar}

@@ -29,14 +29,14 @@
     overflow-y: auto;
 }
 
-.delete-button {
+#details .delete-button {
     position: absolute;
     right: 0;
     top: 0;
 
     width: var(--font-size);
 
-    transform: rotate(45deg)
+    transform: rotate(45deg);
 }
 
 #addButton {

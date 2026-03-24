@@ -37,7 +37,7 @@ pub enum ModalState {
 
 #[component]
 fn App() -> Html {
-    let sidebar_selection = use_state(|| SidebarSelection::Nothing);
+    let sidebar_selection = use_state_eq(|| SidebarSelection::Nothing);
     let modal_state = use_state_eq(|| ModalState::Nothing);
     //TODO: resizing sidebar
 

@@ -71,11 +71,3 @@ pub struct Switchport {
     pub sp_dot1x: bool,
     pub sp_kommentar: Option<String>,
 }
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct DoseZuSwitchport {
-    pub dsz_id: i32,
-    pub dsz_do_id: i32,
-    pub dsz_sp_id: i32,
-    pub dsz_kommentar: Option<String>,
-}

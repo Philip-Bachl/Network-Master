@@ -146,7 +146,7 @@ async fn handle_create_button_click(
         .map(|i| i.value())
         .filter(|v| !v.is_empty())
     else {
-        //TODO: error handling
+        util::alert("Das Dosennummer Feld ist leer");
         return;
     };
 

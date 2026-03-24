@@ -143,7 +143,8 @@ fn render_dose_detail(
     let do_id = dose_detail.do_id;
     let can_delete_dose = dose_detail.do_sp_id.is_none();
     let dosen_deps_clone = dosen_deps.clone();
-    let on_delete_dose_button_click = Callback::from(move |_| {
+    let on_delete_dose_button_click = Callback::from(move |event: yew::MouseEvent| {
+        event.stop_propagation();
         if !can_delete_dose {
             return;
         }

@@ -26,15 +26,20 @@ pub fn AddGebaeudeComponent(
     let gebaeude_deps_clone = gebaeude_deps.clone();
     let modal_state_clone = modal_state.clone(); //TODO: shadowing, details below VVV
     let on_create_button_click = Callback::from(move |_| {
-        wasm_bindgen_futures::spawn_local({
-            let Some(gebaeude_name) = gebaeude_name_ref_clone
+        let gebaeude_name_ref_clone_clone = gebaeude_name_ref_clone.clone();
+        let gebaeude_kommentar_ref_clone_clone = gebaeude_kommentar_ref_clone.clone();
+        let gebaeude_deps_clone_clone = gebaeude_deps_clone.clone();
+        let modal_state_clone_clone = modal_state_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let Some(gebaeude_name) = gebaeude_name_ref_clone_clone
                 .cast::<HtmlInputElement>()
                 .map(|i| i.value())
+                .filter(|v| !v.is_empty())
             else {
                 util::alert("Name Feld ist leer");
                 return;
             };
-            let gebaeude_kommentar = gebaeude_kommentar_ref_clone
+            let gebaeude_kommentar = gebaeude_kommentar_ref_clone_clone
                 .cast::<HtmlInputElement>()
                 .map(|i| i.value());
 
@@ -47,9 +52,9 @@ pub fn AddGebaeudeComponent(
                 return;
             };
 
-            gebaeude_deps_clone.set(!*gebaeude_deps_clone);
-            modal_state_clone.set(ModalState::Nothing);
-            util::fetch_post_with_body("/api/gebaeude", serialized_gebaeude)
+            util::fetch_post_with_body("/api/gebaeude", serialized_gebaeude).await;
+            gebaeude_deps_clone_clone.set(!*gebaeude_deps_clone_clone);
+            modal_state_clone_clone.set(ModalState::Nothing);
         });
     });
 

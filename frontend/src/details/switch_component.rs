@@ -73,7 +73,9 @@ pub fn SwitchComponent(
 
     let switch_name_clone = switch.sw_name.clone();
     let switches_deps_clone = switches_deps.clone();
-    let on_delete_switch_button_click = Callback::from(move |_| {
+    let on_delete_switch_button_click = Callback::from(move |event: yew::MouseEvent| {
+        event.stop_propagation();
+
         let Ok(serialized_delete_switch) = serde_json::to_string(&DeleteSwitch {
             sw_name: switch_name_clone.clone(),
         }) else {
