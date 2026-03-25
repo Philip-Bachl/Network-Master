@@ -43,7 +43,9 @@ async fn rocket() -> _ {
                 .await
                 .unwrap();
         }
+    }
 
+    if args.iter().any(|arg| arg == "--seed") {
         masterbase.seed().await;
     }
 

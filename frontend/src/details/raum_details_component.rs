@@ -195,7 +195,8 @@ fn render_dose_detail(
                     {sw_ip}
                 </div>
             </div>
-            <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_dose_button_click} />
+            <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_dose_button_click} /> //TODO: add functionality to quickly add a device
+            //TODO: make edit_switchport menu able to establish a connection between a switchport and a dose
         </div>
     }
 }

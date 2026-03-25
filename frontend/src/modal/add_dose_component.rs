@@ -102,7 +102,7 @@ pub fn AddDoseComponent(
                 id="doseNummerInput"
                 placeholder="Dosennummer"
                 ref={form_data.dose_nummer_ref}
-            />
+            />//TODO: add lables for all inputs everywhere
             <input
                 type="text"
                 id="doseKommentarInput"

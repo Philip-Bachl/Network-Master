@@ -1,4 +1,4 @@
-use yew::{Html, Suspense, UseStateHandle, component, html, use_state, use_state_eq};
+use yew::{Html, Suspense, UseStateHandle, component, html, use_state_eq};
 
 use crate::{
     details::details_component::DetailsComponent,
