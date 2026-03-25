@@ -22,7 +22,7 @@ pub fn AddGebaeudeComponent(
     let gebaeude_name_ref_clone = gebaeude_name_ref.clone();
     let gebaeude_kommentar_ref_clone = gebaeude_kommentar_ref.clone();
     let gebaeude_deps_clone = gebaeude_deps.clone();
-    let modal_state_clone = modal_state.clone(); //TINY TODO: shadowing, details below VVV
+    let modal_state_clone = modal_state.clone();
     let on_create_button_click = Callback::from(move |_| {
         let gebaeude_name_ref_clone_clone = gebaeude_name_ref_clone.clone();
         let gebaeude_kommentar_ref_clone_clone = gebaeude_kommentar_ref_clone.clone();
@@ -56,7 +56,7 @@ pub fn AddGebaeudeComponent(
         });
     });
 
-    let modal_state_clone = modal_state.clone(); //TINY TODO: unintentionally shadowing (currently does not break anything, could change)
+    let modal_state_clone = modal_state.clone();
     let on_cancel_button_click = Callback::from(move |_| {
         modal_state_clone.set(ModalState::Nothing);
     });

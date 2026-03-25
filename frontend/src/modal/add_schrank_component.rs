@@ -46,7 +46,7 @@ pub fn AddSchrankComponent(
 
     let form_data_clone = form_data.clone();
     let schraenke_deps_clone = schraenke_deps.clone();
-    let modal_state_clone = modal_state.clone(); //TINY TODO: shadowing, details below VVV
+    let modal_state_clone = modal_state.clone();
     let on_create_button_click = Callback::from(move |_| {
         wasm_bindgen_futures::spawn_local(handle_create_button_click(
             form_data_clone.clone(),
@@ -55,7 +55,7 @@ pub fn AddSchrankComponent(
         ));
     });
 
-    let modal_state_clone = modal_state.clone(); //TINY TODO: unintentionally shadowing (currently does not break anything, could change)
+    let modal_state_clone = modal_state.clone();
     let on_cancel_button_click = Callback::from(move |_| {
         modal_state_clone.set(ModalState::Nothing);
     });

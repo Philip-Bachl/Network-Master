@@ -1,10 +1,12 @@
 #sidebar {
     display: flex;
     flex-direction: column;
-
-    min-height: 0;
-    height: 100%;
     flex: none;
+
+    height: 100%;
+    min-height: 0;
+    min-width: 10%;
+    max-width: 90%;
 
     overflow: hidden;
 

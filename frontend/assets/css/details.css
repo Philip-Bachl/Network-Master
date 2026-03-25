@@ -21,6 +21,8 @@
     border-bottom: 3px solid var(--color);
 
     font-size: calc(2 * var(--font-size));
+
+    user-select: none;
 }
 
 #detailsContent {

@@ -1,4 +1,4 @@
-use yew::{Html, Suspense, UseStateHandle, component, html, use_state_eq};
+use yew::{Callback, Html, Suspense, UseStateHandle, component, html, use_state, use_state_eq};
 
 use crate::{
     details::details_component::DetailsComponent,
@@ -39,6 +39,8 @@ pub enum ModalState {
 fn App() -> Html {
     let sidebar_selection = use_state_eq(|| SidebarSelection::Nothing);
     let modal_state = use_state_eq(|| ModalState::Nothing);
+    //MASSIVE TODO: responsive design (mobile inclusive)
+
     //FEATURE TODO: resizing sidebar
 
     let sidebar_fallback = html! {
@@ -59,18 +61,40 @@ fn App() -> Html {
         </div>
     };
 
+    let mouse_x = use_state(|| 0);
+    let resize = use_state_eq(|| false);
+
+    //SMALL TODO: change from yew::Event / yew::MouseEvent to just Event/MouseEvent
+    let resize_clone = resize.clone();
+    let mouse_x_clone = mouse_x.clone();
+    let onmousemove = Callback::from(move |event: yew::MouseEvent| {
+        if *resize_clone {
+            mouse_x_clone.set(event.client_x());
+        }
+    });
+
+    let resize_clone = resize.clone(); //SMALL TODO: use shadowing instead of multiple clones (.._clone_clone) everywhere
+    let onmousedown = Callback::from(move |_| {
+        resize_clone.set(true);
+    });
+    let resize_clone = resize.clone();
+    let onmouseup = Callback::from(move |_| {
+        resize_clone.set(false);
+    });
+
     html! {
-        <>
+        <main {onmousemove} {onmouseup}>
             <Suspense fallback={sidebar_fallback}>
-                <SidebarComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} />
+                <SidebarComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} mouse_x={*mouse_x} />
             </Suspense>
+            <div id="resizeBar" {onmousedown} />
             <Suspense fallback={details_fallback}>
                 <DetailsComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} />
             </Suspense>
             <Suspense fallback={modal_fallback}>
                 <ModalComponent modal_state={modal_state} />
             </Suspense>
-        </>
+        </main>
     }
 }
 

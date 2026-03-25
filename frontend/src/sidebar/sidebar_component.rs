@@ -5,9 +5,10 @@ use crate::{
     util::{self, pretty_stockwerk_number},
 };
 use serde::Serialize;
+use web_sys::Element;
 use yew::{
     AttrValue, Callback, Html, HtmlResult, MouseEvent, Properties, UseStateHandle, component, html,
-    suspense::use_future_with, use_state,
+    suspense::use_future_with, use_node_ref, use_state,
 };
 
 use crate::model::{Raum, Schrank};
@@ -16,6 +17,7 @@ use crate::model::{Raum, Schrank};
 pub struct SidebarComponentProps {
     pub sidebar_selection: UseStateHandle<SidebarSelection>,
     pub modal_state: UseStateHandle<ModalState>,
+    pub mouse_x: i32,
 }
 
 #[component]
@@ -23,6 +25,7 @@ pub fn SidebarComponent(
     SidebarComponentProps {
         sidebar_selection,
         modal_state,
+        mouse_x,
     }: &SidebarComponentProps,
 ) -> HtmlResult {
     let gebaeude_deps = use_state(|| false);
@@ -52,8 +55,14 @@ pub fn SidebarComponent(
         raum_list.to_vec(),
     );
 
+    let sidebar_ref = use_node_ref();
+    let width_style = sidebar_ref.cast::<Element>().map(|e| {
+        let width = *mouse_x as f64 - e.get_bounding_client_rect().left() - 10.0;
+        format!("{}px", width)
+    });
+
     Ok(html! {
-        <div id="sidebar">
+        <div id="sidebar" style={format!("width: {};", width_style.unwrap_or(String::from("auto")))} ref={sidebar_ref}>
             <div id="sidebarTitle">{"Locations"}</div>
             <div id="sidebarContent">
                 for (ge_name, stockwerk_vec) in full_vec {
