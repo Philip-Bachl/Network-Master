@@ -69,7 +69,7 @@ pub fn EditSwitchportComponent(
         modal_state_clone.set(ModalState::Nothing);
     });
 
-    //TODO: add option to connect dose to switchport
+    //MEDIUM TODO: add option to connect dose to switchport
 
     Ok(html! {
         <div id="editSwitchport">
@@ -139,7 +139,7 @@ async fn handle_create_button_click(
         .cast::<HtmlSelectElement>()
         .map(|s| s.value())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -169,7 +169,7 @@ async fn handle_create_button_click(
         .cast::<HtmlInputElement>()
         .map(|i| i.checked())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -187,7 +187,7 @@ async fn handle_create_button_click(
         sp_kommentar: kommentar,
     };
     let Ok(serialized_update_switch) = serde_json::to_string(&update_switchport) else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 

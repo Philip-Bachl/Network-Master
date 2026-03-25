@@ -3,7 +3,6 @@ use serde::Deserialize;
 
 use crate::{masterbase::Masterbase, model::Gebaeude};
 
-//TODO: add read endpoints with filters
 #[get("/gebaeude")]
 pub async fn read_gebaeude_all(
     masterbase: &State<Masterbase>,

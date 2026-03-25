@@ -79,7 +79,7 @@ pub fn SwitchComponent(
         let Ok(serialized_delete_switch) = serde_json::to_string(&DeleteSwitch {
             sw_name: switch_name_clone.clone(),
         }) else {
-            //TODO: error handling
+            //SMALL TODO: error handling
             return;
         };
         let switches_deps_clone_clone = switches_deps_clone.clone();
@@ -127,8 +127,8 @@ fn render_switchport(
     let switchport: Switchport = switchport_detail.clone().into();
     let onclick = Callback::from(move |_| {
         modal_state.set(ModalState::EditSwitchport(
-            switch.clone(),
             switchport.clone(),
+            switch.clone(),
             switchport_details_deps.clone(),
         ));
     });

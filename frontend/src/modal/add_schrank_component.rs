@@ -46,7 +46,7 @@ pub fn AddSchrankComponent(
 
     let form_data_clone = form_data.clone();
     let schraenke_deps_clone = schraenke_deps.clone();
-    let modal_state_clone = modal_state.clone(); //TODO: shadowing, details below VVV
+    let modal_state_clone = modal_state.clone(); //TINY TODO: shadowing, details below VVV
     let on_create_button_click = Callback::from(move |_| {
         wasm_bindgen_futures::spawn_local(handle_create_button_click(
             form_data_clone.clone(),
@@ -55,7 +55,7 @@ pub fn AddSchrankComponent(
         ));
     });
 
-    let modal_state_clone = modal_state.clone(); //TODO: unintentionally shadowing (currently does not break anything, could change)
+    let modal_state_clone = modal_state.clone(); //TINY TODO: unintentionally shadowing (currently does not break anything, could change)
     let on_cancel_button_click = Callback::from(move |_| {
         modal_state_clone.set(ModalState::Nothing);
     });
@@ -111,7 +111,7 @@ async fn handle_create_button_click(
         .cast::<HtmlSelectElement>()
         .map(|s| s.value())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -121,7 +121,7 @@ async fn handle_create_button_click(
         .map(|i| i.value())
         .filter(|v| !v.is_empty())
     else {
-        util::alert("Raum Nummer Feld ist leer"); //TODO: consistant naming of messages
+        util::alert("Raum Nummer Feld ist leer"); //SMALL TODO: consistant naming of messages (should already be the case, just check)
         return;
     };
 
@@ -149,7 +149,7 @@ async fn handle_create_button_click(
         sc_kommentar: schrank_kommentar,
     };
     let Ok(serialized_schrank) = serde_json::to_string(&schrank) else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 

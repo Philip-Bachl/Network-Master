@@ -24,7 +24,7 @@ pub enum SidebarSelection {
 pub enum ModalState {
     AddSwitch(Schrank, UseStateHandle<bool>),
     AddDose(Raum, UseStateHandle<bool>),
-    EditSwitchport(Switch, Switchport, UseStateHandle<bool>), //TODO: <-- change to be consistant: either switchport/dose as first or second elements VVV
+    EditSwitchport(Switchport, Switch, UseStateHandle<bool>),
     EditDose(Dose, Raum, Option<Switchport>, UseStateHandle<bool>),
     AddGebaeude(UseStateHandle<bool>),
     AddRaum(UseStateHandle<bool>),
@@ -32,14 +32,14 @@ pub enum ModalState {
     Nothing,
 }
 
-//TODO: most components clone data to their children
+//BIG TODO: most components clone data to their children
 //      -> change to use heap allocation instead (Rc and alike)
 
 #[component]
 fn App() -> Html {
     let sidebar_selection = use_state_eq(|| SidebarSelection::Nothing);
     let modal_state = use_state_eq(|| ModalState::Nothing);
-    //TODO: resizing sidebar
+    //FEATURE TODO: resizing sidebar
 
     let sidebar_fallback = html! {
         <div id="sidebar">

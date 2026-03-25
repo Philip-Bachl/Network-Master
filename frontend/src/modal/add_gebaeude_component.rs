@@ -9,8 +9,6 @@ pub struct AddGebaeudeComponentProps {
     pub gebaeude_deps: UseStateHandle<bool>,
 }
 
-//TODO: add trigger for this modal
-
 #[component]
 pub fn AddGebaeudeComponent(
     AddGebaeudeComponentProps {
@@ -24,7 +22,7 @@ pub fn AddGebaeudeComponent(
     let gebaeude_name_ref_clone = gebaeude_name_ref.clone();
     let gebaeude_kommentar_ref_clone = gebaeude_kommentar_ref.clone();
     let gebaeude_deps_clone = gebaeude_deps.clone();
-    let modal_state_clone = modal_state.clone(); //TODO: shadowing, details below VVV
+    let modal_state_clone = modal_state.clone(); //TINY TODO: shadowing, details below VVV
     let on_create_button_click = Callback::from(move |_| {
         let gebaeude_name_ref_clone_clone = gebaeude_name_ref_clone.clone();
         let gebaeude_kommentar_ref_clone_clone = gebaeude_kommentar_ref_clone.clone();
@@ -48,7 +46,7 @@ pub fn AddGebaeudeComponent(
                 ge_kommentar: gebaeude_kommentar,
             };
             let Ok(serialized_gebaeude) = serde_json::to_string(&gebaeude) else {
-                //TODO: error handling
+                //SMALL TODO: error handling
                 return;
             };
 
@@ -58,12 +56,10 @@ pub fn AddGebaeudeComponent(
         });
     });
 
-    let modal_state_clone = modal_state.clone(); //TODO: unintentionally shadowing (currently does not break anything, could change)
+    let modal_state_clone = modal_state.clone(); //TINY TODO: unintentionally shadowing (currently does not break anything, could change)
     let on_cancel_button_click = Callback::from(move |_| {
         modal_state_clone.set(ModalState::Nothing);
     });
-
-    //TODO: delete Gebaeude
 
     html! {
         <div id="addGebaeude">

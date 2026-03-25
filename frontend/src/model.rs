@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use yew::AttrValue;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Gebaeude {
@@ -14,18 +13,6 @@ pub struct Raum {
     pub ra_nummer: String,
     pub ra_stockwerk: i32,
     pub ra_kommentar: Option<String>,
-}
-impl Raum {
-    pub fn pretty_raum_number(&self) -> AttrValue {
-        //TODO: will likely change to just be ra_nummer as ra_nummer will include the ra_stockwerk (makes input easier)
-        let tail = if self.ra_nummer.len() == 1 {
-            &format!("0{}", self.ra_nummer)
-        } else {
-            &self.ra_nummer
-        };
-
-        format!("{}{}", self.ra_stockwerk, tail).into()
-    }
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]

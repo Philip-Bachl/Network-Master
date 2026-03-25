@@ -15,7 +15,7 @@ pub struct ModalComponentProps {
     pub modal_state: UseStateHandle<ModalState>,
 }
 
-//TODO: Refactor to use a more central approach for modals
+//SMALL TODO: Refactor to use a more central approach for modals
 
 #[component]
 pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps) -> Html {
@@ -29,8 +29,8 @@ pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps)
             <AddDoseComponent modal_state={modal_state} start_raum={raum.clone()} dosen_deps={dosen_deps.clone()}/>
         },
         ModalState::EditSwitchport(
-            ref start_switch,
             ref switchport,
+            ref start_switch,
             ref switchport_details_deps,
         ) => html! {
             <EditSwitchportComponent modal_state={modal_state} start_switch={start_switch.clone()} switchport={switchport.clone()} switchport_details_deps={switchport_details_deps.clone()} />
@@ -42,10 +42,10 @@ pub fn ModalComponent(ModalComponentProps { modal_state }: &ModalComponentProps)
             <AddGebaeudeComponent modal_state={modal_state.clone()} gebaeude_deps={gebaeude_deps.clone()} />
         },
         ModalState::AddRaum(ref raeume_deps) => html! {
-            <AddRaumComponent modal_state={modal_state.clone()} raeume_deps={raeume_deps.clone()} start_gebaeude={None} /> //TODO: read currently selected value (if any) of sidebar and use that as start_gebaeude
+            <AddRaumComponent modal_state={modal_state.clone()} raeume_deps={raeume_deps.clone()} start_gebaeude={None} /> //SMALL TODO: read currently selected value (if any) of sidebar and use that as start_gebaeude
         },
         ModalState::AddSchrank(ref schraenke_deps) => html! {
-            <AddSchrankComponent modal_state={modal_state.clone()} schraenke_deps={schraenke_deps.clone()} start_gebaeude={None} /> //TODO: read currently selected value (if any) of sidebar and use that as start_gebaeude
+            <AddSchrankComponent modal_state={modal_state.clone()} schraenke_deps={schraenke_deps.clone()} start_gebaeude={None} /> //SMALL TODO: read currently selected value (if any) of sidebar and use that as start_gebaeude
         },
         ModalState::Nothing => {
             return html! {};

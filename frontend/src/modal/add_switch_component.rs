@@ -82,9 +82,8 @@ pub fn AddSwitchComponent(
         modal_state_clone.set(ModalState::Nothing);
     });
 
-    //TODO keyed list everywhere
-    //TODO smart pointers to reduce cloning (specifically in the case of lists)
-    //TODO gebauede durch gebaeude ersetzen
+    //MEDIUM TODO keyed list everywhere
+    //BIG TODO smart pointers to reduce cloning (specifically in the case of lists)
     Ok(html! {
         <div id="addSwitch">
             <select id="gebaeudeSelect" onchange={on_select_gebaeude}>
@@ -169,7 +168,7 @@ async fn handle_create_button_click(
         .map(|s| s.value())
         .and_then(|v| v.parse::<i32>().ok())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -197,7 +196,7 @@ async fn handle_create_button_click(
         sw_kommentar: switch_kommentar,
     };
     let Ok(serialized_switch) = serde_json::to_string(&switch) else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 

@@ -8,9 +8,9 @@ pub async fn read_dose_all(masterbase: &State<Masterbase>) -> Result<Json<Vec<Do
     sqlx::query_as(
         "
             SELECT * FROM do_dose
-        ", //TODO: add ORDER BY statements everywhere
+        ", //SMALL TODO: add ORDER BY statements everywhere
     )
-    .fetch_all(&masterbase.connection_pool) //TODO: could be bad to fetch all, maybe add a LIMIT flag
+    .fetch_all(&masterbase.connection_pool) //MEDIUM TODO: could be bad to fetch all, maybe add a LIMIT flag everywhere
     .await
     .map(Json)
     .map_err(|err| err.to_string())

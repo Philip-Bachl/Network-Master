@@ -16,7 +16,7 @@ pub struct EditDoseComponentProps {
     pub dose: Dose,
     pub start_raum: Raum,
     pub start_switchport: Option<Switchport>,
-    pub dosen_details_deps: UseStateHandle<bool>, //TODO: make consistant: either plural or singular everywhere
+    pub dosen_details_deps: UseStateHandle<bool>, //MEDIUM TODO: make consistant: either plural or singular everywhere
     pub modal_state: UseStateHandle<ModalState>,
 }
 
@@ -90,7 +90,7 @@ pub fn EditDoseComponent(
     })?;
     let selected_device_kind_id = use_state_eq(|| dose.do_dk_id);
 
-    //TODO: add way to add device kinds
+    //BIG TODO: add way to add device kinds
 
     let selected_gebaeude_name_clone = selected_gebaeude_name.clone();
     let on_select_gebaeude = Callback::from(move |event: yew::Event| {
@@ -154,16 +154,16 @@ pub fn EditDoseComponent(
             <select id="gebaeudeSelect" onchange={on_select_gebaeude}>
                 for gebaeude in gebaeude_list.iter().cloned() {
                     <option selected={ *selected_gebaeude_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
-                    //TODO: ^^^ optimization for cloning (i know, but you need this a couple of times to not forget!)
+                    //BIG TODO: ^^^ optimization for cloning (i know, but you need this a couple of times to not forget!)
                 }
             </select>
-            //TODO: always use a use_state to keep track of selected items everywhere. otherwise a reload of any kind voids their state
+            //MEDIUM TODO: always use a use_state to keep track of selected items everywhere. otherwise a reload of any kind voids their state (should already be the case, just check)
             <select id="raumSelect" onchange={on_select_raum} ref={form_data.dose_raum_select_ref}>
                 for raum in raum_list.iter().cloned() {
                     <option selected={ *selected_raum_id == raum.ra_id } value={raum.ra_id.to_string()}>{raum.ra_nummer}</option>
                 }
             </select>
-            //TODO: add schrank select (maybe)
+            //MEDIUM TODO: add schrank select (maybe)
             <select id="switchSelect" onchange={on_select_switch}>
                 <option selected={ dose.do_sp_id.is_none() } value={""}>{"<Switch>"}</option>
 
@@ -182,7 +182,7 @@ pub fn EditDoseComponent(
                 <option selected={ dose.do_dk_id.is_none() } value={""}>{"<Kein Gerät verbunden>"}</option>
                 for device_kind in device_kind_list.iter().cloned() {
                     <option selected={ dose.do_dk_id == Some(device_kind.dk_id) } value={device_kind.dk_id.to_string()}>{device_kind.dk_name}</option>
-                    //TODO: find a way to display icons instead of text (option elements dont allow anything but text, probably have to create custom select)
+                    //BIG TODO: find a way to display icons instead of text (option elements dont allow anything but text, probably have to create custom select)
                 }
             </select>
             <input
@@ -195,12 +195,12 @@ pub fn EditDoseComponent(
             <input
                 type="text"
                 id="doseKommentarInput"
-                placeholder="Optional: Kommentar" //TODO: change "Optional: ..." to "... (Optional)"
+                placeholder="Optional: Kommentar" //SMALL TODO: change "Optional: ..." to "... (Optional)"
                 ref={form_data.dose_kommentar_ref}
                 value={dose.do_kommentar.clone()}
             />
             <div id="buttons">
-                <input type="button" id="acceptButton" onclick={on_create_button_click} value="Speichern"/> //TODO: change "create..." stuff to "apply" or "save" or something
+                <input type="button" id="acceptButton" onclick={on_create_button_click} value="Speichern"/> //SMALL TODO: change "create..." stuff to "apply" or "save" or something
                 <input type="button" id="cancelButton" onclick={on_cancel_button_click} value="Abbrechen"/>
             </div>
         </div>
@@ -214,7 +214,7 @@ struct FormData {
     dose_device_kind_select_ref: NodeRef,
     dose_nummer_ref: NodeRef,
     dose_kommentar_ref: NodeRef,
-} //TODO: make the dose_ prefix naming of stuff inside FormData consistant everywhere (either have it or not)
+} //SMALL TODO: make the dose_ prefix naming of stuff inside FormData consistant everywhere (either have it or not)
 
 async fn handle_create_button_click(
     do_id: i32,
@@ -222,14 +222,14 @@ async fn handle_create_button_click(
     dosen_details_deps: UseStateHandle<bool>,
     modal_state: UseStateHandle<ModalState>,
 ) {
-    //TODO: maybe use references here and at all other create_... spots instead of owned data (reduces cloning)
+    //MEDIUM TODO: maybe use references here and at all other create_... spots instead of owned data (reduces cloning)
     let Some(raum_id) = form_data
         .dose_raum_select_ref
         .cast::<HtmlSelectElement>()
         .map(|s| s.value())
         .and_then(|v| v.parse::<i32>().ok())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -252,7 +252,7 @@ async fn handle_create_button_click(
         .map(|i| i.value())
         .filter(|v| !v.is_empty())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -271,7 +271,7 @@ async fn handle_create_button_click(
         do_kommentar: dose_kommentar,
     };
     let Ok(serialized_dose) = serde_json::to_string(&dose) else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 

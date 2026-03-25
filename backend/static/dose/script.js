@@ -110,11 +110,11 @@ addDoseButton.addEventListener("mousedown", () => {
 
     const dose = {
         do_id: 0,
-        do_sp_id: null, //TODO: change!
+        do_sp_id: null,
         do_ra_id: parseInt(raumId),
         do_nummer: doseNummer.value,
         do_dk_id: deviceKindKey,
-        do_kommentar: null //TODO: change!
+        do_kommentar: null
     };
 
     addDose(dose);

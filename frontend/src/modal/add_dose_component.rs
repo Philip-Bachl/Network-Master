@@ -102,16 +102,15 @@ pub fn AddDoseComponent(
                 id="doseNummerInput"
                 placeholder="Dosennummer"
                 ref={form_data.dose_nummer_ref}
-            />//TODO: add lables for all inputs everywhere
+            />//MEDIUM TODO: add lables for all inputs everywhere
             <input
                 type="text"
                 id="doseKommentarInput"
-                placeholder="Optional: Kommentar" //TODO: change "Optional: ..." to "... (Optional)"
+                placeholder="Optional: Kommentar" //SMALL TODO: change "Optional: ..." to "... (Optional)"
                 ref={form_data.dose_kommentar_ref}
             />
-            //TODO: add way to create with device/switchport already connected
 
-            <div id="buttons"> //TODO: extract into seperate component
+            <div id="buttons"> //MEDIUM TODO: extract into seperate component
                 <input type="button" id="CreateButton" onclick={on_create_button_click} value="Erstellen"/>
                 <input type="button" id="CancelButton" onclick={on_cancel_button_click} value="Abbrechen"/>
             </div>
@@ -136,7 +135,7 @@ async fn handle_create_button_click(
         .map(|s| s.value())
         .and_then(|v| v.parse::<i32>().ok())
     else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -164,7 +163,7 @@ async fn handle_create_button_click(
         do_kommentar: kommentar,
     };
     let Ok(serialized_dose) = serde_json::to_string(&dose) else {
-        //TODO: error handling
+        //SMALL TODO: error handling
         return;
     };
 
@@ -174,4 +173,4 @@ async fn handle_create_button_click(
     modal_state.set(ModalState::Nothing);
 }
 
-//TODO: add a way to view kommentar everywhere
+//BIG TODO: add a way to view kommentar everywhere

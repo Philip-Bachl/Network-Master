@@ -71,7 +71,7 @@ pub struct DeleteGebaeude {
 }
 
 fn render_gebaeude(
-    ge_name: AttrValue, //TODO switch almost all references of String to AttrValue
+    ge_name: AttrValue, //BIG TODO switch almost all references of String to AttrValue
     stockwerk_vec: Vec<(i32, Vec<Schrank>, Vec<Raum>)>,
     sidebar_selection: UseStateHandle<SidebarSelection>,
     gebaeude_deps: UseStateHandle<bool>,
@@ -84,7 +84,7 @@ fn render_gebaeude(
         let Ok(serialized_delete_gebaeude) = serde_json::to_string(&DeleteGebaeude {
             ge_name: ge_name_clone.to_string(),
         }) else {
-            //TODO: error handling
+            //SMALL TODO: error handling
             return;
         };
         let gebaeude_deps_clone = gebaeude_deps.clone();
@@ -165,7 +165,7 @@ fn render_schrank(
         let Ok(serialized_delete_schrank) =
             serde_json::to_string(&DeleteSchrank { sc_id: sc_id_clone })
         else {
-            //TODO: error handling
+            //SMALL TODO: error handling
             return;
         };
         let schraenke_deps_clone = schraenke_deps.clone();
@@ -215,7 +215,7 @@ fn render_raum(
 
         let Ok(serialized_delete_raum) = serde_json::to_string(&DeleteRaum { ra_id: ra_id_clone })
         else {
-            //TODO: error handling
+            //SMALL TODO: error handling
             return;
         };
         let raeume_deps_clone = raeume_deps.clone();

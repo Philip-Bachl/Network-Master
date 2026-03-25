@@ -45,7 +45,7 @@ impl From<DoseDetail> for Dose {
     }
 }
 
-//TODO: solve this technical dept VVV
+//MASSIVE TODO: solve this technical dept VVV
 impl From<DoseDetail> for Option<Switchport> {
     fn from(value: DoseDetail) -> Self {
         let DoseDetail {
@@ -103,7 +103,8 @@ pub fn RaumDetailsComponent(
         ));
     });
 
-    //TODO: fix dose ordering
+    //MEDIUM TODO: fix dose ordering (is alphabetical, causes 10 to be before 2)
+    //      maybe change everywhere
     Ok(html! {
         <div id="dosen">
             for dose_detail in dose_details.iter() {
@@ -126,7 +127,7 @@ fn render_dose_detail(
 ) -> Html {
     let img_src = match dose_detail.dk_name {
         Some(ref dk_name) => format!("assets/svg/{}.svg", dk_name),
-        None => String::from("assets/svg/plus.svg"), //TODO: make clickable to add device
+        None => String::from("assets/svg/plus.svg"),
     };
 
     let sw_name = dose_detail.sw_name.as_deref().unwrap_or_default();
@@ -149,14 +150,14 @@ fn render_dose_detail(
             return;
         }
         let Ok(serialized_delete_dose) = serde_json::to_string(&DeleteDose { do_id }) else {
-            //TODO: error handling
+            //SMALL TODO: error handling
             return;
         };
         let dosen_deps_clone_clone = dosen_deps_clone.clone();
         wasm_bindgen_futures::spawn_local(async move {
             util::fetch_delete_with_body("/api/dose", serialized_delete_dose).await;
             dosen_deps_clone_clone.set(!*dosen_deps_clone_clone);
-        }); // add error handling to fetch_delete_with_body and then here to notify the user if theres a foreign key falure (ports connected)
+        }); // add error handling to fetches and then everwhere its used notify the user if theres a foreign key falure
     });
 
     let modal_state_clone = modal_state.clone();
@@ -195,8 +196,8 @@ fn render_dose_detail(
                     {sw_ip}
                 </div>
             </div>
-            <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_dose_button_click} /> //TODO: add functionality to quickly add a device
-            //TODO: make edit_switchport menu able to establish a connection between a switchport and a dose
+            <img class="delete-button" src="assets/svg/plus.svg" onclick={on_delete_dose_button_click} /> //BIG TODO: add functionality to quickly add a device
+            //BIG TODO: make edit_switchport menu able to establish a connection between a switchport and a dose
         </div>
     }
 }

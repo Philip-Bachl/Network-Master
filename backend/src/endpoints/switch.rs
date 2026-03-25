@@ -190,5 +190,5 @@ pub async fn delete_switch(
         .await
         .map(|_| Status::Ok)
         .map_err(|err| err.to_string()),
-    ) //TODO: error handling on all endpoints
+    )
 }

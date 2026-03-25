@@ -38,7 +38,7 @@ pub fn TabComponent(
                 "tab open"
             } else {
                 "tab"
-            } //TODO: refactor class assignments to use the macro instead
+            } //MEDIUM TODO: refactor class assignments to use the macro instead everywhere
         }>
             <div class="tab-title"  {onclick}>
                 <img class="arrow" src="assets/svg/arrow.svg" />
