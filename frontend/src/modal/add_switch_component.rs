@@ -190,6 +190,7 @@ async fn handle_create_button_click(
         .filter(|sk| !sk.is_empty());
 
     let switch = Switch {
+        sw_id: 0,
         sw_name: switch_name,
         sw_sc_id: switch_schrank_id,
         sw_ip: switch_ip,
@@ -206,7 +207,7 @@ async fn handle_create_button_click(
         .map(|i| i.value())
         .filter(|v| !v.is_empty())
     else {
-        util::alert("Port-Prefix Feld ist leer");
+        util::alert("Port-Prefix Feld ist leer"); //MEDIUM TODO: make it possible for switchports_prefix to be empty 
         return;
     };
 

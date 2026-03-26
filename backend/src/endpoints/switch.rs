@@ -1,5 +1,6 @@
 use rocket::{State, delete, get, http::Status, post, put, serde::json::Json};
 use serde::Deserialize;
+use sqlx::prelude::FromRow;
 
 use crate::{masterbase::Masterbase, model::Switch};
 
@@ -61,9 +62,10 @@ pub async fn create_switch(
     sqlx::query(
         "
             INSERT INTO sw_switch
-            VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, $3, $4, $5)
         ",
     )
+    .bind(switch.sw_id)
     .bind(&switch.sw_name)
     .bind(switch.sw_sc_id)
     .bind(&switch.sw_ip)
@@ -80,53 +82,58 @@ pub async fn create_switch_with_ports(
     count: i32,
     switch: Json<Switch>,
 ) -> Result<Status, String> {
-    let mut transaction = masterbase
-        .connection_pool
-        .begin()
-        .await
-        .map_err(|err| err.to_string())?;
-
     sqlx::query(
         "
             INSERT INTO sw_switch
-            VALUES ($1, $2, $3, $4)
+            VALUES (NULL, $1, $2, $3, $4)
         ",
     )
     .bind(&switch.sw_name)
     .bind(switch.sw_sc_id)
     .bind(&switch.sw_ip)
     .bind(&switch.sw_kommentar)
-    .execute(&mut *transaction)
+    .execute(&masterbase.connection_pool)
     .await
     .map_err(|err| err.to_string())?;
+
+    #[derive(FromRow)]
+    struct SwId {
+        sw_id: i32,
+    }
+
+    let SwId { sw_id } = sqlx::query_as(
+        "
+            SELECT sw_id FROM sw_switch WHERE sw_name = $1 ORDER BY sw_id
+        ",
+    )
+    .bind(&switch.sw_name)
+    .fetch_one(&masterbase.connection_pool)
+    .await
+    .map_err(|err| err.to_string())?; //BIG TODO: fix Race condition
 
     for i in 1..=count {
         sqlx::query(
             "
-            INSERT INTO sp_switchport
-            VALUES (NULL, $1, $2, $3, $4, $5)
-        ",
+                INSERT INTO sp_switchport
+                VALUES (NULL, $1, $2, $3, $4, $5)
+            ",
         )
-        .bind(&switch.sw_name)
+        .bind(sw_id)
         .bind(format!("{prefix}{:02}", i))
         .bind(0)
         .bind(false)
         .bind(None::<String>)
-        .execute(&mut *transaction)
+        .execute(&masterbase.connection_pool)
         .await
         .map_err(|err| err.to_string())?;
     }
 
-    transaction
-        .commit()
-        .await
-        .map(|_| Status::Created)
-        .map_err(|err| err.to_string())
+    Ok(Status::Created)
 }
 
 #[derive(Deserialize)]
 pub struct UpdateSwitch {
-    sw_name: String,
+    sw_id: i32,
     switch: Switch,
 }
 
@@ -139,16 +146,18 @@ pub async fn update_switch(
         "
             UPDATE sw_switch
             SET
-            sw_sc_id = $1,
-            sw_ip = $2,
-            sw_kommentar = $3
-            WHERE sw_name = $4
+            sw_name = $1,
+            sw_sc_id = $2,
+            sw_ip = $3,
+            sw_kommentar = $4
+            WHERE sw_id = $5
         ",
     )
+    .bind(&update_switch.switch.sw_name)
     .bind(update_switch.switch.sw_sc_id)
     .bind(&update_switch.switch.sw_ip)
     .bind(&update_switch.switch.sw_kommentar)
-    .bind(&update_switch.sw_name)
+    .bind(update_switch.sw_id)
     .execute(&masterbase.connection_pool)
     .await
     .map(|_| Status::Accepted)
@@ -157,7 +166,7 @@ pub async fn update_switch(
 
 #[derive(Deserialize)]
 pub struct DeleteSwitch {
-    sw_name: String,
+    sw_id: i32,
 }
 
 #[delete("/switch", data = "<delete_switch>")]
@@ -168,10 +177,10 @@ pub async fn delete_switch(
     sqlx::query(
         "
             DELETE FROM sp_switchport
-            WHERE sp_sw_name = $1
+            WHERE sp_sw_id = $1
         ",
     )
-    .bind(&delete_switch.sw_name)
+    .bind(delete_switch.sw_id)
     .execute(&masterbase.connection_pool)
     .await
     .map(|_| Status::Ok)
@@ -180,10 +189,10 @@ pub async fn delete_switch(
         sqlx::query(
             "
             DELETE FROM sw_switch
-            WHERE sw_name = $1
+            WHERE sw_id = $1
         ",
         )
-        .bind(&delete_switch.sw_name)
+        .bind(delete_switch.sw_id)
         .execute(&masterbase.connection_pool)
         .await
         .map(|_| Status::Ok)

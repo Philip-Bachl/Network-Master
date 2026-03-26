@@ -125,6 +125,7 @@ impl Masterbase {
                     Some(String::from("Testkommentar")).filter(|_| switch_index % 3 != 0);
 
                 let switch = Switch {
+                    sw_id: switch_index as i32 + schrank.sc_id * SWITCH_COUNT as i32,
                     sw_name: generate_switch_name(
                         schrank.sc_id,
                         &schrank.sc_ge_name,
@@ -152,7 +153,7 @@ impl Masterbase {
 
                 let switchport = Switchport {
                     sp_id: (switchport_index + switch_index * SWITCHPORT_COUNT) as i32,
-                    sp_sw_name: switch.sw_name.clone(),
+                    sp_sw_id: switch.sw_id,
                     sp_port: format!("fa0/{:02}", switchport_index + 1),
                     sp_vlan: vlan,
                     sp_dot1x: switchport_index % 7 == 0 || switchport_index % 8 == 0,
@@ -268,9 +269,10 @@ impl Masterbase {
             sqlx::query(
                 "
                         INSERT INTO sw_switch
-                        VALUES ($1, $2, $3, $4)
+                        VALUES ($1, $2, $3, $4, $5)
                     ",
             )
+            .bind(switch.sw_id)
             .bind(&switch.sw_name)
             .bind(switch.sw_sc_id)
             .bind(&switch.sw_ip)
@@ -291,7 +293,7 @@ impl Masterbase {
                     ",
             )
             .bind(switchport.sp_id)
-            .bind(&switchport.sp_sw_name)
+            .bind(switchport.sp_sw_id)
             .bind(&switchport.sp_port)
             .bind(switchport.sp_vlan)
             .bind(switchport.sp_dot1x)

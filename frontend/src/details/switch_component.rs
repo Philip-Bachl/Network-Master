@@ -13,7 +13,7 @@ use crate::{
 #[derive(Deserialize, Clone)]
 pub struct SwitchportDetail {
     sp_id: i32,
-    sp_sw_name: String,
+    sp_sw_id: i32,
     sp_port: String,
     sp_vlan: i32,
     sp_dot1x: bool,
@@ -28,7 +28,7 @@ impl From<SwitchportDetail> for Switchport {
     fn from(value: SwitchportDetail) -> Self {
         Switchport {
             sp_id: value.sp_id,
-            sp_sw_name: value.sp_sw_name,
+            sp_sw_id: value.sp_sw_id,
             sp_port: value.sp_port,
             sp_vlan: value.sp_vlan,
             sp_dot1x: value.sp_dot1x,
@@ -39,7 +39,7 @@ impl From<SwitchportDetail> for Switchport {
 
 #[derive(Serialize)]
 pub struct DeleteSwitch {
-    sw_name: String,
+    sw_id: i32,
 }
 
 #[derive(PartialEq, Properties)]
@@ -59,26 +59,26 @@ pub fn SwitchComponent(
 ) -> HtmlResult {
     let switchport_details_deps = use_state(|| false);
     let switchport_details = use_future_with(
-        (switch.sw_name.clone(), *switchport_details_deps),
+        (switch.sw_id, *switchport_details_deps),
         |deps| async move {
-            let sw_name = deps.0.clone();
+            let sw_id = deps.0;
             util::fetch_get::<Vec<SwitchportDetail>>(&format!(
                 "/api/details/switch/{}",
-                urlencoding::encode(&sw_name)
+                urlencoding::encode(&sw_id.to_string())
             ))
             .await
             .unwrap_or_default()
         },
     )?;
 
-    let switch_name_clone = switch.sw_name.clone();
+    let sw_id_clone = switch.sw_id;
     let switches_deps_clone = switches_deps.clone();
     let on_delete_switch_button_click = Callback::from(move |event: yew::MouseEvent| {
         event.stop_propagation();
 
-        let Ok(serialized_delete_switch) = serde_json::to_string(&DeleteSwitch {
-            sw_name: switch_name_clone.clone(),
-        }) else {
+        let Ok(serialized_delete_switch) =
+            serde_json::to_string(&DeleteSwitch { sw_id: sw_id_clone })
+        else {
             //SMALL TODO: error handling
             return;
         };

@@ -22,7 +22,7 @@ struct DoseDetail {
     dk_name: Option<String>,
 
     sp_id: Option<i32>,
-    sp_sw_name: Option<String>,
+    sp_sw_id: Option<i32>,
     sp_port: Option<String>,
     sp_vlan: Option<i32>,
     sp_dot1x: Option<bool>,
@@ -50,7 +50,7 @@ impl From<DoseDetail> for Option<Switchport> {
     fn from(value: DoseDetail) -> Self {
         let DoseDetail {
             sp_id: Some(sp_id),
-            sp_sw_name: Some(sp_sw_name),
+            sp_sw_id: Some(sp_sw_id),
             sp_port: Some(sp_port),
             sp_vlan: Some(sp_vlan),
             sp_dot1x: Some(sp_dot1x),
@@ -63,7 +63,7 @@ impl From<DoseDetail> for Option<Switchport> {
 
         Some(Switchport {
             sp_id,
-            sp_sw_name,
+            sp_sw_id,
             sp_port,
             sp_vlan,
             sp_dot1x,

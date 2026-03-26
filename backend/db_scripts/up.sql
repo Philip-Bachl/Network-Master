@@ -51,25 +51,26 @@ CREATE TABLE do_dose (
 );
 
 CREATE TABLE sw_switch (
+    sw_id INTEGER PRIMARY KEY,
     sw_name TEXT NOT NULL,
     sw_sc_id INTEGER NOT NULL,
     sw_ip TEXT NOT NULL,
     sw_kommentar TEXT,
     
-    PRIMARY KEY (sw_name),
+    UNIQUE (sw_name),
     FOREIGN KEY (sw_sc_id) REFERENCES sc_schrank(sc_id)
 );
 
 CREATE TABLE sp_switchport (
     sp_id INTEGER PRIMARY KEY,
-    sp_sw_name TEXT NOT NULL,
+    sp_sw_id INTEGER NOT NULL,
     sp_port TEXT NOT NULL,
     sp_vlan INTEGER NOT NULL,
     sp_dot1x BOOLEAN NOT NULL,
     sp_kommentar TEXT,
 
-    UNIQUE (sp_sw_name, sp_port),
-    FOREIGN KEY (sp_sw_name) REFERENCES sw_switch(sw_name)
+    UNIQUE (sp_sw_id, sp_port),
+    FOREIGN KEY (sp_sw_id) REFERENCES sw_switch(sw_id)
 );
 
 PRAGMA foreign_keys = 1;

@@ -43,6 +43,7 @@ pub struct Dose {
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Switch {
+    pub sw_id: i32,
     pub sw_name: String,
     pub sw_sc_id: i32,
     pub sw_ip: String,
@@ -52,7 +53,7 @@ pub struct Switch {
 #[derive(PartialEq, Serialize, Deserialize, Debug, Clone)]
 pub struct Switchport {
     pub sp_id: i32,
-    pub sp_sw_name: String,
+    pub sp_sw_id: i32,
     pub sp_port: String,
     pub sp_vlan: i32,
     pub sp_dot1x: bool,

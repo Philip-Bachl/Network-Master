@@ -17,19 +17,19 @@ pub async fn read_switchport_all(
     .map(Json)
     .map_err(|err| err.to_string())
 }
-#[get("/switchport/switch/<sw_name>")]
+#[get("/switchport/switch/<sw_id>")]
 pub async fn read_switchport_of_switch(
     masterbase: &State<Masterbase>,
-    sw_name: &str,
+    sw_id: &str,
 ) -> Result<Json<Vec<Switchport>>, String> {
     sqlx::query_as(
         "
             SELECT *
             FROM sp_switchport
-            WHERE sp_sw_name = $1
+            WHERE sp_sw_id = $1
         ",
     )
-    .bind(sw_name)
+    .bind(sw_id)
     .fetch_all(&masterbase.connection_pool)
     .await
     .map(Json)
@@ -47,7 +47,7 @@ pub async fn create_switchport(
             VALUES (NULL, $1, $2, $3, $4, $5)
         ",
     )
-    .bind(&switchport.sp_sw_name)
+    .bind(switchport.sp_sw_id)
     .bind(&switchport.sp_port)
     .bind(switchport.sp_vlan)
     .bind(switchport.sp_dot1x)
@@ -67,7 +67,7 @@ pub async fn update_switchport(
         "
             UPDATE sp_switchport
             SET
-            sp_sw_name = $1,
+            sp_sw_id = $1,
             sp_port = $2,
             sp_vlan = $3,
             sp_dot1x = $4,
@@ -76,7 +76,7 @@ pub async fn update_switchport(
             sp_id = $6
         ",
     )
-    .bind(&switchport.sp_sw_name)
+    .bind(switchport.sp_sw_id)
     .bind(&switchport.sp_port)
     .bind(switchport.sp_vlan)
     .bind(switchport.sp_dot1x)

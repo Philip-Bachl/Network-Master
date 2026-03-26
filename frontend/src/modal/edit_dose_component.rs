@@ -62,21 +62,16 @@ pub fn EditDoseComponent(
         .await
         .unwrap_or_default()
     })?;
-    let selected_switch_name = use_state_eq(|| {
-        start_switchport
-            .clone()
-            .map(|sp| sp.sp_sw_name)
-            .unwrap_or_default()
-    });
+    let selected_switch_id = use_state_eq(|| start_switchport.clone().map(|sp| sp.sp_sw_id));
 
-    let switchport_list = use_future_with((*selected_switch_name).clone(), |sw_name| async move {
-        if sw_name.is_empty() {
+    let switchport_list = use_future_with(*selected_switch_id, |sw_id| async move {
+        let Some(sw_id) = *sw_id else {
             return vec![];
-        }
+        };
 
         util::fetch_get::<Vec<Switchport>>(&format!(
             "/api/switchport/switch/{}",
-            urlencoding::encode(&sw_name)
+            urlencoding::encode(&sw_id.to_string())
         ))
         .await
         .unwrap_or_default()
@@ -105,10 +100,10 @@ pub fn EditDoseComponent(
         selected_raum_id_clone.set(select.value().parse::<i32>().unwrap_or(start_raum_id_clone));
     });
 
-    let selected_switch_name_clone = selected_switch_name.clone();
+    let selected_switch_id_clone = selected_switch_id;
     let on_select_switch = Callback::from(move |event: yew::Event| {
         let select: HtmlSelectElement = event.target_unchecked_into();
-        selected_switch_name_clone.set(select.value());
+        selected_switch_id_clone.set(select.value().parse::<i32>().ok());
     });
 
     let selected_switchport_id_clone = selected_switchport_id;
@@ -168,7 +163,7 @@ pub fn EditDoseComponent(
                 <option selected={ dose.do_sp_id.is_none() } value={""}>{"<Switch>"}</option>
 
                 for switch in switch_list.iter().cloned() {
-                    <option selected={ start_switchport.clone().map(|sp| sp.sp_sw_name).unwrap_or_default() == switch.sw_name } value={switch.sw_name.clone()}>{switch.sw_name}</option>
+                    <option selected={ start_switchport.clone().map(|sp| sp.sp_sw_id)== Some(switch.sw_id) } value={switch.sw_id.to_string()}>{switch.sw_name}</option>
                 }
             </select>
             <select id="switchportSelect" ref={form_data.dose_switchport_select_ref} onchange={on_select_switchport}>

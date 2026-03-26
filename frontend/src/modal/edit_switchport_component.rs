@@ -27,15 +27,6 @@ pub fn EditSwitchportComponent(
         modal_state,
     }: &EditSwitchportComponentProps,
 ) -> HtmlResult {
-    /*
-       pub sp_id: i32,
-       pub sp_sw_name: String,
-       pub sp_port: String,
-       pub sp_vlan: i32,
-       pub sp_dot1x: bool,
-       pub sp_kommentar: Option<String>,
-    */
-
     let switch_list = use_future(|| async {
         util::fetch_get::<Vec<Switch>>("api/switch")
             .await
@@ -43,7 +34,7 @@ pub fn EditSwitchportComponent(
     })?;
 
     let form_data = FormData {
-        switch_name_ref: use_node_ref(),
+        switch_id_ref: use_node_ref(),
         port_ref: use_node_ref(),
         vlan_ref: use_node_ref(),
         dot1x_ref: use_node_ref(),
@@ -73,9 +64,9 @@ pub fn EditSwitchportComponent(
 
     Ok(html! {
         <div id="editSwitchport">
-            <select id="switchSelect" ref={form_data.switch_name_ref}>
+            <select id="switchSelect" ref={form_data.switch_id_ref}>
                 for switch in switch_list.iter().cloned() {
-                    <option selected={ start_switch.sw_name == switch.sw_name } value={switch.sw_name.clone()}>{switch.sw_name}</option>
+                    <option selected={ start_switch.sw_id == switch.sw_id } value={switch.sw_id.to_string()}>{switch.sw_name}</option>
                 }
             </select>
             <input
@@ -121,7 +112,7 @@ pub fn EditSwitchportComponent(
 
 #[derive(Clone)]
 struct FormData {
-    pub switch_name_ref: NodeRef,
+    pub switch_id_ref: NodeRef,
     pub port_ref: NodeRef,
     pub vlan_ref: NodeRef,
     pub dot1x_ref: NodeRef,
@@ -134,10 +125,10 @@ async fn handle_create_button_click(
     switchport_details_deps: UseStateHandle<bool>,
     modal_state: UseStateHandle<ModalState>,
 ) {
-    let Some(switch_name) = form_data
-        .switch_name_ref
+    let Some(switch_id) = form_data
+        .switch_id_ref
         .cast::<HtmlSelectElement>()
-        .map(|s| s.value())
+        .and_then(|s| s.value().parse::<i32>().ok())
     else {
         //SMALL TODO: error handling
         return;
@@ -180,7 +171,7 @@ async fn handle_create_button_click(
 
     let update_switchport = Switchport {
         sp_id,
-        sp_sw_name: switch_name,
+        sp_sw_id: switch_id,
         sp_port: port,
         sp_vlan: vlan,
         sp_dot1x: dot1x,

@@ -102,6 +102,21 @@
     position: relative;
 }
 
+.switch-title input {
+    font-size: var(--font-size);
+    color: inherit;
+    background-color: transparent;
+    border: none;
+}
+
+.switch-title input:first-child {
+    text-align: start;
+}
+
+.switch-title input:last-child {
+    text-align: end;
+}
+
 .switch-content {
     display: flex;
     flex-direction: row;
