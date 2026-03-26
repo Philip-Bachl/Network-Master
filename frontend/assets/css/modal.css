@@ -16,8 +16,6 @@
 }
 
 #modal input:invalid {
-    /*background-color: tomato;
-    color: black;*/
     background-color: firebrick;
 }
 

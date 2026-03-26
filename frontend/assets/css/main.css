@@ -28,6 +28,10 @@ main {
     box-sizing: border-box;
 }
 
+.no-scroll {
+    max-height: 100vh;
+    overflow: hidden;
+}
 
 #resizeBar {
     display: flex;
@@ -61,6 +65,7 @@ main {
 
     #sidebar {
         max-width: unset !important;
+        width: auto !important;
     }
 
     #resizeBar {

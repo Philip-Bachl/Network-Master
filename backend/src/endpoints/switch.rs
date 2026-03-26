@@ -139,14 +139,12 @@ pub async fn update_switch(
         "
             UPDATE sw_switch
             SET
-            sw_name = $1,
-            sw_sc_id = $2,
-            sw_ip = $3,
-            sw_kommentar = $4
-            WHERE sw_name = $5
+            sw_sc_id = $1,
+            sw_ip = $2,
+            sw_kommentar = $3
+            WHERE sw_name = $4
         ",
     )
-    .bind(&update_switch.switch.sw_name)
     .bind(update_switch.switch.sw_sc_id)
     .bind(&update_switch.switch.sw_ip)
     .bind(&update_switch.switch.sw_kommentar)

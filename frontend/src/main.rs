@@ -82,8 +82,14 @@ fn App() -> Html {
         resize_clone.set(false);
     });
 
+    let no_scroll_class = if *modal_state == ModalState::Nothing {
+        ""
+    } else {
+        "no-scroll"
+    };
+
     html! {
-        <main {onmousemove} {onmouseup}>
+        <main {onmousemove} {onmouseup} class={no_scroll_class}>
             <Suspense fallback={sidebar_fallback}>
                 <SidebarComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} mouse_x={*mouse_x} />
             </Suspense>

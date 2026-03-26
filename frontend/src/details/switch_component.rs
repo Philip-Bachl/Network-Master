@@ -86,7 +86,7 @@ pub fn SwitchComponent(
         wasm_bindgen_futures::spawn_local(async move {
             util::fetch_delete_with_body("/api/switch", serialized_delete_switch).await;
             switches_deps_clone_clone.set(!*switches_deps_clone_clone);
-        }); // add error handling to fetch_delete_with_body and then here to notify the user if theres a foreign key falure (ports connected)
+        }); // MEDIUM TODO: add error handling to fetch_delete_with_body and then here to notify the user if theres a foreign key falure (ports connected)
     });
 
     Ok(html! {
@@ -135,8 +135,9 @@ fn render_switchport(
 
     html! {
         <div class={format!("switchport{}{}", border, dot1x)} {onclick}>
-            <img  class={ if switchport_detail.sp_dot1x { "dot1x" } else { "" } } src={img_src} />
             <div>{&switchport_detail.sp_port}</div>
+            <img src={img_src} />
+            <div>{switchport_detail.sp_vlan}</div>
             <div>{switchport_detail.do_nummer.as_deref().unwrap_or_default()}</div>
         </div>
     }

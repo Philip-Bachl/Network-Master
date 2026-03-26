@@ -49,10 +49,13 @@ pub async fn update_gebaeude(
 ) -> Result<Status, String> {
     sqlx::query(
         "
-            UPDATE ge_gebaeude SET ge_name = $1, ge_kommentar = $2 WHERE ge_name = $3
+            UPDATE ge_gebaeude
+            SET
+            ge_kommentar = $1
+            WHERE
+            ge_name = $2
         ",
     )
-    .bind(&update_gebaeude.gebaeude.ge_name)
     .bind(&update_gebaeude.gebaeude.ge_kommentar)
     .bind(&update_gebaeude.ge_name)
     .execute(&masterbase.connection_pool)

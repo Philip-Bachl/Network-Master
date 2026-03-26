@@ -83,7 +83,7 @@
 
     aspect-ratio: 1;
     width: calc(var(--font-size) * 1.5);
-    transform: scale(0.5) translate(20px, -20px);
+    transform: scale(0.5) translate(20px, 20px);
 
     background-image: url("/assets/svg/dot1x.svg");
     filter: drop-shadow(0 2px 7px black);
