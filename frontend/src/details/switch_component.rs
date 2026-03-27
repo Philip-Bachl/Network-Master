@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use web_sys::HtmlInputElement;
 use yew::{
-    Callback, Html, HtmlResult, Properties, UseStateHandle, component, html,
+    Callback, Html, HtmlResult, Properties, TargetCast, UseStateHandle, component, html,
     suspense::use_future_with, use_state,
 };
 
@@ -89,9 +90,54 @@ pub fn SwitchComponent(
         }); // MEDIUM TODO: add error handling to fetch_delete_with_body and then here to notify the user if theres a foreign key falure (ports connected)
     });
 
+    let switch_clone = switch.clone();
+    let on_switch_name_submit = Callback::from(move |event: yew::Event| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+        if !input.check_validity() {
+            return;
+        }
+        let sw_name = input.value();
+
+        update_switch(&switch_clone, sw_name, switch_clone.sw_ip.clone());
+    });
+    let switch_clone = switch.clone();
+    let on_switch_ip_submit = Callback::from(move |event: yew::Event| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+        if !input.check_validity() {
+            return;
+        }
+        let sw_ip = input.value();
+
+        update_switch(&switch_clone, switch_clone.sw_name.clone(), sw_ip);
+    });
+
+    let resize_callback = Callback::from(|event: yew::InputEvent| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+        input.set_size(input.value().len().saturating_sub(2).max(1) as u32);
+    });
+
     Ok(html! {
         <div class="switch">
-            <div class="switch-title">{format!("{} - {}", &switch.sw_name, &switch.sw_ip)}</div>
+            <div class="switch-title">
+                //{format!("{} - {}", &switch.sw_name, &switch.sw_ip)}
+                <input
+                    type="text"
+                    onchange={on_switch_name_submit}
+                    oninput={resize_callback.clone()}
+                    value={switch.sw_name.clone()}
+                    size={switch.sw_name.len().saturating_sub(2).max(1).to_string()}
+                />
+                <span>{ "-"}</span>
+                <input
+                    type="text"
+                    onchange={on_switch_ip_submit}
+                    oninput={resize_callback}
+                    value={switch.sw_ip.clone()}
+                    size={switch.sw_ip.len().saturating_sub(2).max(1).to_string()}
+                    pattern="([0-9]?[0-9]?[0-9]\\.){3}([0-9]?[0-9]?[0-9])"
+                />
+            </div>
+
             <div class="switch-content">
                 for switchport_detail in switchport_details.iter() {
                     {render_switchport(switchport_detail, modal_state.clone(), switch.clone(), switchport_details_deps.clone())}
@@ -141,4 +187,27 @@ fn render_switchport(
             <div>{switchport_detail.do_nummer.as_deref().unwrap_or_default()}</div>
         </div>
     }
+}
+
+fn update_switch(switch: &Switch, sw_name: String, sw_ip: String) {
+    //SMALL FEATURE TODO: validation
+
+    if sw_name.is_empty() || sw_ip.is_empty() {
+        return;
+    }
+
+    let update_switch = Switch {
+        sw_name,
+        sw_ip,
+        ..switch.clone()
+    };
+
+    let Ok(serialized_update_switch) = serde_json::to_string(&update_switch) else {
+        //SMALL TODO: error handling
+        return;
+    };
+
+    wasm_bindgen_futures::spawn_local(async move {
+        util::fetch_put_with_body("/api/switch", serialized_update_switch).await;
+    });
 }

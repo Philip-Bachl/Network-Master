@@ -131,16 +131,10 @@ pub async fn create_switch_with_ports(
     Ok(Status::Created)
 }
 
-#[derive(Deserialize)]
-pub struct UpdateSwitch {
-    sw_id: i32,
-    switch: Switch,
-}
-
-#[put("/switch", data = "<update_switch>")]
+#[put("/switch", data = "<switch>")]
 pub async fn update_switch(
     masterbase: &State<Masterbase>,
-    update_switch: Json<UpdateSwitch>,
+    switch: Json<Switch>,
 ) -> Result<Status, String> {
     sqlx::query(
         "
@@ -153,11 +147,11 @@ pub async fn update_switch(
             WHERE sw_id = $5
         ",
     )
-    .bind(&update_switch.switch.sw_name)
-    .bind(update_switch.switch.sw_sc_id)
-    .bind(&update_switch.switch.sw_ip)
-    .bind(&update_switch.switch.sw_kommentar)
-    .bind(update_switch.sw_id)
+    .bind(&switch.sw_name)
+    .bind(switch.sw_sc_id)
+    .bind(&switch.sw_ip)
+    .bind(&switch.sw_kommentar)
+    .bind(switch.sw_id)
     .execute(&masterbase.connection_pool)
     .await
     .map(|_| Status::Accepted)

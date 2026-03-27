@@ -107,14 +107,11 @@
     color: inherit;
     background-color: transparent;
     border: none;
+    text-align: center;
 }
 
-.switch-title input:first-child {
-    text-align: start;
-}
-
-.switch-title input:last-child {
-    text-align: end;
+.switch-title input:invalid {
+    background-color: firebrick;
 }
 
 .switch-content {
