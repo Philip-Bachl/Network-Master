@@ -61,15 +61,15 @@ fn App() -> Html {
         </div>
     };
 
-    let mouse_x = use_state(|| 0);
+    let sidebar_width = use_state(|| 0);
     let resize = use_state_eq(|| false);
 
     //SMALL TODO: change from yew::Event / yew::MouseEvent to just Event/MouseEvent
     let resize_clone = resize.clone();
-    let mouse_x_clone = mouse_x.clone();
+    let sidebar_width_clone = sidebar_width.clone();
     let onmousemove = Callback::from(move |event: yew::MouseEvent| {
         if *resize_clone {
-            mouse_x_clone.set(event.client_x());
+            sidebar_width_clone.set(event.client_x());
         }
     });
 
@@ -91,7 +91,7 @@ fn App() -> Html {
     html! {
         <main {onmousemove} {onmouseup} class={no_scroll_class}>
             <Suspense fallback={sidebar_fallback}>
-                <SidebarComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} mouse_x={*mouse_x} />
+                <SidebarComponent sidebar_selection={sidebar_selection.clone()} modal_state={modal_state.clone()} sidebar_width={*sidebar_width} />
             </Suspense>
             <div id="resizeBar" {onmousedown} />
             <Suspense fallback={details_fallback}>

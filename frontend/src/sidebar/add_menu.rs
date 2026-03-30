@@ -28,37 +28,39 @@ pub fn AddMenuComponent(
     });
 
     let open_state = html! {
-        <div id="options">
-            <div class="option" onclick={
+        <>
+            <div id="addMenuTitle">{ "Hinzufügen" }</div>
+            <div id="options">
+                <div class="option" onclick={
                     let modal_state_clone = modal_state.clone();
                     let gebaeude_deps_clone = gebaeude_deps.clone();
                     Callback::from(move |_| {modal_state_clone.set(ModalState::AddGebaeude(gebaeude_deps_clone.clone()))})
                 }>
-                <img src="assets/svg/gebaeude.svg" />
-                <div>{ "Gebäude" }</div>
-            </div>
-            <div class="option" onclick={
+                    <img src="assets/svg/gebaeude.svg" />
+                    <div>{ "Gebäude" }</div>
+                </div>
+                <div class="option" onclick={
                     let modal_state_clone = modal_state.clone();
                     let raeume_deps_clone = raeume_deps.clone();
                     Callback::from(move |_| {modal_state_clone.set(ModalState::AddRaum(raeume_deps_clone.clone()))})
                 }>
-                <img src="assets/svg/raum.svg" />
-                <div>{ "Raum" }</div>
-            </div>
-            <div class="option" onclick={
+                    <img src="assets/svg/raum.svg" />
+                    <div>{ "Raum" }</div>
+                </div>
+                <div class="option" onclick={
                     let modal_state_clone = modal_state.clone();
                     let schraenke_deps_clone = schraenke_deps.clone();
                     Callback::from(move |_| {modal_state_clone.set(ModalState::AddSchrank(schraenke_deps_clone.clone()))})
                 }>
-                <img src="assets/svg/schrank.svg" />
-                <div>{ "Schrank" }</div>
+                    <img src="assets/svg/schrank.svg" />
+                    <div>{ "Schrank" }</div>
+                </div>
             </div>
-        </div>
+        </>
     };
 
     html! {
         <div id="addMenu">
-            <img src="assets/svg/plus.svg" id="expandButton" onclick={on_menu_button_click} />
             {
                 if *open {
                     open_state
@@ -66,7 +68,7 @@ pub fn AddMenuComponent(
                     html! {}
                 }
             }
-
+            <img src="assets/svg/plus.svg" id="expandButton" onclick={on_menu_button_click} />
         </div>
     }
 }

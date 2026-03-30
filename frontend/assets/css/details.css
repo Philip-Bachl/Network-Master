@@ -17,12 +17,16 @@
 }
 
 #detailsTitle {
+    flex: none;
+
     background-color: var(--level-2);
     border-bottom: 3px solid var(--color);
 
     font-size: calc(2 * var(--font-size));
 
     user-select: none;
+
+    overflow: auto;
 }
 
 #detailsContent {

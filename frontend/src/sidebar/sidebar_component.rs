@@ -5,10 +5,10 @@ use crate::{
     util::{self, pretty_stockwerk_number},
 };
 use serde::Serialize;
-use web_sys::Element;
+use web_sys::{Element, HtmlInputElement};
 use yew::{
-    AttrValue, Callback, Html, HtmlResult, MouseEvent, Properties, UseStateHandle, component, html,
-    suspense::use_future_with, use_node_ref, use_state,
+    AttrValue, Callback, Html, HtmlResult, MouseEvent, Properties, TargetCast, UseStateHandle,
+    component, html, suspense::use_future_with, use_node_ref, use_state,
 };
 
 use crate::model::{Raum, Schrank};
@@ -17,7 +17,7 @@ use crate::model::{Raum, Schrank};
 pub struct SidebarComponentProps {
     pub sidebar_selection: UseStateHandle<SidebarSelection>,
     pub modal_state: UseStateHandle<ModalState>,
-    pub mouse_x: i32,
+    pub sidebar_width: i32,
 }
 
 #[component]
@@ -25,7 +25,7 @@ pub fn SidebarComponent(
     SidebarComponentProps {
         sidebar_selection,
         modal_state,
-        mouse_x,
+        sidebar_width,
     }: &SidebarComponentProps,
 ) -> HtmlResult {
     let gebaeude_deps = use_state(|| false);
@@ -56,13 +56,17 @@ pub fn SidebarComponent(
     );
 
     let sidebar_ref = use_node_ref();
-    let width_style = sidebar_ref.cast::<Element>().map(|e| {
-        let width = *mouse_x as f64 - e.get_bounding_client_rect().left() - 10.0;
-        format!("{}px", width)
-    });
+    let width_style = sidebar_ref
+        .cast::<Element>()
+        .filter(|_| *sidebar_width > 0)
+        .map(|e| {
+            let width = *sidebar_width as f64 - e.get_bounding_client_rect().left() - 10.0;
+            format!("{}px", width)
+        })
+        .unwrap_or(String::from("33%"));
 
     Ok(html! {
-        <div id="sidebar" style={format!("width: {};", width_style.unwrap_or(String::from("auto")))} ref={sidebar_ref}>
+        <div id="sidebar" style={format!("width: {};", width_style)} ref={sidebar_ref}>
             <div id="sidebarTitle">{"Locations"}</div>
             <div id="sidebarContent">
                 for (ge_name, stockwerk_vec) in full_vec {
@@ -156,11 +160,12 @@ fn render_schrank(
     let sc_id_clone = schrank.sc_id;
     let sidebar_selection_clone = sidebar_selection.clone();
 
-    let schrank_sc_nummer = schrank.sc_nummer.clone();
+    let schrank_clone = schrank.clone();
     let onclick = Callback::from(move |_| {
-        sidebar_selection.set(SidebarSelection::Schrank(schrank.clone()));
+        sidebar_selection.set(SidebarSelection::Schrank(schrank_clone.clone()));
     });
 
+    let schraenke_deps_clone = schraenke_deps.clone();
     let delete_callback = Callback::from(move |event: yew::MouseEvent| {
         event.stop_propagation();
 
@@ -177,18 +182,49 @@ fn render_schrank(
             //SMALL TODO: error handling
             return;
         };
-        let schraenke_deps_clone = schraenke_deps.clone();
+
+        let schraenke_deps_clone_clone = schraenke_deps_clone.clone();
         wasm_bindgen_futures::spawn_local(async move {
             util::fetch_delete_with_body("/api/schrank", serialized_delete_schrank).await;
-            schraenke_deps_clone.set(!*schraenke_deps_clone);
+            schraenke_deps_clone_clone.set(!*schraenke_deps_clone_clone);
         });
     });
+
+    let schrank_clone = schrank.clone();
+    let schraenke_deps_clone = schraenke_deps.clone();
+    let onchange = Callback::from(move |event: yew::Event| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+
+        let sc_nummer = input.value();
+        if sc_nummer.is_empty() {
+            return;
+        }
+
+        let schrank = Schrank {
+            sc_nummer,
+            ..schrank_clone.clone()
+        };
+        let Ok(serialized_schrank) = serde_json::to_string(&schrank) else {
+            //SMALL TODO: error handling
+            return;
+        };
+
+        let schraenke_deps_clone_clone = schraenke_deps_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            util::fetch_put_with_body("/api/schrank", serialized_schrank).await;
+            schraenke_deps_clone_clone.set(!*schraenke_deps_clone_clone);
+        });
+    });
+
+    let resize_callback = Callback::from(|event: yew::InputEvent| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+        input.set_size(input.value().len().saturating_sub(2).max(1) as u32);
+    });
+
     html! {
         <div class="schrank" {onclick}>
             <img src="assets/svg/schrank.svg" />
-            <div>
-                {schrank_sc_nummer}
-            </div>
+            <input type="text" {onchange} oninput={resize_callback} value={schrank.sc_nummer.clone()} size={schrank.sc_nummer.len().saturating_sub(2).max(1).to_string()} />
             <img src="assets/svg/plus.svg" class="delete-button" onclick={delete_callback} />
         </div>
     }

@@ -13,21 +13,14 @@
     background-color: var(--level-1);
     border-radius: 10px;
 
-
     cursor: default;
     user-select: none;
-}
-
-#sidebar img {
-    flex: none;
-    place-self: center;
-
-    width: var(--font-size);
 }
 
 #sidebar>* {
     padding: 20px 40px 20px 20px;
 }
+
 
 #sidebarTitle {
     background-color: var(--level-2);
@@ -45,6 +38,25 @@
     overflow-y: auto;
 }
 
+#sidebar img {
+    flex: none;
+    place-self: center;
+
+    width: var(--font-size);
+}
+
+#sidebar input {
+    font-size: var(--font-size);
+    color: inherit;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+}
+
+#sidebar input:invalid {
+    background-color: firebrick;
+}
+
 .schrank,
 .raum {
     display: flex;
@@ -54,7 +66,7 @@
 
 #addMenu {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 20px;
 
     border-top: 3px solid var(--color);
@@ -72,6 +84,10 @@
     background-color: var(--level-2);
     border: 2px solid var(--color);
     border-radius: 20px;
+}
+
+#addMenuTitle {
+    font-size: calc(1.5 * var(--font-size));
 }
 
 #addMenu #options {

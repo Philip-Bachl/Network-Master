@@ -100,6 +100,7 @@ pub fn SwitchComponent(
 
         update_switch(&switch_clone, sw_name, switch_clone.sw_ip.clone());
     });
+
     let switch_clone = switch.clone();
     let on_switch_ip_submit = Callback::from(move |event: yew::Event| {
         let input = event.target_unchecked_into::<HtmlInputElement>();
@@ -127,7 +128,7 @@ pub fn SwitchComponent(
                     value={switch.sw_name.clone()}
                     size={switch.sw_name.len().saturating_sub(2).max(1).to_string()}
                 />
-                <span>{ "-"}</span>
+                <span>{ "-" }</span>
                 <input
                     type="text"
                     onchange={on_switch_ip_submit}
@@ -190,12 +191,6 @@ fn render_switchport(
 }
 
 fn update_switch(switch: &Switch, sw_name: String, sw_ip: String) {
-    //SMALL FEATURE TODO: validation
-
-    if sw_name.is_empty() || sw_ip.is_empty() {
-        return;
-    }
-
     let update_switch = Switch {
         sw_name,
         sw_ip,

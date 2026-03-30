@@ -68,7 +68,7 @@ pub async fn update_schrank(
             SET
             sc_ge_name = $1,
             sc_nummer = $2,
-            sc_stockwerk = $3
+            sc_stockwerk = $3,
             sc_kommentar = $4
             WHERE sc_id = $5
         ",
