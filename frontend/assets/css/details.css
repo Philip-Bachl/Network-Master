@@ -109,9 +109,12 @@
 .switch-title input {
     font-size: var(--font-size);
     color: inherit;
+
     background-color: transparent;
     border: none;
+
     text-align: center;
+    text-decoration: underline;
 }
 
 .switch-title input:invalid {

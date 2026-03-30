@@ -224,7 +224,13 @@ fn render_schrank(
     html! {
         <div class="schrank" {onclick}>
             <img src="assets/svg/schrank.svg" />
-            <input type="text" {onchange} oninput={resize_callback} value={schrank.sc_nummer.clone()} size={schrank.sc_nummer.len().saturating_sub(2).max(1).to_string()} />
+            <input
+                type="text"
+                {onchange}
+                oninput={resize_callback}
+                value={schrank.sc_nummer.clone()}
+                size={schrank.sc_nummer.len().saturating_sub(2).max(1).to_string()}
+            />
             <img src="assets/svg/plus.svg" class="delete-button" onclick={delete_callback} />
         </div>
     }
@@ -243,11 +249,12 @@ fn render_raum(
     let ra_id_clone = raum.ra_id;
     let sidebar_selection_clone = sidebar_selection.clone();
 
-    let raum_ra_nummer = raum.ra_nummer.clone();
+    let raum_clone = raum.clone();
     let onclick = Callback::from(move |_| {
-        sidebar_selection.set(SidebarSelection::Raum(raum.clone()));
+        sidebar_selection.set(SidebarSelection::Raum(raum_clone.clone()));
     });
 
+    let raeume_deps_clone = raeume_deps.clone();
     let delete_callback = Callback::from(move |event: yew::MouseEvent| {
         event.stop_propagation();
 
@@ -263,18 +270,54 @@ fn render_raum(
             //SMALL TODO: error handling
             return;
         };
-        let raeume_deps_clone = raeume_deps.clone();
+        let raeume_deps_clone_clone = raeume_deps_clone.clone();
         wasm_bindgen_futures::spawn_local(async move {
             util::fetch_delete_with_body("/api/raum", serialized_delete_raum).await;
-            raeume_deps_clone.set(!*raeume_deps_clone);
+            raeume_deps_clone_clone.set(!*raeume_deps_clone_clone);
         });
     });
+
+    let raum_clone = raum.clone();
+    let raeume_deps_clone = raeume_deps.clone();
+    let onchange = Callback::from(move |event: yew::Event| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+
+        let ra_nummer = input.value();
+        if ra_nummer.is_empty() {
+            return;
+        }
+
+        let raum = Raum {
+            ra_nummer,
+            ..raum_clone.clone()
+        };
+        let Ok(serialized_raum) = serde_json::to_string(&raum) else {
+            //SMALL TODO: error handling
+            return;
+        };
+
+        let raeume_deps_clone_clone = raeume_deps_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            util::fetch_put_with_body("/api/raum", serialized_raum).await;
+            raeume_deps_clone_clone.set(!*raeume_deps_clone_clone);
+        });
+    });
+
+    let resize_callback = Callback::from(|event: yew::InputEvent| {
+        let input = event.target_unchecked_into::<HtmlInputElement>();
+        input.set_size(input.value().len().saturating_sub(1).max(1) as u32);
+    });
+
     html! {
         <div class="raum" {onclick}>
             <img src="assets/svg/raum.svg" />
-            <div>
-                {raum_ra_nummer}
-            </div>
+            <input
+                type="text"
+                {onchange}
+                oninput={resize_callback}
+                value={raum.ra_nummer.clone()}
+                size={raum.ra_nummer.len().saturating_sub(1).max(1).to_string()}
+            />
             <img src="assets/svg/plus.svg" class="delete-button" onclick={delete_callback} />
         </div>
     }
