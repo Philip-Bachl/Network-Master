@@ -1,7 +1,6 @@
 # Network Master
-- TODO GENERAL DESCRIPTION
-- in rust implementiert (list dependencies)
-- erklären, dass Dose wanddose meint
+
+**Eine Fullstack Netzwerkdatenbankimplementation**
 
 ## Inhaltsverzeichnis
 
@@ -14,6 +13,7 @@
 - Switch
 
 ### Developer
+- Techstack
 - Backend
   - Endpunkte
   - Entities
@@ -90,6 +90,14 @@ Klickt man auf einen Switchport so öffnet sich das Bearbeitungsmenu. Hier kann 
 <br>
 
 ## Developer
+
+## Techstack
+
+- Backend
+  - Rocket (rust)
+  - sqlx
+- Frontend
+  - Yew
 
 ### Backend
 
