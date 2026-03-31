@@ -240,6 +240,7 @@ Für die backend.exe gibt es 3 flags:
 
 - ```--reset```: führt das backend aus, setzte die Datenbank komplett zurück und erstellt sie neu.
 - ```--seed```: führt das backend aus und fügt testdaten in die Datenbank ein
+- ```--simple```: _deprecated_
 
 Wird backend.exe ohne flags ausgeführt startes es die Application normal.<br>
 Um die Application zu starten benötigt backend.exe ein ```.env``` File welches sich im deploy Ordner befinden muss.
