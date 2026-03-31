@@ -58,7 +58,11 @@ impl Masterbase {
                             + gebaeude_index * STOCKWERK_COUNT * RAUM_COUNT)
                             as i32,
                         ra_ge_name: gebaeude.ge_name.clone(),
-                        ra_nummer: format!("{}{:02}", stockwerk_index, raum_index),
+                        ra_nummer: format!(
+                            "{}{:02}",
+                            (stockwerk_index as i32 - (STOCKWERK_COUNT >> 1) as i32),
+                            raum_index
+                        ),
                         ra_stockwerk: (stockwerk_index as i32 - (STOCKWERK_COUNT >> 1) as i32),
                         ra_kommentar: kommentar,
                     };
@@ -174,7 +178,7 @@ impl Masterbase {
                 let dose = Dose {
                     do_id: dosen_index as i32 + raum.ra_id * DOSE_COUNT as i32,
                     do_ra_id: raum.ra_id,
-                    do_nummer: dosen_index.to_string(),
+                    do_nummer: format!("{}/{}", raum.ra_nummer, dosen_index),
                     do_sp_id: None,
                     do_dk_id: Some((dosen_index % device_kinds_length) as i32)
                         .filter(|_| dosen_index % 7 != 0),

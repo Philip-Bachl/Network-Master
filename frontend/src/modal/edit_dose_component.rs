@@ -146,6 +146,13 @@ pub fn EditDoseComponent(
 
     Ok(html! {
         <div id="editDose">
+            <input
+                type="text"
+                id="doseNummerInput"
+                placeholder="Dosennummer"
+                ref={form_data.dose_nummer_ref}
+                value={dose.do_nummer.clone()}
+            />
             <select id="gebaeudeSelect" onchange={on_select_gebaeude}>
                 for gebaeude in gebaeude_list.iter().cloned() {
                     <option selected={ *selected_gebaeude_name == gebaeude.ge_name } value={gebaeude.ge_name.clone()}>{gebaeude.ge_name}</option>
@@ -180,13 +187,6 @@ pub fn EditDoseComponent(
                     //BIG TODO: find a way to display icons instead of text (option elements dont allow anything but text, probably have to create custom select)
                 }
             </select>
-            <input
-                type="text"
-                id="doseNummerInput"
-                placeholder="Dosennummer"
-                ref={form_data.dose_nummer_ref}
-                value={dose.do_nummer.clone()}
-            />
             <input
                 type="text"
                 id="doseKommentarInput"

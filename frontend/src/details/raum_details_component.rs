@@ -127,7 +127,7 @@ fn render_dose_detail(
 ) -> Html {
     let img_src = match dose_detail.dk_name {
         Some(ref dk_name) => format!("assets/svg/{}.svg", dk_name),
-        None => String::from("assets/svg/plus.svg"),
+        None => String::new(),
     };
 
     let sw_name = dose_detail.sw_name.as_deref().unwrap_or_default();
