@@ -220,4 +220,23 @@ class Switchport {
 
 Das Frontend ist eine YEW (rust) Webapp auf Webassembly basis.<br>
 
-## TODO how to deploy
+## Deployment
+
+build_reset.cmd erstellt (und überschreibt wenn schon vorhanden!!!) einen ```deploy``` Ordner.
+Dort ist zum einem der ```dist``` Ordner, welcher das frontend enthält und die ```backend.exe```.
+Dieser Ordner representiert alle Dependencies und Daten des Projektes und kann beliebig verschoben werden.<br>
+
+die ```backend.exe``` representiert das backend und den Webserver, der alle dateien in ```dist/..``` auf ```(HOST)/..``` hostet.<br>
+
+Für die backend.exe gibt es 3 flags:
+
+- ```--reset```: führt das backend aus, setzte die Datenbank komplett zurück und erstellt sie neu.
+- ```--seed```: führt das backend aus und fügt testdaten in die Datenbank ein
+
+Wird backend.exe ohne flags ausgeführt startes es die Application normal.<br>
+Um die Application zu starten benötigt backend.exe ein ```.env``` File welches sich im deploy Ordner befinden muss.
+Dort ist ist die **```DATABASE_URL```** zu setzen um den Dateinamen des Sqlite Files zu bestimmen.<br>
+
+```toml
+DATABASE_URL="database.db"
+```

@@ -1,5 +1,6 @@
 target
 dist
+deploy
 
 .env
 *.db*
